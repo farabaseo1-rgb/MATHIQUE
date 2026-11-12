@@ -1,4 +1,6 @@
 
+/* MATHIQUE - Sage Green and Cream Theme */
+
 * {
     margin: 0;
     padding: 0;
@@ -7,80 +9,116 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: #f4f0e8;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #F5F2E8;
+    color: #34483B;
 }
 
 .login-page {
-    width: 100%;
-    padding: 25px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+/* BRAND */
+
+.brand {
     text-align: center;
+    margin-bottom: 30px;
 }
 
 .brand h1 {
     font-family: 'Cabin Sketch', cursive;
     font-size: 48px;
-    color: #333;
+    color: #526B55;
+    letter-spacing: 3px;
 }
 
 .brand p {
+    color: #7D8B73;
     font-size: 12px;
     letter-spacing: 2px;
-    margin-bottom: 30px;
 }
 
+/* LOGIN BOX */
+
 .login-container {
-    background: white;
+    background-color: #FFFEF8;
+    width: 100%;
     max-width: 420px;
-    margin: auto;
-    padding: 35px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px #00000015;
+    padding: 40px 35px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(65, 85, 65, 0.12);
 }
 
 .login-container h2 {
+    color: #526B55;
+    text-align: center;
+    font-size: 27px;
     margin-bottom: 10px;
 }
 
 .subtitle {
+    color: #89927F;
+    text-align: center;
     font-size: 13px;
-    color: #777;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
+/* INPUT FIELDS */
+
 .input-group {
-    text-align: left;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 7px;
-    font-size: 14px;
+    color: #526B55;
+    font-size: 13px;
+    margin-bottom: 8px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 13px;
+    border: 1px solid #D6DDCD;
+    border-radius: 9px;
+    background-color: #F8F7F0;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
 }
+
+.input-group input:focus {
+    border-color: #829B7C;
+    box-shadow: 0 0 0 3px rgba(130, 155, 124, 0.15);
+}
+
+/* LOGIN BUTTON */
 
 button {
     width: 100%;
-    padding: 13px;
-    background: #333;
-    color: white;
+    padding: 14px;
+    background-color: #718A70;
+    color: #FFFFFF;
     border: none;
-    border-radius: 8px;
+    border-radius: 9px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
     cursor: pointer;
+    transition: 0.3s;
 }
 
+button:hover {
+    background-color: #526B55;
+}
+
+/* FOOTER */
+
 .login-footer {
-    margin-top: 20px;
+    text-align: center;
+    color: #89927F;
     font-size: 12px;
-    color: #888;
+    margin-top: 25px;
 }
