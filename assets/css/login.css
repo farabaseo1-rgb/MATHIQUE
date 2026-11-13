@@ -32,12 +32,12 @@ body {
 .brand h1 {
     font-family: 'Cabin Sketch', cursive;
     font-size: 48px;
-    color: #526B55;
+    color: #FFFEF8;
     letter-spacing: 3px;
 }
 
 .brand p {
-    color: #7D8B73;
+    color: #E8EBDD;
     font-size: 12px;
     letter-spacing: 2px;
 }
