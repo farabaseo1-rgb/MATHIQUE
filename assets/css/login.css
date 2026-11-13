@@ -9,7 +9,11 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #718A70;
+    background-image: url('../../chalkboard-bg.jpg');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
     color: #34483B;
 }
 
