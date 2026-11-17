@@ -1,61 +1,391 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-    <title>MATHIQUE | Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATHIQUE | Mathematics Learning Database</title>
 
-    <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+      background: #173d2d url('chalkboard-bg.jpg') center/cover fixed no-repeat;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      padding: 35px;
+      background: #FFFEF8;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      color: #344d3c;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+      margin: 5px 0 25px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #344d3c;
+      font-size: 21px;
+    }
+
+    label {
+      display: block;
+      margin: 13px 0 6px;
+      color: #344d3c;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: 2px solid #718A70;
+      border-color: #718A70;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 17px;
+      border: none;
+      border-radius: 8px;
+      background: #718A70;
+      color: white;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover { background: #5e765d; }
+    button:disabled { opacity: .6; cursor: wait; }
+
+    .secondary {
+      background: transparent;
+      color: #526b50;
+      border: 1px solid #718A70;
+    }
+
+    .secondary:hover {
+      background: #edf1e9;
+      color: #344d3c;
+    }
+
+    .links {
+      margin-top: 17px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .links a {
+      color: #526b50;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: none;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error {
+      display: block;
+      background: #fbe9e7;
+      color: #a33328;
+    }
+
+    .message.success {
+      display: block;
+      background: #e8f2e5;
+      color: #315b36;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .note {
+      color: #777;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    footer {
+      margin-top: 25px;
+      text-align: center;
+      color: #888;
+      font-size: 10px;
+    }
+  </style>
 </head>
+
 <body>
+  <main class="card">
+    <h1>MATHIQUE</h1>
+    <p class="subtitle">Mathematics Learning Database</p>
 
-    <main class="login-page">
+    <!-- LOGIN -->
+    <section id="loginScreen" class="screen active">
+      <h2>Welcome Back!</h2>
 
-        <header class="brand">
-            <h1>MATHIQUE</h1>
-            <p>MATHEMATICS LEARNING DATABASE</p>
-        </header>
+      <form id="loginForm">
+        <label for="loginEmail">Email Address</label>
+        <input id="loginEmail" type="email" required autocomplete="email">
 
-        <section class="login-container">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" required autocomplete="current-password">
 
-            <h2>Welcome Back!</h2>
-            <p class="subtitle">
-                Enter your account to continue learning.
-            </p>
+        <button type="submit">LOG IN</button>
+      </form>
 
-            <form action="login.php" method="POST">
+      <div class="links">
+        <a onclick="showScreen('resetScreen')">Forgot / Reset Password?</a>
+        <p>Don't have an account?
+          <a onclick="showScreen('registerScreen')">Register here</a>
+        </p>
+      </div>
+    </section>
 
-                <div class="input-group">
-                    <label>Email Address</label>
-                    <input type="email"
-                           name="email"
-                           placeholder="Enter your email"
-                           required>
-                </div>
+    <!-- REGISTRATION -->
+    <section id="registerScreen" class="screen">
+      <h2>Create Account</h2>
 
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password"
-                           name="password"
-                           placeholder="Enter your password"
-                           required>
-                </div>
+      <form id="registerForm">
+        <label for="registerEmail">Email Address</label>
+        <input id="registerEmail" type="email" required autocomplete="email">
 
-                <button type="submit">LOG IN</button>
+        <label for="teacherId">Teacher ID Number (Optional)</label>
+        <input id="teacherId" type="text" autocomplete="off">
+        <p class="note">Leave blank if you are registering as a student.</p>
 
-            </form>
+        <label for="registerPassword">Create Password</label>
+        <input id="registerPassword" type="password" minlength="6" required autocomplete="new-password">
 
-            <p class="login-footer">
-                Learn • Explore • Solve
-            </p>
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" type="password" minlength="6" required autocomplete="new-password">
 
-        </section>
+        <button type="submit">CREATE ACCOUNT</button>
+      </form>
 
-    </main>
+      <div class="links">
+        Already have an account?
+        <a onclick="showScreen('loginScreen')">Log in</a>
+      </div>
+    </section>
 
+    <!-- PASSWORD RESET -->
+    <section id="resetScreen" class="screen">
+      <h2>Reset Password</h2>
+      <p class="subtitle">Enter your registered email to receive a password-reset link.</p>
+
+      <form id="resetForm">
+        <label for="resetEmail">Email Address</label>
+        <input id="resetEmail" type="email" required autocomplete="email">
+
+        <button type="submit">SEND RESET LINK</button>
+      </form>
+
+      <div class="links">
+        <a onclick="showScreen('loginScreen')">Back to Login</a>
+      </div>
+    </section>
+
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+
+    <footer>© MATHIQUE | Mathematics Learning Database</footer>
+  </main>
+
+  <script type="module">
+    import { createClient } from
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://nnvtbmsmxyuoycqwydny.supabase.co';
+
+    // Replace this placeholder with your existing Supabase Publishable key.
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_wbBcFuv6yOH84WwWdf-vDg_IahE-JoW';
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const messageBox = document.getElementById('message');
+
+    window.showScreen = function(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+
+      document.getElementById(screenId).classList.add('active');
+      messageBox.className = 'message';
+      messageBox.textContent = '';
+    };
+
+    function showMessage(message, type) {
+      messageBox.textContent = message;
+      messageBox.className = 'message ' + type;
+    }
+
+    function setLoading(form, loading) {
+      const button = form.querySelector('button[type="submit"]');
+      button.disabled = loading;
+      button.textContent = loading ? 'PLEASE WAIT...' :
+        button.dataset.originalText;
+    }
+
+    document.querySelectorAll('form button[type="submit"]').forEach(button => {
+      button.dataset.originalText = button.textContent;
+    });
+
+    // REGISTRATION
+    document.getElementById('registerForm').addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const email = document.getElementById('registerEmail').value.trim();
+      const teacherId = document.getElementById('teacherId').value.trim();
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        showMessage('Passwords do not match.', 'error');
+        return;
+      }
+
+      setLoading(form, true);
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: 'https://farabaseo1-rgb.github.io/MATHIQUE/',
+            data: {
+              teacher_id: teacherId || null
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        showMessage(
+          'Registration submitted! Check your email for a confirmation link if email confirmation is enabled.',
+          'success'
+        );
+
+        form.reset();
+
+      } catch (error) {
+        showMessage(error.message, 'error');
+      } finally {
+        setLoading(form, false);
+      }
+    });
+
+    // LOGIN
+    document.getElementById('loginForm').addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      setLoading(form, true);
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (profileError) {
+          throw new Error('Login succeeded, but the account role could not be loaded. Please contact the administrator.');
+        }
+
+        showMessage(
+          'Login successful! Your account role is: ' +
+          profile.role.toUpperCase() +
+          '. Your portal is not available yet.',
+          'success'
+        );
+
+      } catch (error) {
+        showMessage(error.message, 'error');
+      } finally {
+        setLoading(form, false);
+      }
+    });
+
+    // PASSWORD RESET
+    document.getElementById('resetForm').addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const email = document.getElementById('resetEmail').value.trim();
+
+      setLoading(form, true);
+
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: 'https://farabaseo1-rgb.github.io/MATHIQUE/'
+        });
+
+        if (error) throw error;
+
+        showMessage(
+          'If an account exists for that email, a password-reset link will be sent.',
+          'success'
+        );
+
+      } catch (error) {
+        showMessage(error.message, 'error');
+      } finally {
+        setLoading(form, false);
+      }
+    });
+  </script>
 </body>
 </html>
