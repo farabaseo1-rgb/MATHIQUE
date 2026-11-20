@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATHIQUE | Student Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #F5F0E5;
+      color: #34483B;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #718C78;
+      color: #FFF9EC;
+      padding: 22px 7%;
+    }
+
+    header h1 {
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    main {
+      padding: 55px 7%;
+    }
+
+    .welcome h2 {
+      color: #718C78;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .welcome p {
+      color: #667267;
+      margin-bottom: 35px;
+    }
+
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: #FFFDF7;
+      border: 1px solid #D9DFD3;
+      border-radius: 14px;
+      padding: 30px 22px;
+      text-decoration: none;
+      color: #34483B;
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #718C78;
+    }
+
+    .card h3 {
+      color: #718C78;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #69736A;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+      .dashboard-cards {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 35px 6%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>MATHIQUE</h1>
+  </header>
+
+  <main>
+    <section class="welcome">
+      <h2>Welcome, Student!</h2>
+      <p>Your Mathematics Learning Dashboard</p>
+    </section>
+
+    <section class="dashboard-cards">
+      <a href="#" class="card">
+        <h3>Modules</h3>
+        <p>Access your Mathematics learning modules.</p>
+      </a>
+
+      <a href="#" class="card">
+        <h3>Mock Test</h3>
+        <p>Practice and test your knowledge.</p>
+      </a>
+
+      <a href="#" class="card">
+        <h3>Video Tutorial</h3>
+        <p>Watch helpful Mathematics video lessons.</p>
+      </a>
+    </section>
+  </main>
+</body>
+</html>
