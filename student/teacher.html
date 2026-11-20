@@ -175,7 +175,7 @@
 
     <section class="learning-options">
 
-        <a class="option" id="modulesLink" href="#">
+        <a class="option" id="modulesLink" href="modules.html">
             <div class="symbol">📚</div>
             <h3>MODULES</h3>
             <p>Access your lessons and learning materials.</p>
@@ -244,6 +244,11 @@
     document.getElementById("videosLink").href =
         "videos.html?teacher=" + encodeURIComponent(teacher || "");
 </script>
+<script>
+    const selectedTeacher = new URLSearchParams(window.location.search).get("teacher");
 
+    document.getElementById("modulesLink").href =
+        "modules.html?teacher=" + encodeURIComponent(selectedTeacher || "");
+</script>
 </body>
 </html>

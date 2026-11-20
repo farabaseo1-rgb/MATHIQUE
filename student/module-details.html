@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Module Details</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .module-box {
+            background: #fffef8;
+            padding: 35px;
+            border-radius: 16px;
+            border: 1px solid #dce5d8;
+        }
+
+        .tag {
+            color: #718675;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            color: #294b38;
+            margin-bottom: 12px;
+        }
+
+        .teacher {
+            color: #718675;
+            margin-bottom: 25px;
+        }
+
+        .description {
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .pdf-button {
+            display: inline-block;
+            background: #294b38;
+            color: #fffef8;
+            padding: 13px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pdf-button:hover {
+            background: #3d654d;
+        }
+
+        .notice {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #718675;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .module-box {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" id="backLink" href="modules.html">
+        ← Back to Modules
+    </a>
+
+    <div class="module-box">
+        <div class="tag" id="moduleNumber">MODULE</div>
+
+        <h1 id="moduleTitle">Module Details</h1>
+
+        <p class="teacher" id="teacherName"></p>
+
+        <p class="description" id="moduleDescription"></p>
+
+        <button class="pdf-button" id="viewPdfButton" type="button">
+            View PDF
+        </button>
+
+        <p class="notice" id="pdfNotice">
+            The PDF for this module has not been uploaded yet.
+        </p>
+    </div>
+
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+
+    const teacher = params.get("teacher");
+    const module = Number(params.get("module"));
+
+    const teachers = {
+        josephine: "Josephine H. Lapuz",
+        maria: "Maria Pauline B. Gonzales",
+        rochelle: "Rochelle R. Carpio"
+    };
+
+    const teacherName = teachers[teacher];
+
+    if (!teacherName || !Number.isInteger(module) || module < 1) {
+        document.getElementById("moduleTitle").textContent =
+            "Module Not Found";
+
+        document.getElementById("moduleDescription").textContent =
+            "Please return to the teacher's module list and select a valid module.";
+
+        document.getElementById("viewPdfButton").style.display = "none";
+        document.getElementById("moduleNumber").style.display = "none";
+        document.getElementById("teacherName").style.display = "none";
+    } else {
+        document.title = "MATHIQUE | Module " + module;
+
+        document.getElementById("moduleNumber").textContent =
+            "MODULE " + module;
+
+        document.getElementById("moduleTitle").textContent =
+            "Module " + module;
+
+        document.getElementById("teacherName").textContent =
+            "Prepared by: " + teacherName;
+
+        document.getElementById("moduleDescription").textContent =
+            "This module contains the lesson and learning materials prepared by " +
+            teacherName + ". Open the PDF when it becomes available.";
+
+        document.getElementById("backLink").href =
+            "modules.html?teacher=" + encodeURIComponent(teacher);
+    }
+
+    document.getElementById("viewPdfButton").addEventListener("click", function () {
+        alert("The PDF for this module has not been uploaded yet.");
+    });
+</script>
+
+</body>
+</html>

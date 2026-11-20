@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Modules</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #e5ecdf;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: #fffef8;
+            padding: 25px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #354b3c;
+            border: 1px solid #dce5d8;
+            transition: 0.2s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+        }
+
+        .module-number {
+            font-size: 13px;
+            color: #718675;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .module-card h3 {
+            color: #294b38;
+            margin-bottom: 10px;
+        }
+
+        .module-card p {
+            font-size: 14px;
+            color: #68796b;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" id="backLink" href="teacher.html">
+        ← Back to Teacher Page
+    </a>
+
+    <div class="header">
+        <h1 id="teacherName">Teacher Modules</h1>
+        <p>Explore the learning modules prepared by your teacher.</p>
+    </div>
+
+    <div class="module-grid" id="moduleGrid"></div>
+
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const teacher = params.get("teacher");
+
+    const teachers = {
+        josephine: "Josephine H. Lapuz",
+        maria: "Maria Pauline B. Gonzales",
+        rochelle: "Rochelle R. Carpio"
+    };
+
+    const teacherName = teachers[teacher];
+
+    if (!teacherName) {
+        document.getElementById("teacherName").textContent =
+            "Teacher not found";
+
+        document.getElementById("moduleGrid").innerHTML =
+            "<p>Please return to the teacher selection page.</p>";
+    } else {
+        document.getElementById("teacherName").textContent =
+            teacherName + " - Modules";
+
+        document.getElementById("backLink").href =
+            "teacher.html?teacher=" + encodeURIComponent(teacher);
+
+        const moduleGrid = document.getElementById("moduleGrid");
+
+        for (let i = 1; i <= 3; i++) {
+            moduleGrid.innerHTML += `
+                <a class="module-card"
+                   href="module-details.html?teacher=${encodeURIComponent(teacher)}&module=${i}">
+
+                    <div class="module-number">MODULE ${i}</div>
+                    <h3>Module ${i}</h3>
+                    <p>Open this module to view its lesson details and PDF.</p>
+
+                </a>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>
