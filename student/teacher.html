@@ -61,7 +61,7 @@
             padding: 35px 20px;
             border-radius: 18px;
             text-align: center;
-            min-height: 210px;
+            min-height: 230px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,18 +73,19 @@
             background: #5D7764;
         }
 
-        .option .symbol {
+        .symbol {
             font-size: 45px;
             margin-bottom: 18px;
         }
 
         .option h3 {
-            font-size: 23px;
-            margin-bottom: 10px;
+            font-size: 21px;
+            margin-bottom: 12px;
         }
 
         .option p {
             font-size: 14px;
+            line-height: 1.5;
             color: #F5F0E5;
         }
 
@@ -111,34 +112,36 @@
 </header>
 
 <main>
+
     <section class="welcome">
-        <h2 id="teacherName">Welcome, Teacher!</h2>
-        <p>Choose a learning section to explore.</p>
+        <h2 id="teacherName">Welcome, Student!</h2>
+        <p>Select a learning section to begin.</p>
     </section>
 
     <section class="learning-options">
 
+        <a class="option" id="lessonsLink" href="#">
+            <div class="symbol">📖</div>
+            <h3>Lessons and Video Tutorials</h3>
+            <p>Access lesson materials and video tutorial links.</p>
+        </a>
+
         <a class="option" id="modulesLink" href="#">
             <div class="symbol">📚</div>
             <h3>Modules</h3>
-            <p>Access lessons and learning materials.</p>
-        </a>
-
-        <a class="option" id="videosLink" href="#">
-            <div class="symbol">🎥</div>
-            <h3>Video Tutorials</h3>
-            <p>Watch educational video lessons.</p>
+            <p>Read and access your learning modules.</p>
         </a>
 
         <a class="option" id="activitiesLink" href="#">
             <div class="symbol">✏️</div>
             <h3>Activities</h3>
-            <p>Practice through learning activities.</p>
+            <p>Answer exercises and learning activities.</p>
         </a>
 
     </section>
 
     <a class="back" href="dashboard.html">← Back to Teachers</a>
+
 </main>
 
 <script>
@@ -153,6 +156,15 @@
 
     document.getElementById("teacherName").textContent =
         teachers[teacher] || "Welcome, Student!";
+
+    document.getElementById("lessonsLink").href =
+        "lessons.html?teacher=" + encodeURIComponent(teacher || "");
+
+    document.getElementById("modulesLink").href =
+        "modules.html?teacher=" + encodeURIComponent(teacher || "");
+
+    document.getElementById("activitiesLink").href =
+        "activities.html?teacher=" + encodeURIComponent(teacher || "");
 </script>
 
 </body>
