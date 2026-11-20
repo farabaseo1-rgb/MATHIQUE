@@ -22,11 +22,11 @@
     header {
       background: #718C78;
       color: #FFF9EC;
-      padding: 22px 7%;
+      padding: 24px 7%;
     }
 
     header h1 {
-      font-size: 28px;
+      font-size: 30px;
       letter-spacing: 2px;
     }
 
@@ -36,66 +36,79 @@
 
     .welcome h2 {
       color: #718C78;
-      font-size: 32px;
+      font-size: 34px;
       margin-bottom: 10px;
     }
 
     .welcome p {
       color: #69736A;
-      margin-bottom: 35px;
+      margin-bottom: 40px;
     }
 
     .section-title {
       color: #526B58;
-      font-size: 21px;
-      margin-bottom: 20px;
+      font-size: 23px;
+      margin-bottom: 22px;
     }
 
     .teacher-cards {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 25px;
     }
 
     .teacher-card {
       background: #718C78;
       color: #FFF9EC;
-      border-radius: 14px;
-      padding: 30px 18px;
-      min-height: 170px;
+      border-radius: 18px;
+      padding: 22px;
+      min-height: 340px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
       text-decoration: none;
-      transition: 0.2s ease;
+      transition: 0.25s ease;
+      box-shadow: 0 5px 14px rgba(52, 72, 59, 0.12);
     }
 
     .teacher-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-6px);
       background: #607B67;
     }
 
-    .teacher-icon {
-      font-size: 35px;
-      margin-bottom: 15px;
+    .teacher-photo {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #F5F0E5;
+      margin-bottom: 20px;
     }
 
     .teacher-card h3 {
-      font-size: 17px;
-      margin-bottom: 9px;
+      font-size: 18px;
       line-height: 1.4;
+      margin-bottom: 10px;
     }
 
     .teacher-card p {
-      font-size: 14px;
+      font-size: 15px;
       color: #F5F0E5;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 750px) {
       .teacher-cards {
         grid-template-columns: 1fr;
+      }
+
+      .teacher-card {
+        min-height: 300px;
+      }
+
+      .teacher-photo {
+        max-width: 240px;
       }
     }
   </style>
@@ -118,19 +131,25 @@
     <section class="teacher-cards">
 
       <a href="teacher.html?teacher=josephine" class="teacher-card">
-        <div class="teacher-icon">👤</div>
+        <img src="../assets/images/josephine.jpg"
+             alt="Josephine H. Lapuz"
+             class="teacher-photo">
         <h3>Josephine H. Lapuz</h3>
         <p>Teacher V</p>
       </a>
 
       <a href="teacher.html?teacher=maria" class="teacher-card">
-        <div class="teacher-icon">👤</div>
+        <img src="../assets/images/maria.jpg"
+             alt="Maria Pauline B. Gonzales"
+             class="teacher-photo">
         <h3>Maria Pauline B. Gonzales</h3>
         <p>Teacher III</p>
       </a>
 
       <a href="teacher.html?teacher=rochelle" class="teacher-card">
-        <div class="teacher-icon">👤</div>
+        <img src="../assets/images/rochelle.jpg"
+             alt="Rochelle R. Carpio"
+             class="teacher-photo">
         <h3>Rochelle R. Carpio</h3>
         <p>Teacher III</p>
       </a>
