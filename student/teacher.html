@@ -187,7 +187,7 @@
             <p>Test your knowledge and practice your skills.</p>
         </a>
 
-        <a class="option" id="videosLink" href="#">
+        <a class="option" id="videosLink" href="videos.html">
             <div class="symbol">🎬</div>
             <h3>VIDEO TUTORIALS</h3>
             <p>Watch video lessons through teacher-provided links.</p>
@@ -249,6 +249,9 @@
 
     document.getElementById("modulesLink").href =
         "modules.html?teacher=" + encodeURIComponent(selectedTeacher || "");
+
+    document.getElementById("videosLink").href =
+        "videos.html?teacher=" + encodeURIComponent(selectedTeacher || "");
 </script>
 </body>
 </html>

@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Video Tutorials</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #e5ecdf;
+        }
+
+        .video-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background: #fffef8;
+            padding: 25px;
+            border-radius: 14px;
+            border: 1px solid #dce5d8;
+        }
+
+        .video-icon {
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .video-card h3 {
+            color: #294b38;
+            margin-bottom: 10px;
+        }
+
+        .video-card p {
+            color: #68796b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .watch-button {
+            display: inline-block;
+            background: #294b38;
+            color: #fffef8;
+            padding: 11px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .watch-button:hover {
+            background: #3d654d;
+        }
+
+        .empty-message {
+            background: #fffef8;
+            padding: 25px;
+            border-radius: 12px;
+            color: #718675;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" id="backLink" href="teacher.html">
+        ← Back to Teacher Page
+    </a>
+
+    <div class="header">
+        <h1 id="teacherName">Video Tutorials</h1>
+        <p>Watch video lessons and improve your understanding of mathematics.</p>
+    </div>
+
+    <div class="video-list" id="videoList"></div>
+
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const teacher = params.get("teacher");
+
+    const teachers = {
+        josephine: "Josephine H. Lapuz",
+        maria: "Maria Pauline B. Gonzales",
+        rochelle: "Rochelle R. Carpio"
+    };
+
+    const teacherName = teachers[teacher];
+
+    if (!teacherName) {
+        document.getElementById("teacherName").textContent =
+            "Teacher Not Found";
+
+        document.getElementById("videoList").innerHTML =
+            '<p class="empty-message">Please return to the teacher selection page.</p>';
+
+    } else {
+        document.title = "MATHIQUE | Video Tutorials";
+
+        document.getElementById("teacherName").textContent =
+            teacherName + " - Video Tutorials";
+
+        document.getElementById("backLink").href =
+            "teacher.html?teacher=" + encodeURIComponent(teacher);
+
+        document.getElementById("videoList").innerHTML =
+            '<p class="empty-message">No video tutorials have been added yet. Please check again later.</p>';
+    }
+</script>
+
+</body>
+</html>
