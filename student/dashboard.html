@@ -31,7 +31,7 @@
     }
 
     main {
-      padding: 55px 7%;
+      padding: 50px 7%;
     }
 
     .welcome h2 {
@@ -41,56 +41,68 @@
     }
 
     .welcome p {
-      color: #667267;
+      color: #69736A;
       margin-bottom: 35px;
     }
 
-    .dashboard-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
+    .section-title {
+      color: #526B58;
+      font-size: 21px;
+      margin-bottom: 20px;
     }
 
-    .card {
-      background: #FFFDF7;
-      border: 1px solid #D9DFD3;
+    .teacher-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .teacher-card {
+      background: #718C78;
+      color: #FFF9EC;
       border-radius: 14px;
-      padding: 30px 22px;
+      padding: 30px 18px;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       text-decoration: none;
-      color: #34483B;
       transition: 0.2s ease;
     }
 
-    .card:hover {
+    .teacher-card:hover {
       transform: translateY(-5px);
-      border-color: #718C78;
+      background: #607B67;
     }
 
-    .card h3 {
-      color: #718C78;
-      font-size: 20px;
-      margin-bottom: 12px;
+    .teacher-icon {
+      font-size: 35px;
+      margin-bottom: 15px;
     }
 
-    .card p {
-      color: #69736A;
+    .teacher-card h3 {
+      font-size: 17px;
+      margin-bottom: 9px;
+      line-height: 1.4;
+    }
+
+    .teacher-card p {
       font-size: 14px;
-      line-height: 1.5;
+      color: #F5F0E5;
     }
 
     @media (max-width: 700px) {
-      .dashboard-cards {
+      .teacher-cards {
         grid-template-columns: 1fr;
-      }
-
-      main {
-        padding: 35px 6%;
       }
     }
   </style>
 </head>
 
 <body>
+
   <header>
     <h1>MATHIQUE</h1>
   </header>
@@ -101,22 +113,30 @@
       <p>Your Mathematics Learning Dashboard</p>
     </section>
 
-    <section class="dashboard-cards">
-      <a href="#" class="card">
-        <h3>Modules</h3>
-        <p>Access your Mathematics learning modules.</p>
+    <h3 class="section-title">Select Your Teacher</h3>
+
+    <section class="teacher-cards">
+
+      <a href="teacher.html?teacher=josephine" class="teacher-card">
+        <div class="teacher-icon">👤</div>
+        <h3>Josephine H. Lapuz</h3>
+        <p>Teacher V</p>
       </a>
 
-      <a href="#" class="card">
-        <h3>Mock Test</h3>
-        <p>Practice and test your knowledge.</p>
+      <a href="teacher.html?teacher=maria" class="teacher-card">
+        <div class="teacher-icon">👤</div>
+        <h3>Maria Pauline B. Gonzales</h3>
+        <p>Teacher III</p>
       </a>
 
-      <a href="#" class="card">
-        <h3>Video Tutorial</h3>
-        <p>Watch helpful Mathematics video lessons.</p>
+      <a href="teacher.html?teacher=rochelle" class="teacher-card">
+        <div class="teacher-icon">👤</div>
+        <h3>Rochelle R. Carpio</h3>
+        <p>Teacher III</p>
       </a>
+
     </section>
   </main>
+
 </body>
 </html>
