@@ -1,161 +1,124 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MATHIQUE | Student Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Teacher Dashboard</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+    <link rel="stylesheet" href="../../assets/css/teacher-dashboard.css">
 
-    body {
-      background: #F5F0E5;
-      color: #34483B;
-      min-height: 100vh;
-    }
-
-    header {
-      background: #718C78;
-      color: #FFF9EC;
-      padding: 24px 7%;
-    }
-
-    header h1 {
-      font-size: 30px;
-      letter-spacing: 2px;
-    }
-
-    main {
-      padding: 50px 7%;
-    }
-
-    .welcome h2 {
-      color: #718C78;
-      font-size: 34px;
-      margin-bottom: 10px;
-    }
-
-    .welcome p {
-      color: #69736A;
-      margin-bottom: 40px;
-    }
-
-    .section-title {
-      color: #526B58;
-      font-size: 23px;
-      margin-bottom: 22px;
-    }
-
-    .teacher-cards {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 25px;
-    }
-
-    .teacher-card {
-      background: #718C78;
-      color: #FFF9EC;
-      border-radius: 18px;
-      padding: 22px;
-      min-height: 340px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      text-decoration: none;
-      transition: 0.25s ease;
-      box-shadow: 0 5px 14px rgba(52, 72, 59, 0.12);
-    }
-
-    .teacher-card:hover {
-      transform: translateY(-6px);
-      background: #607B67;
-    }
-
-    .teacher-photo {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      max-height: 220px;
-      object-fit: cover;
-      border-radius: 12px;
-      background: #F5F0E5;
-      margin-bottom: 20px;
-    }
-
-    .teacher-card h3 {
-      font-size: 18px;
-      line-height: 1.4;
-      margin-bottom: 10px;
-    }
-
-    .teacher-card p {
-      font-size: 15px;
-      color: #F5F0E5;
-    }
-
-    @media (max-width: 750px) {
-      .teacher-cards {
-        grid-template-columns: 1fr;
-      }
-
-      .teacher-card {
-        min-height: 300px;
-      }
-
-      .teacher-photo {
-        max-width: 240px;
-      }
-    }
-  </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-  <header>
-    <h1>MATHIQUE</h1>
-  </header>
+<div class="sidebar">
+    <h2 class="logo">MATHIQUE</h2>
+    <p class="logo-subtitle">MATHEMATICS LEARNING DATABASE</p>
 
-  <main>
-    <section class="welcome">
-      <h2>Welcome, Student!</h2>
-      <p>Your Mathematics Learning Dashboard</p>
+    <nav>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="../modules.html">Learning Modules</a>
+        <a href="../lessons.html">Lessons</a>
+        <a href="../activities.html">Activities</a>
+        <a href="../videos.html">Video Tutorials</a>
+        <a href="../scores.html">Scores</a>
+        <a href="answer-keys.html">Answer Keys</a>
+    </nav>
+
+    <a href="../../index.html" class="logout">Log Out</a>
+</div>
+
+<main class="main-content">
+
+    <header class="topbar">
+        <div>
+            <h1>Teacher Dashboard</h1>
+            <p>Welcome to MATHIQUE!</p>
+        </div>
+
+        <div class="teacher-label">
+            TEACHER PORTAL
+        </div>
+    </header>
+
+    <section class="welcome-card">
+        <h2>Welcome, Teacher!</h2>
+        <p>
+            Manage your mathematics lessons, learning activities,
+            video tutorials, and answer keys in one place.
+        </p>
     </section>
 
-    <h3 class="section-title">Select Your Teacher</h3>
+    <section class="dashboard-stats">
 
-    <section class="teacher-cards">
+        <div class="stat-card">
+            <h3>Learning Modules</h3>
+            <p>Manage modules</p>
+        </div>
 
-      <a href="teacher.html?teacher=josephine" class="teacher-card">
-        <img src="../assets/images/josephine.jpg"
-             alt="Josephine H. Lapuz"
-             class="teacher-photo">
-        <h3>Josephine H. Lapuz</h3>
-        <p>Teacher V</p>
-      </a>
+        <div class="stat-card">
+            <h3>Lessons</h3>
+            <p>Manage lessons</p>
+        </div>
 
-      <a href="teacher.html?teacher=maria" class="teacher-card">
-        <img src="../assets/images/maria.jpg"
-             alt="Maria Pauline B. Gonzales"
-             class="teacher-photo">
-        <h3>Maria Pauline B. Gonzales</h3>
-        <p>Teacher III</p>
-      </a>
+        <div class="stat-card">
+            <h3>Activities</h3>
+            <p>Manage activities</p>
+        </div>
 
-      <a href="teacher.html?teacher=rochelle" class="teacher-card">
-        <img src="../assets/images/rochelle-profile.jpg"
-             alt="Rochelle R. Carpio"
-             class="teacher-photo">
-        <h3>Rochelle R. Carpio</h3>
-        <p>Teacher III</p>
-      </a>
+        <div class="stat-card">
+            <h3>Answer Keys</h3>
+            <p>Teacher access</p>
+        </div>
 
     </section>
-  </main>
+
+    <section class="section">
+        <h2>Our Teachers</h2>
+        <p class="section-description">
+            Meet the teachers behind MATHIQUE.
+        </p>
+
+        <div class="teacher-cards">
+
+            <a href="teacher.html?teacher=josephine" class="teacher-card">
+                <img src="../../assets/images/josephine.jpg"
+                     alt="Josephine H. Lapuz"
+                     class="teacher-photo">
+
+                <h3>Josephine H. Lapuz</h3>
+                <p>Teacher V</p>
+            </a>
+
+            <a href="teacher.html?teacher=maria" class="teacher-card">
+                <img src="../../assets/images/maria.jpg"
+                     alt="Maria Pauline B. Gonzales"
+                     class="teacher-photo">
+
+                <h3>Maria Pauline B. Gonzales</h3>
+                <p>Teacher III</p>
+            </a>
+
+            
+<a href="teacher.html?teacher=rochelle" class="teacher-card">
+    <img src="../../assets/images/rochelle_profile.jpg"
+         alt="Rochelle R. Carpio"
+         class="teacher-photo">
+
+    <h3>Rochelle R. Carpio</h3>
+    <p>Teacher III</p>
+</a>
+
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 MATHIQUE | Mathematics Learning Database</p>
+    </footer>
+
+</main>
 
 </body>
 </html>
