@@ -181,7 +181,7 @@
             <p>Access your lessons and learning materials.</p>
         </a>
 
-        <a class="option" id="mockTestLink" href="#">
+        <a class="option" id="mockTestLink" href="mock-test.html">
             <div class="symbol">📝</div>
             <h3>MOCK TEST</h3>
             <p>Test your knowledge and practice your skills.</p>
@@ -252,6 +252,9 @@
 
     document.getElementById("videosLink").href =
         "videos.html?teacher=" + encodeURIComponent(selectedTeacher || "");
+
+    document.getElementById("mockTestLink").href =
+        "mock-test.html?teacher=" + encodeURIComponent(selectedTeacher || "");
 </script>
 </body>
 </html>

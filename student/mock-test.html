@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Mock Test</title>
+
+    <link rel="stylesheet" href="../assets/css/student_dashboard.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+        }
+
+        .content {
+            background: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .symbol {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .content h2 {
+            margin-bottom: 10px;
+            color: #294b38;
+        }
+
+        .content p {
+            color: #68776b;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+        <section class="header">
+            <h1 id="teacherTitle">MOCK TEST</h1>
+            <p>Test your knowledge and practice your skills.</p>
+        </section>
+
+        <section class="content">
+            <div class="symbol">📝</div>
+            <h2>No Mock Tests Available Yet</h2>
+            <p>
+                There are no mock tests available from this teacher at the moment.
+                Please check again later.
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        const selectedTeacher =
+            new URLSearchParams(window.location.search).get("teacher");
+
+        const teachers = {
+            josephine: "Josephine H. Lapuz",
+            maria: "Maria Pauline B. Gonzales",
+            rochelle: "Rochelle R. Carpio"
+        };
+
+        const teacherName = teachers[selectedTeacher] || "Your Teacher";
+
+        document.getElementById("teacherTitle").textContent =
+            teacherName + " - Mock Test";
+    </script>
+
+</body>
+</html>
