@@ -379,6 +379,18 @@
   </script>
   <script type="module">
   import { supabase } from './js./supabase.js';
+  supabase
+  .from('profiles')
+  .select('user_id')
+  .limit(1)
+  .then(({ data, error }) => {
+    if (error) {
+      console.error('Supabase test failed:', error);
+    } else {
+      console.log('Supabase database connected!', data);
+    }
+  });
+
 
   console.log('MATHIQUE Supabase connected!');
 </script>
