@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Learning Portal | MATHIQUE</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #F5F0E5;
+            color: #405447;
+        }
+
+        header {
+            background: #718C78;
+            color: white;
+            padding: 22px 7%;
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome h2 {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: #667568;
+        }
+
+        .learning-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .option {
+            background: #718C78;
+            color: white;
+            text-decoration: none;
+            padding: 35px 20px;
+            border-radius: 18px;
+            text-align: center;
+            min-height: 210px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+            background: #5D7764;
+        }
+
+        .option .symbol {
+            font-size: 45px;
+            margin-bottom: 18px;
+        }
+
+        .option h3 {
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .option p {
+            font-size: 14px;
+            color: #F5F0E5;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 35px;
+            color: #405447;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .learning-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>MATHIQUE</h1>
+</header>
+
+<main>
+    <section class="welcome">
+        <h2 id="teacherName">Welcome, Teacher!</h2>
+        <p>Choose a learning section to explore.</p>
+    </section>
+
+    <section class="learning-options">
+
+        <a class="option" id="modulesLink" href="#">
+            <div class="symbol">📚</div>
+            <h3>Modules</h3>
+            <p>Access lessons and learning materials.</p>
+        </a>
+
+        <a class="option" id="videosLink" href="#">
+            <div class="symbol">🎥</div>
+            <h3>Video Tutorials</h3>
+            <p>Watch educational video lessons.</p>
+        </a>
+
+        <a class="option" id="activitiesLink" href="#">
+            <div class="symbol">✏️</div>
+            <h3>Activities</h3>
+            <p>Practice through learning activities.</p>
+        </a>
+
+    </section>
+
+    <a class="back" href="dashboard.html">← Back to Teachers</a>
+</main>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const teacher = params.get("teacher");
+
+    const teachers = {
+        josephine: "Josephine H. Lapuz",
+        maria: "Maria Pauline B. Gonzales",
+        rochelle: "Rochelle R. Carpio"
+    };
+
+    document.getElementById("teacherName").textContent =
+        teachers[teacher] || "Welcome, Student!";
+</script>
+
+</body>
+</html>
