@@ -4,26 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATHIQUE | Teacher Dashboard</title>
+    <title>MATHIQUE | Student Dashboard</title>
 
-    <link rel="stylesheet" href="../assets/css/teacher_dashboard.css">
-
+    <link rel="stylesheet" href="../assets/css/student_dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="logo">
-            <h2>MATHIQUE</h2>
-            <p>MATHEMATICS LEARNING DATABASE</p>
-        </div>
+        <h2 class="logo">MATHIQUE</h2>
+        <p class="logo-subtitle">MATHEMATICS LEARNING DATABASE</p>
 
         <nav>
             <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="teachers.html">Our Teachers</a>
             <a href="modules.html">Learning Modules</a>
-            <a href="mocktest.html">Mock Test</a>
-            <a href="video_tutorials.html">Video Tutorials</a>
-            <a href="answer_keys.html">Answer Keys</a>
+            <a href="mock-test.html">Mock Test</a>
+            <a href="video-tutorials.html">Video Tutorials</a>
         </nav>
 
         <a href="../index.html" class="logout">Log Out</a>
@@ -31,54 +28,81 @@
 
     <main class="main-content">
 
-        <header class="top-header">
-            <h1>MATHIQUE</h1>
-            <p>MATHEMATICS LEARNING DATABASE</p>
+        <header class="topbar">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p>Welcome to MATHIQUE!</p>
+            </div>
+            <div class="student-label">STUDENT PORTAL</div>
         </header>
 
-        <section class="welcome-section">
-            <p class="portal-label">TEACHER PORTAL</p>
-            <h1>Welcome, Teacher!</h1>
+        <section class="welcome-card">
+            <h2>Welcome, Student!</h2>
             <p>
-                Manage your mathematics learning modules, mock tests,
-                video tutorials, and answer keys in one place.
+                Explore mathematics modules, take mock tests,
+                and watch video tutorials to improve your learning.
             </p>
         </section>
 
         <section class="dashboard-cards">
+            <a href="teachers.html" class="dashboard-card">
+                <h3>Our Teachers</h3>
+                <p>Meet your mathematics teachers.</p>
+            </a>
 
             <a href="modules.html" class="dashboard-card">
-                <div class="card-icon">📚</div>
                 <h3>Learning Modules</h3>
-                <p>Manage and view mathematics learning modules.</p>
-                <span>Open Modules →</span>
+                <p>Explore your mathematics modules.</p>
             </a>
 
-            <a href="mocktest.html" class="dashboard-card">
-                <div class="card-icon">📝</div>
+            <a href="mock-test.html" class="dashboard-card">
                 <h3>Mock Test</h3>
-                <p>Manage mock tests and practice assessments.</p>
-                <span>Open Mock Tests →</span>
+                <p>Test your mathematics knowledge.</p>
             </a>
 
-            <a href="video_tutorials.html" class="dashboard-card">
-                <div class="card-icon">🎥</div>
+            <a href="video-tutorials.html" class="dashboard-card">
                 <h3>Video Tutorials</h3>
-                <p>Manage mathematics video tutorial links.</p>
-                <span>Open Tutorials →</span>
+                <p>Watch helpful mathematics lessons.</p>
             </a>
+        </section>
 
-            <a href="answer_keys.html" class="dashboard-card">
-                <div class="card-icon">🔑</div>
-                <h3>Answer Keys</h3>
-                <p>Access and manage teacher answer keys.</p>
-                <span>Open Answer Keys →</span>
-            </a>
+        <section class="section">
+            <h2>Our Teachers</h2>
+            <p class="section-description">
+                Choose a teacher to explore their learning materials.
+            </p>
 
+            <div class="teacher-cards">
+
+                <a href="teacher.html?teacher=josephine" class="teacher-card">
+                    <img src="../assets/images/josephine.jpg"
+                         alt="Josephine H. Lapuz"
+                         class="teacher-photo">
+                    <h3>Josephine H. Lapuz</h3>
+                    <p>Teacher V</p>
+                </a>
+
+                <a href="teacher.html?teacher=maria" class="teacher-card">
+                    <img src="../assets/images/maria.jpg"
+                         alt="Maria Pauline B. Gonzales"
+                         class="teacher-photo">
+                    <h3>Maria Pauline B. Gonzales</h3>
+                    <p>Teacher III</p>
+                </a>
+
+                <a href="teacher.html?teacher=rochelle" class="teacher-card">
+                    <img src="../assets/images/rochelle_profile.jpg"
+                         alt="Rochelle R. Carpio"
+                         class="teacher-photo">
+                    <h3>Rochelle R. Carpio</h3>
+                    <p>Teacher III</p>
+                </a>
+
+            </div>
         </section>
 
         <footer>
-            © 2026 MATHIQUE | Mathematics Learning Database
+            <p>© 2026 MATHIQUE | Mathematics Learning Database</p>
         </footer>
 
     </main>
