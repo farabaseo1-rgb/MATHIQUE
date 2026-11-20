@@ -231,18 +231,8 @@
   </main>
 
   <script type="module">
-    import { createClient } from
-      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { supabase } from './js./supabase.js';
 
-    const SUPABASE_URL = 'https://nnvtbmsmxyuoycqwydny.supabase.co';
-
-    // Replace this placeholder with your existing Supabase Publishable key.
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_wbBcFuv6yOH84WwWdf-vDg_IahE-JoW';
-
-    const supabase = createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
 
     const messageBox = document.getElementById('message');
 
