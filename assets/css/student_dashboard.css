@@ -217,13 +217,21 @@ footer {
     font-size: 12px;
 }
 
+
 /* RESPONSIVE */
+
+/* TABLETS */
 @media (max-width: 1000px) {
     .dashboard-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .teacher-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
+/* MOBILE PHONES */
 @media (max-width: 700px) {
     body {
         flex-direction: column;
@@ -232,32 +240,131 @@ footer {
     .sidebar {
         width: 100%;
         min-height: auto;
-    }
-
-    .sidebar nav {
-        gap: 5px;
-    }
-
-    .logout {
-        margin-top: 20px;
-    }
-
-    .main-content {
         padding: 20px;
     }
 
+    .logo {
+        font-size: 25px;
+    }
+
+    .logo-subtitle {
+        margin-bottom: 20px;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .sidebar nav a {
+        flex: 1 1 40%;
+        text-align: center;
+        font-size: 12px;
+        padding: 12px 8px;
+    }
+
+    .logout {
+        display: inline-block;
+        width: fit-content;
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .main-content {
+        width: 100%;
+        padding: 20px 16px;
+    }
+
     .topbar {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .student-label {
+        font-size: 11px;
+    }
+
+    .welcome-card {
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .welcome-card h2 {
+        font-size: 19px;
+    }
+
+    .welcome-card p {
+        font-size: 13px;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+        padding: 22px;
     }
 
     .teacher-cards {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .teacher-card {
+        padding: 22px;
+    }
+
+    .teacher-photo {
+        width: 110px;
+        height: 110px;
+    }
+
+    .section h2 {
+        font-size: 20px;
+    }
+
+    footer {
+        margin-top: 30px;
     }
 }
 
-@media (max-width: 450px) {
-    .dashboard-cards {
-        grid-template-columns: 1fr;
+/* SMALL PHONES */
+@media (max-width: 400px) {
+    .main-content {
+        padding: 16px 12px;
+    }
+
+    .sidebar {
+        padding: 16px 12px;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    .topbar h1 {
+        font-size: 21px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 15px;
+    }
+
+    .dashboard-card p {
+        font-size: 12px;
+    }
+
+    .teacher-photo {
+        width: 100px;
+        height: 100px;
     }
 }
