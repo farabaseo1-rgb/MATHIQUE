@@ -14,8 +14,11 @@
 <body>
 
 <div class="sidebar">
-    <h2 class="logo">MATHIQUE</h2>
-    <p class="logo-subtitle">MATHEMATICS LEARNING DATABASE</p>
+
+    <div class="logo">
+        <h2>MATHIQUE</h2>
+        <p>MATHEMATICS LEARNING DATABASE</p>
+    </div>
 
     <nav>
         <a href="dashboard.html" class="active">Dashboard</a>
@@ -28,49 +31,57 @@
     </nav>
 
     <a href="../index.html" class="logout">Log Out</a>
+
 </div>
 
 <main class="main-content">
 
-    <header class="topbar">
-        <div>
-            <h1>Teacher Dashboard</h1>
-            <p>Welcome to MATHIQUE!</p>
-        </div>
-
-        <div class="teacher-label">
-            TEACHER PORTAL
-        </div>
+    <header class="top-header">
+        <h1>Teacher Dashboard</h1>
+        <p>Welcome to MATHIQUE!</p>
     </header>
 
-    <section class="welcome-card">
-        <h2>Welcome, Teacher!</h2>
+    <section class="welcome-section">
+        <p class="portal-label">TEACHER PORTAL</p>
+
+        <h1>Welcome, Teacher!</h1>
+
         <p>
             Manage your mathematics lessons, learning activities,
             video tutorials, and answer keys in one place.
         </p>
     </section>
 
-    <section class="dashboard-stats">
-        <div class="stat-card">
+    <section class="dashboard-cards">
+
+        <a href="../modules.html" class="dashboard-card">
+            <div class="card-icon">📚</div>
             <h3>Learning Modules</h3>
-            <p>Manage modules</p>
-        </div>
+            <p>Manage and view mathematics learning modules.</p>
+            <span>Open Modules →</span>
+        </a>
 
-        <div class="stat-card">
+        <a href="../lessons.html" class="dashboard-card">
+            <div class="card-icon">📖</div>
             <h3>Lessons</h3>
-            <p>Manage lessons</p>
-        </div>
+            <p>Manage mathematics lessons and learning materials.</p>
+            <span>Open Lessons →</span>
+        </a>
 
-        <div class="stat-card">
+        <a href="../activities.html" class="dashboard-card">
+            <div class="card-icon">📝</div>
             <h3>Activities</h3>
-            <p>Manage activities</p>
-        </div>
+            <p>Manage student activities and practice exercises.</p>
+            <span>Open Activities →</span>
+        </a>
 
-        <div class="stat-card">
+        <a href="answer-keys.html" class="dashboard-card">
+            <div class="card-icon">🔑</div>
             <h3>Answer Keys</h3>
-            <p>Teacher access</p>
-        </div>
+            <p>Access and manage teacher answer keys.</p>
+            <span>Open Answer Keys →</span>
+        </a>
+
     </section>
 
     <footer>
