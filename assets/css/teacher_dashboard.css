@@ -9,54 +9,104 @@ body {
     font-family: 'Poppins', sans-serif;
     background: #edf1e8;
     color: #354b3c;
-    display: flex;
     min-height: 100vh;
 }
 
-/* SIDEBAR */
+/* FIXED SIDEBAR */
 
 .sidebar {
-    width: 250px;
-    min-height: 100vh;
+    width: 260px;
+    height: 100vh;
     background: #294b38;
-    color: #fff;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
+    color: #fffef8;
     position: fixed;
     top: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 18px;
+    overflow-y: auto;
 }
+
+/* TEACHER PROFILE */
+
+.teacher-profile {
+    text-align: center;
+    padding: 15px 10px 20px;
+    margin-bottom: 20px;
+    background: #365a45;
+    border-radius: 14px;
+}
+
+.profile-avatar {
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: #dce7d5;
+    color: #294b38;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 27px;
+    font-weight: 700;
+}
+
+.teacher-profile h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.teacher-profile p {
+    font-size: 11px;
+    color: #dce7d5;
+    margin-bottom: 10px;
+}
+
+.teacher-profile a {
+    display: inline-block;
+    color: #294b38;
+    background: #fffef8;
+    padding: 7px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* LOGO */
 
 .logo {
     text-align: center;
-    margin-bottom: 45px;
+    padding: 10px 5px 22px;
 }
 
 .logo h2 {
-    font-size: 28px;
+    font-size: 25px;
     letter-spacing: 2px;
+    color: #fffef8;
 }
 
 .logo p {
     font-size: 9px;
     letter-spacing: 1px;
-    margin-top: 5px;
+    color: #dce7d5;
 }
+
+/* NAVIGATION */
 
 .sidebar nav {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 7px;
 }
 
-.sidebar nav a,
-.logout {
-    color: #f5f0e6;
+.sidebar nav a {
+    color: #e8eee4;
     text-decoration: none;
-    padding: 13px 15px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 9px;
+    font-size: 13px;
     transition: 0.3s;
 }
 
@@ -66,67 +116,53 @@ body {
     color: #fff;
 }
 
+/* LOG OUT */
+
 .logout {
     margin-top: auto;
-    background: #203d2e;
-    text-align: center;
-}
-
-.logout:hover {
-    background: #879b83;
+    padding: 12px 14px;
+    color: #fff;
+    text-decoration: none;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    font-size: 13px;
 }
 
 /* MAIN CONTENT */
 
 .main-content {
-    margin-left: 250px;
-    width: calc(100% - 250px);
+    margin-left: 260px;
+    width: calc(100% - 260px);
     padding: 30px 40px;
 }
 
+/* HEADER */
+
 .top-header {
-    margin-bottom: 35px;
-    border-bottom: 1px solid #cbd5c5;
-    padding-bottom: 18px;
+    margin-bottom: 25px;
 }
 
-.top-header h1 {
-    font-size: 25px;
-    letter-spacing: 2px;
+.top-header h2 {
+    font-size: 22px;
     color: #294b38;
-}
-
-.top-header p {
-    font-size: 11px;
-    letter-spacing: 1px;
 }
 
 /* WELCOME SECTION */
 
 .welcome-section {
     background: #879b83;
-    color: #fff;
-    padding: 40px;
-    border-radius: 15px;
-    margin-bottom: 35px;
-}
-
-.portal-label {
-    font-size: 12px;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
-    font-weight: 600;
+    color: #fffef8;
+    padding: 38px;
+    border-radius: 16px;
+    margin-bottom: 30px;
 }
 
 .welcome-section h1 {
-    font-size: 30px;
-    margin-bottom: 12px;
+    font-size: 28px;
+    margin-bottom: 8px;
 }
 
-.welcome-section p:last-child {
+.welcome-section p {
     font-size: 14px;
-    line-height: 1.8;
-    max-width: 650px;
 }
 
 /* DASHBOARD CARDS */
@@ -134,55 +170,49 @@ body {
 .dashboard-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 25px;
+    gap: 22px;
 }
 
 .dashboard-card {
+    display: block;
     background: #fffef8;
-    padding: 28px;
-    border-radius: 14px;
-    text-decoration: none;
     color: #354b3c;
-    box-shadow: 0 4px 12px rgba(41, 75, 56, 0.08);
+    text-decoration: none;
+    padding: 28px;
+    border-radius: 15px;
+    border: 1px solid #dce5d7;
+    box-shadow: 0 4px 12px rgba(41, 75, 56, 0.07);
     transition: 0.3s;
-    border: 1px solid #e1e8dc;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(41, 75, 56, 0.14);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(41, 75, 56, 0.13);
 }
 
 .card-icon {
-    font-size: 32px;
-    margin-bottom: 18px;
+    font-size: 30px;
+    margin-bottom: 15px;
 }
 
 .dashboard-card h3 {
-    font-size: 19px;
-    margin-bottom: 10px;
+    font-size: 17px;
+    margin-bottom: 8px;
     color: #294b38;
 }
 
 .dashboard-card p {
     font-size: 13px;
-    line-height: 1.7;
-    margin-bottom: 20px;
-}
-
-.dashboard-card span {
-    color: #718b6d;
-    font-size: 13px;
-    font-weight: 600;
+    line-height: 1.6;
+    color: #68796a;
 }
 
 /* FOOTER */
 
 footer {
     text-align: center;
-    margin-top: 50px;
-    padding: 20px;
-    font-size: 12px;
+    padding: 30px 10px 10px;
+    font-size: 11px;
     color: #718071;
 }
 
@@ -190,14 +220,14 @@ footer {
 
 @media (max-width: 768px) {
     .sidebar {
-        width: 190px;
-        padding: 20px 12px;
+        width: 210px;
+        padding: 18px 12px;
     }
 
     .main-content {
-        margin-left: 190px;
-        width: calc(100% - 190px);
-        padding: 20px;
+        margin-left: 210px;
+        width: calc(100% - 210px);
+        padding: 25px 20px;
     }
 
     .dashboard-cards {
@@ -205,27 +235,24 @@ footer {
     }
 
     .welcome-section {
-        padding: 25px;
-    }
-
-    .welcome-section h1 {
-        font-size: 24px;
+        padding: 28px;
     }
 }
 
 @media (max-width: 480px) {
     .sidebar {
-        width: 150px;
+        width: 155px;
+        padding: 14px 9px;
     }
 
     .main-content {
-        margin-left: 150px;
-        width: calc(100% - 150px);
-        padding: 15px;
+        margin-left: 155px;
+        width: calc(100% - 155px);
+        padding: 18px 12px;
     }
 
     .logo h2 {
-        font-size: 20px;
+        font-size: 19px;
     }
 
     .logo p {
@@ -235,6 +262,22 @@ footer {
     .sidebar nav a,
     .logout {
         font-size: 11px;
-        padding: 10px;
+        padding: 10px 8px;
+    }
+
+    .teacher-profile h3 {
+        font-size: 13px;
+    }
+
+    .welcome-section h1 {
+        font-size: 21px;
+    }
+
+    .welcome-section p {
+        font-size: 12px;
+    }
+
+    .dashboard-card {
+        padding: 20px;
     }
 }

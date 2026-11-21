@@ -10,85 +10,97 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<div class="sidebar">
+    <!-- FIXED SIDEBAR -->
+    <aside class="sidebar">
 
-    <div class="logo">
-        <h2>MATHIQUE</h2>
-        <p>MATHEMATICS LEARNING DATABASE</p>
-    </div>
+        <!-- TEACHER PROFILE -->
+        <div class="teacher-profile">
+            <div class="profile-avatar">T</div>
+            <h3>Teacher Profile</h3>
+            <p>Manage your account</p>
+            <a href="profile.html">View Profile</a>
+        </div>
 
-    <nav>
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="../modules.html">Learning Modules</a>
-        <a href="../lessons.html">Lessons</a>
-        <a href="../activities.html">Activities</a>
-        <a href="../videos.html">Video Tutorials</a>
-        <a href="../scores.html">Scores</a>
-        <a href="answer-keys.html">Answer Keys</a>
-    </nav>
+        <!-- LOGO -->
+        <div class="logo">
+            <h2>MATHIQUE</h2>
+            <p>MATHEMATICS LEARNING DATABASE</p>
+        </div>
 
-    <a href="../index.html" class="logout">Log Out</a>
+        <!-- NAVIGATION -->
+        <nav>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="../modules.html">Learning Modules</a>
+            <a href="../activities.html">Activities</a>
+            <a href="mock-test.html">Mock Test</a>
+            <a href="../videos.html">Video Tutorials</a>
+            <a href="answer-keys.html">Answer Keys</a>
+            <a href="../scores.html">Scores</a>
+        </nav>
 
-</div>
+        <a href="../index.html" class="logout">Log Out</a>
 
-<main class="main-content">
+    </aside>
 
-    <header class="top-header">
-        <h1>Teacher Dashboard</h1>
-        <p>Welcome to MATHIQUE!</p>
-    </header>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
 
-    <section class="welcome-section">
-        <p class="portal-label">TEACHER PORTAL</p>
+        <header class="top-header">
+            <h2>Teacher Dashboard</h2>
+        </header>
 
-        <h1>Welcome, Teacher!</h1>
+        <section class="welcome-section">
+            <h1>Welcome, Teacher!</h1>
+            <p>Manage your mathematics learning materials and student activities.</p>
+        </section>
 
-        <p>
-            Manage your mathematics lessons, learning activities,
-            video tutorials, and answer keys in one place.
-        </p>
-    </section>
+        <section class="dashboard-cards">
 
-    <section class="dashboard-cards">
+            <a href="../modules.html" class="dashboard-card">
+                <div class="card-icon">📚</div>
+                <h3>Learning Modules</h3>
+                <p>Organize lessons by week and add learning materials.</p>
+            </a>
 
-        <a href="../modules.html" class="dashboard-card">
-            <div class="card-icon">📚</div>
-            <h3>Learning Modules</h3>
-            <p>Manage and view mathematics learning modules.</p>
-            <span>Open Modules →</span>
-        </a>
+            <a href="../activities.html" class="dashboard-card">
+                <div class="card-icon">📝</div>
+                <h3>Activities</h3>
+                <p>Create and manage student learning activities.</p>
+            </a>
 
-        <a href="../lessons.html" class="dashboard-card">
-            <div class="card-icon">📖</div>
-            <h3>Lessons</h3>
-            <p>Manage mathematics lessons and learning materials.</p>
-            <span>Open Lessons →</span>
-        </a>
+            <a href="mock-test.html" class="dashboard-card">
+                <div class="card-icon">📋</div>
+                <h3>Mock Test</h3>
+                <p>Prepare and manage mathematics mock tests.</p>
+            </a>
 
-        <a href="../activities.html" class="dashboard-card">
-            <div class="card-icon">📝</div>
-            <h3>Activities</h3>
-            <p>Manage student activities and practice exercises.</p>
-            <span>Open Activities →</span>
-        </a>
+            <a href="../videos.html" class="dashboard-card">
+                <div class="card-icon">🎬</div>
+                <h3>Video Tutorials</h3>
+                <p>Add and manage video tutorial links.</p>
+            </a>
 
-        <a href="answer-keys.html" class="dashboard-card">
-            <div class="card-icon">🔑</div>
-            <h3>Answer Keys</h3>
-            <p>Access and manage teacher answer keys.</p>
-            <span>Open Answer Keys →</span>
-        </a>
+            <a href="answer-keys.html" class="dashboard-card">
+                <div class="card-icon">🔑</div>
+                <h3>Answer Keys</h3>
+                <p>View and manage answer keys for activities and tests.</p>
+            </a>
 
-    </section>
+            <a href="../scores.html" class="dashboard-card">
+                <div class="card-icon">📊</div>
+                <h3>Scores</h3>
+                <p>Monitor student scores and performance.</p>
+            </a>
 
-    <footer>
-        <p>© 2026 MATHIQUE | Mathematics Learning Database</p>
-    </footer>
+        </section>
 
-</main>
+        <footer>
+            <p>© 2026 MATHIQUE | Mathematics Learning Database</p>
+        </footer>
+
+    </main>
 
 </body>
 </html>
