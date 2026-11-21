@@ -387,3 +387,21 @@ footer {
         height: 100px;
     }
 }
+.student-profile .view-profile {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 7px 16px;
+    background: #e5eddf;
+    color: #294b38;
+    border: 1px solid #d2dfce;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.student-profile .view-profile:hover {
+    background: #ffffff;
+    color: #294b38;
+}
