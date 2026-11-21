@@ -41,17 +41,23 @@
             margin-bottom: 55px;
         }
 
+        .welcome h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
         .teacher-photo {
             width: 160px;
             height: 160px;
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid #718C78;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        .welcome h2 {
-            font-size: 32px;
+        .teacher-name {
+            font-size: 24px;
+            color: #405447;
             margin-bottom: 12px;
         }
 
@@ -148,6 +154,10 @@
                 width: 125px;
                 height: 125px;
             }
+
+            .teacher-name {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -162,12 +172,16 @@
 
     <section class="welcome">
 
+        <h2>Welcome, Student!</h2>
+
         <img id="teacherPhoto"
              class="teacher-photo"
              src="../assets/images/rochelle_profile.jpg"
              alt="Teacher Profile">
 
-        <h2 id="teacherName">Welcome, Student!</h2>
+        <h3 class="teacher-name" id="teacherName">
+            Teacher Name
+        </h3>
 
         <p>Choose a learning section to begin.</p>
 
@@ -224,13 +238,13 @@
 
     if (selectedTeacher) {
         document.getElementById("teacherName").textContent =
-            "Welcome, " + selectedTeacher.name + "!";
+            selectedTeacher.name;
 
         document.getElementById("teacherPhoto").src =
             selectedTeacher.image;
     } else {
         document.getElementById("teacherName").textContent =
-            "Welcome, Student!";
+            "Teacher not found";
 
         document.getElementById("teacherPhoto").style.display = "none";
     }
