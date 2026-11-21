@@ -117,27 +117,27 @@
 
         @media (max-width: 600px) {
             .learning-options {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                gap: 8px;
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
 
             .option {
-                padding: 18px 5px;
+                padding: 22px 12px;
                 min-height: 165px;
                 border-radius: 12px;
             }
 
             .symbol {
-                font-size: 32px;
+                font-size: 38px;
                 margin-bottom: 12px;
             }
 
             .option h3 {
-                font-size: 12px;
+                font-size: 16px;
             }
 
             .option p {
-                font-size: 10px;
+                font-size: 12px;
             }
 
             .welcome h2 {
@@ -177,8 +177,8 @@
 
         <a class="option" id="modulesLink" href="modules.html">
             <div class="symbol">📚</div>
-            <h3>MODULES</h3>
-            <p>Access your lessons and learning materials.</p>
+            <h3>LEARNING MODULES</h3>
+            <p>Explore weekly lessons and learning materials.</p>
         </a>
 
         <a class="option" id="mockTestLink" href="mock-test.html">
@@ -235,26 +235,18 @@
         document.getElementById("teacherPhoto").style.display = "none";
     }
 
-    document.getElementById("modulesLink").href =
-        "modules.html?teacher=" + encodeURIComponent(teacher || "");
-
-    document.getElementById("mockTestLink").href =
-        "mock-test.html?teacher=" + encodeURIComponent(teacher || "");
-
-    document.getElementById("videosLink").href =
-        "videos.html?teacher=" + encodeURIComponent(teacher || "");
-</script>
-<script>
-    const selectedTeacher = new URLSearchParams(window.location.search).get("teacher");
+    const teacherParameter = "?teacher=" +
+        encodeURIComponent(teacher || "");
 
     document.getElementById("modulesLink").href =
-        "modules.html?teacher=" + encodeURIComponent(selectedTeacher || "");
-
-    document.getElementById("videosLink").href =
-        "videos.html?teacher=" + encodeURIComponent(selectedTeacher || "");
+        "modules.html" + teacherParameter;
 
     document.getElementById("mockTestLink").href =
-        "mock-test.html?teacher=" + encodeURIComponent(selectedTeacher || "");
+        "mock-test.html" + teacherParameter;
+
+    document.getElementById("videosLink").href =
+        "videos.html" + teacherParameter;
 </script>
+
 </body>
 </html>

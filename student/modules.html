@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATHIQUE | Modules</title>
+    <title>MATHIQUE | Learning Modules</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -29,8 +31,12 @@
             display: inline-block;
             color: #294b38;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 25px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
 
         .header {
@@ -48,44 +54,85 @@
 
         .header p {
             color: #e5ecdf;
+            line-height: 1.6;
         }
 
-        .module-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+        .week-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
 
-        .module-card {
+        .week-card {
             background: #fffef8;
-            padding: 25px;
-            border-radius: 14px;
-            text-decoration: none;
-            color: #354b3c;
             border: 1px solid #dce5d8;
-            transition: 0.2s;
+            border-radius: 14px;
+            overflow: hidden;
         }
 
-        .module-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.10);
-        }
-
-        .module-number {
-            font-size: 13px;
-            color: #718675;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .module-card h3 {
+        .week-button {
+            width: 100%;
+            border: none;
+            background: #fffef8;
             color: #294b38;
-            margin-bottom: 10px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .module-card p {
-            font-size: 14px;
+        .week-button:hover {
+            background: #e8efe5;
+        }
+
+        .week-button h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .week-button p {
+            color: #718675;
+            font-size: 13px;
+        }
+
+        .arrow {
+            font-size: 22px;
+            transition: transform 0.2s;
+        }
+
+        .week-button[aria-expanded="true"] .arrow {
+            transform: rotate(180deg);
+        }
+
+        .lesson-list {
+            display: none;
+            padding: 0 25px 25px;
+        }
+
+        .lesson-list.open {
+            display: block;
+        }
+
+        .lesson {
+            background: #edf1e8;
+            padding: 17px 20px;
+            border-radius: 10px;
+            margin-top: 12px;
+            border-left: 4px solid #718c78;
+        }
+
+        .lesson h3 {
+            color: #294b38;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .lesson p {
             color: #68796b;
+            font-size: 13px;
         }
 
         @media (max-width: 600px) {
@@ -100,6 +147,18 @@
             .header h1 {
                 font-size: 24px;
             }
+
+            .week-button {
+                padding: 20px;
+            }
+
+            .week-button h2 {
+                font-size: 17px;
+            }
+
+            .lesson-list {
+                padding: 0 18px 20px;
+            }
         }
     </style>
 </head>
@@ -113,11 +172,103 @@
     </a>
 
     <div class="header">
-        <h1 id="teacherName">Teacher Modules</h1>
-        <p>Explore the learning modules prepared by your teacher.</p>
+        <h1 id="teacherName">Learning Modules</h1>
+        <p>
+            Explore the weekly lessons prepared by your mathematics teacher.
+            Select a week to view its lessons.
+        </p>
     </div>
 
-    <div class="module-grid" id="moduleGrid"></div>
+    <div class="week-list">
+
+        <!-- WEEK 1 -->
+        <div class="week-card">
+            <button class="week-button" type="button"
+                    aria-expanded="false" aria-controls="lessons1">
+                <div>
+                    <h2>Week 1</h2>
+                    <p>View the lessons for Week 1</p>
+                </div>
+                <span class="arrow">⌄</span>
+            </button>
+
+            <div class="lesson-list" id="lessons1">
+                <div class="lesson">
+                    <h3>Lesson 1</h3>
+                    <p>Week 1 lesson content will be provided by your teacher.</p>
+                </div>
+
+                <div class="lesson">
+                    <h3>Lesson 2</h3>
+                    <p>Week 1 lesson content will be provided by your teacher.</p>
+                </div>
+
+                <div class="lesson">
+                    <h3>Lesson 3</h3>
+                    <p>Week 1 lesson content will be provided by your teacher.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEK 2 -->
+        <div class="week-card">
+            <button class="week-button" type="button"
+                    aria-expanded="false" aria-controls="lessons2">
+                <div>
+                    <h2>Week 2</h2>
+                    <p>View the lessons for Week 2</p>
+                </div>
+                <span class="arrow">⌄</span>
+            </button>
+
+            <div class="lesson-list" id="lessons2">
+                <div class="lesson">
+                    <h3>Lesson 1</h3>
+                    <p>Week 2 lesson content will be provided by your teacher.</p>
+                </div>
+
+                <div class="lesson">
+                    <h3>Lesson 2</h3>
+                    <p>Week 2 lesson content will be provided by your teacher.</p>
+                </div>
+
+                <div class="lesson">
+                    <h3>Lesson 3</h3>
+                    <p>Week 2 lesson content will be provided by your teacher.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEK 3 -->
+        <div class="week-card">
+            <button class="week-button" type="button"
+                    aria-expanded="false" aria-controls="lessons3">
+                <div>
+                    <h2>Week 3</h2>
+                    <p>View the lessons for Week 3</p>
+                </div>
+                <span class="arrow">⌄</span>
+            </button>
+
+            <div class="lesson-list" id="lessons3">
+                <div class="lesson">
+                    <h3>Lesson 1</h3>
+                    <p>Week 3 lesson content will be provided by your teacher.</p>
+                </div>
+
+                <div class="lesson">
+                    <h3>Lesson 2</h3>
+                    <p>Week 3 lesson content will be provided by your teacher.</p>
+                </div>
+
+                <div class="lesson">
+                    <h3>Lesson 3</h3>
+                    <p>Week 3 lesson content will be provided by your teacher.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </div>
 
@@ -133,34 +284,29 @@
 
     const teacherName = teachers[teacher];
 
-    if (!teacherName) {
+    if (teacherName) {
         document.getElementById("teacherName").textContent =
-            "Teacher not found";
-
-        document.getElementById("moduleGrid").innerHTML =
-            "<p>Please return to the teacher selection page.</p>";
-    } else {
-        document.getElementById("teacherName").textContent =
-            teacherName + " - Modules";
+            teacherName + " - Learning Modules";
 
         document.getElementById("backLink").href =
             "teacher.html?teacher=" + encodeURIComponent(teacher);
-
-        const moduleGrid = document.getElementById("moduleGrid");
-
-        for (let i = 1; i <= 3; i++) {
-            moduleGrid.innerHTML += `
-                <a class="module-card"
-                   href="module-details.html?teacher=${encodeURIComponent(teacher)}&module=${i}">
-
-                    <div class="module-number">MODULE ${i}</div>
-                    <h3>Module ${i}</h3>
-                    <p>Open this module to view its lesson details and PDF.</p>
-
-                </a>
-            `;
-        }
+    } else {
+        document.getElementById("teacherName").textContent =
+            "Learning Modules";
     }
+
+    document.querySelectorAll(".week-button").forEach(button => {
+        button.addEventListener("click", () => {
+            const lessonList = document.getElementById(
+                button.getAttribute("aria-controls")
+            );
+
+            const isOpen = button.getAttribute("aria-expanded") === "true";
+
+            button.setAttribute("aria-expanded", String(!isOpen));
+            lessonList.classList.toggle("open", !isOpen);
+        });
+    });
 </script>
 
 </body>
