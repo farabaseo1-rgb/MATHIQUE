@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Student Profile</title>
+
+    <link rel="stylesheet" href="../assets/css/student_dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #edf1e8;
+            color: #354b3c;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .profile-card {
+            background: #fffef8;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 4px 18px rgba(41, 75, 56, 0.08);
+        }
+
+        .profile-heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-heading h1 {
+            color: #294b38;
+            margin-bottom: 8px;
+        }
+
+        .profile-heading p {
+            color: #718174;
+            font-size: 14px;
+        }
+
+        .photo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-photo {
+            width: 135px;
+            height: 135px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #dce8d9;
+            border: 5px solid #dce8d9;
+            display: block;
+            margin: 0 auto 15px;
+        }
+
+        .photo-upload {
+            display: inline-block;
+            background: #496b53;
+            color: white;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .photo-upload input {
+            display: none;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #405447;
+        }
+
+        .form-group input {
+            padding: 13px;
+            border: 1px solid #dce5d8;
+            border-radius: 8px;
+            background: #f8faf5;
+            color: #354b3c;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #718c78;
+        }
+
+        .form-group input:disabled {
+            background: #edf1e8;
+            cursor: not-allowed;
+        }
+
+        .role-display {
+            padding: 13px;
+            background: #edf1e8;
+            border-radius: 8px;
+            color: #496b53;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .button-group button {
+            padding: 12px 23px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .edit-btn, .save-btn {
+            background: #496b53;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #e5ecdf;
+            color: #405447;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .profile-container {
+                padding: 15px;
+                margin: 20px auto;
+            }
+
+            .profile-card {
+                padding: 22px;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    <a href="dashboard.html" class="back-link">
+        ← Back to Student Dashboard
+    </a>
+
+    <div class="profile-card">
+
+        <div class="profile-heading">
+            <h1>My Student Profile</h1>
+            <p>View and manage your personal information.</p>
+        </div>
+
+        <div class="photo-section">
+
+            <img
+                id="profilePhoto"
+                class="profile-photo"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Ccircle cx='75' cy='75' r='75' fill='%23dce8d9'/%3E%3Ctext x='75' y='95' text-anchor='middle' font-size='65' fill='%23294b38'%3ES%3C/text%3E%3C/svg%3E"
+                alt="Student Profile Photo"
+            >
+
+            <label class="photo-upload" for="photoInput">
+                Change Photo
+                <input type="file" id="photoInput" accept="image/*" disabled>
+            </label>
+
+        </div>
+
+        <form id="profileForm">
+
+            <div class="profile-form">
+
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter full name" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter email address" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="gradeSection">Grade & Section</label>
+                    <input type="text" id="gradeSection" placeholder="Enter grade and section" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label>Role</label>
+                    <div class="role-display">Student</div>
+                </div>
+
+            </div>
+
+            <div class="button-group">
+
+                <button type="button" class="edit-btn" id="editBtn">
+                    Edit Profile
+                </button>
+
+                <button type="button" class="cancel-btn hidden" id="cancelBtn">
+                    Cancel
+                </button>
+
+                <button type="submit" class="save-btn hidden" id="saveBtn">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const fields = [
+        "fullName",
+        "email",
+        "username",
+        "gradeSection"
+    ];
+
+    const form = document.getElementById("profileForm");
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const photoInput = document.getElementById("photoInput");
+    const profilePhoto = document.getElementById("profilePhoto");
+
+    const defaultPhoto = profilePhoto.src;
+    const storageKey = "mathiqueStudentProfile";
+
+    let savedProfile = {};
+
+    function loadProfile() {
+        const stored = localStorage.getItem(storageKey);
+
+        if (stored) {
+            savedProfile = JSON.parse(stored);
+
+            fields.forEach(id => {
+                document.getElementById(id).value =
+                    savedProfile[id] || "";
+            });
+
+            if (savedProfile.photo) {
+                profilePhoto.src = savedProfile.photo;
+            }
+        }
+    }
+
+    function setEditing(enabled) {
+        fields.forEach(id => {
+            document.getElementById(id).disabled = !enabled;
+        });
+
+        photoInput.disabled = !enabled;
+
+        editBtn.classList.toggle("hidden", enabled);
+        saveBtn.classList.toggle("hidden", !enabled);
+        cancelBtn.classList.toggle("hidden", !enabled);
+    }
+
+    function restoreProfile() {
+        fields.forEach(id => {
+            document.getElementById(id).value =
+                savedProfile[id] || "";
+        });
+
+        profilePhoto.src = savedProfile.photo || defaultPhoto;
+        photoInput.value = "";
+    }
+
+    editBtn.addEventListener("click", () => {
+        setEditing(true);
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        restoreProfile();
+        setEditing(false);
+    });
+
+    photoInput.addEventListener("change", event => {
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image.");
+            photoInput.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            profilePhoto.src = reader.result;
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const updatedProfile = {};
+
+        fields.forEach(id => {
+            updatedProfile[id] =
+                document.getElementById(id).value.trim();
+        });
+
+        updatedProfile.photo = profilePhoto.src;
+
+        try {
+            localStorage.setItem(
+                storageKey,
+                JSON.stringify(updatedProfile)
+            );
+
+            savedProfile = updatedProfile;
+
+            setEditing(false);
+
+            alert("Student profile saved successfully!");
+
+        } catch (error) {
+            alert("Unable to save. The selected photo may be too large.");
+        }
+    });
+
+    loadProfile();
+    setEditing(false);
+</script>
+
+</body>
+</html>
