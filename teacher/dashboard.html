@@ -13,7 +13,7 @@
 <body>
 
     <!-- FIXED SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
 
         <!-- TEACHER PROFILE -->
         <div class="teacher-profile">
@@ -43,7 +43,16 @@
         <a href="../index.html" class="logout">Log Out</a>
 
     </aside>
-
+<button class="sidebar-toggle" id="sidebarToggle"
+        type="button" aria-label="Toggle sidebar"
+                aria-expanded="true">
+                    <span id="toggleArrow">
+                            <svg viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2 2 L30 12 L2 22 L8 12 Z"
+                                                          fill="#173D2D"/>
+                                                                  </svg>
+                                                                      </span>
+                                                                      </button>
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
@@ -101,6 +110,40 @@
         </footer>
 
     </main>
+<script>
+const sidebar = document.getElementById("sidebar");
+const toggle = document.getElementById("sidebarToggle");
+const arrow = document.getElementById("toggleArrow");
 
+function updateSidebar() {
+    const isMobile = window.innerWidth <= 700;
+    const isCollapsed = document.body.classList.contains("sidebar-collapsed");
+
+    if (isMobile) {
+        sidebar.classList.toggle("mobile-open", !isCollapsed);
+    } else {
+        sidebar.classList.toggle("collapsed", isCollapsed);
+    }
+
+    arrow.style.transform = isCollapsed
+        ? "scaleX(1)"
+        : "scaleX(-1)";
+
+    toggle.setAttribute("aria-expanded", String(!isCollapsed));
+}
+
+toggle.addEventListener("click", function () {
+    document.body.classList.toggle("sidebar-collapsed");
+    updateSidebar();
+});
+
+window.addEventListener("resize", updateSidebar);
+
+if (window.innerWidth <= 700) {
+    document.body.classList.add("sidebar-collapsed");
+}
+
+updateSidebar();
+</script>
 </body>
 </html>
