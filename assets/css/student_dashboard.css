@@ -117,7 +117,28 @@ body {
 
 /* SIDEBAR ARROW */
 .sidebar-toggle {
-    #toggleArrow {
+    position: fixed;
+    top: 28px;
+    left: 234px;
+    z-index: 110;
+    width: 40px;
+    height: 42px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #173D2D;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: left 0.3s ease;
+}
+
+#toggleArrow {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -128,26 +149,6 @@ body {
     width: 32px;
     height: 24px;
     display: block;
-}
-    position: fixed;
-    top: 28px;
-    left: 234px;
-    z-index: 110;
-    width: 40px;
-    height: 42px;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    color: #fffef8;
-    font-size: 44px;
-    font-weight: 700;
-    line-height: 1;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: left 0.3s ease;
 }
 
 /* MAIN CONTENT */
