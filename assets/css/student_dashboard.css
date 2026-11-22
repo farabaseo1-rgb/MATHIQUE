@@ -121,13 +121,18 @@ body {
     top: 28px;
     left: 234px;
     z-index: 110;
-    width: 34px;
+    width: 40px;
     height: 42px;
-    border: 2px solid #fffef8;
-    border-radius: 0 10px 10px 0;
-    background: #294b38;
-    color: #fffef8;
-    font-size: 25px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #294b38;
+    font-size: 32px;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: left 0.3s ease;
 }
