@@ -117,6 +117,18 @@ body {
 
 /* SIDEBAR ARROW */
 .sidebar-toggle {
+    #toggleArrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+#toggleArrow svg {
+    width: 32px;
+    height: 24px;
+    display: block;
+}
     position: fixed;
     top: 28px;
     left: 234px;
