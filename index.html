@@ -231,7 +231,7 @@
   </main>
 
   <script type="module">
-    import { supabase } from './js./supabase.js';
+    import { supabase } from './js/supabase.js';
 
 
     const messageBox = document.getElementById('message');
@@ -335,12 +335,15 @@
           throw new Error('Login succeeded, but the account role could not be loaded. Please contact the administrator.');
         }
 
-        showMessage(
-          'Login successful! Your account role is: ' +
-          profile.role.toUpperCase() +
-          '. Your portal is not available yet.',
-          'success'
-        );
+        const role = profile.role.toLowerCase();
+
+        if (role === 'student') {
+          window.location.href = './student/dashboard.html';
+          } else if (role === 'teacher') {
+            window.location.href = './teacher/dashboard.html';
+            } else {
+              throw new Error('Unknown account role.');
+              }
 
       } catch (error) {
         showMessage(error.message, 'error');
@@ -378,7 +381,7 @@
     });
   </script>
   <script type="module">
-  import { supabase } from './js./supabase.js';
+  import { supabase } from './js/supabase.js';
   supabase
   .from('profiles')
   .select('user_id')
