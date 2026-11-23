@@ -415,3 +415,15 @@ body.sidebar-collapsed .main-content {
         font-size: 19px;
     }
 }
+/* PREVENT HAMBURGER FROM COVERING HEADER */
+
+body.sidebar-collapsed .top-header {
+    padding-left: 70px;
+    min-height: 55px;
+}
+
+@media (max-width: 480px) {
+    body.sidebar-collapsed .top-header {
+        padding-left: 65px;
+    }
+}
