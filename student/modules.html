@@ -133,6 +133,17 @@
         .lesson p {
             color: #68796b;
             font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .message {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            color: #68796b;
         }
 
         @media (max-width: 600px) {
@@ -167,146 +178,166 @@
 
 <div class="container">
 
-    <a class="back-link" id="backLink" href="teacher.html">
-        ← Back to Teacher Page
+    <a class="back-link" href="dashboard.html">
+        ← Back to Student Dashboard
     </a>
 
     <div class="header">
-        <h1 id="teacherName">Learning Modules</h1>
+        <h1>Learning Modules</h1>
         <p>
             Explore the weekly lessons prepared by your mathematics teacher.
             Select a week to view its lessons.
         </p>
     </div>
 
-    <div class="week-list">
-
-        <!-- WEEK 1 -->
-        <div class="week-card">
-            <button class="week-button" type="button"
-                    aria-expanded="false" aria-controls="lessons1">
-                <div>
-                    <h2>Week 1</h2>
-                    <p>View the lessons for Week 1</p>
-                </div>
-                <span class="arrow">⌄</span>
-            </button>
-
-            <div class="lesson-list" id="lessons1">
-                <div class="lesson">
-                    <h3>Lesson 1</h3>
-                    <p>Week 1 lesson content will be provided by your teacher.</p>
-                </div>
-
-                <div class="lesson">
-                    <h3>Lesson 2</h3>
-                    <p>Week 1 lesson content will be provided by your teacher.</p>
-                </div>
-
-                <div class="lesson">
-                    <h3>Lesson 3</h3>
-                    <p>Week 1 lesson content will be provided by your teacher.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- WEEK 2 -->
-        <div class="week-card">
-            <button class="week-button" type="button"
-                    aria-expanded="false" aria-controls="lessons2">
-                <div>
-                    <h2>Week 2</h2>
-                    <p>View the lessons for Week 2</p>
-                </div>
-                <span class="arrow">⌄</span>
-            </button>
-
-            <div class="lesson-list" id="lessons2">
-                <div class="lesson">
-                    <h3>Lesson 1</h3>
-                    <p>Week 2 lesson content will be provided by your teacher.</p>
-                </div>
-
-                <div class="lesson">
-                    <h3>Lesson 2</h3>
-                    <p>Week 2 lesson content will be provided by your teacher.</p>
-                </div>
-
-                <div class="lesson">
-                    <h3>Lesson 3</h3>
-                    <p>Week 2 lesson content will be provided by your teacher.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- WEEK 3 -->
-        <div class="week-card">
-            <button class="week-button" type="button"
-                    aria-expanded="false" aria-controls="lessons3">
-                <div>
-                    <h2>Week 3</h2>
-                    <p>View the lessons for Week 3</p>
-                </div>
-                <span class="arrow">⌄</span>
-            </button>
-
-            <div class="lesson-list" id="lessons3">
-                <div class="lesson">
-                    <h3>Lesson 1</h3>
-                    <p>Week 3 lesson content will be provided by your teacher.</p>
-                </div>
-
-                <div class="lesson">
-                    <h3>Lesson 2</h3>
-                    <p>Week 3 lesson content will be provided by your teacher.</p>
-                </div>
-
-                <div class="lesson">
-                    <h3>Lesson 3</h3>
-                    <p>Week 3 lesson content will be provided by your teacher.</p>
-                </div>
-            </div>
-        </div>
-
+    <div class="week-list" id="weekList">
+        <div class="message">Loading learning modules...</div>
     </div>
 
 </div>
 
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const teacher = params.get("teacher");
+<script type="module">
+    import { supabase } from '../js/supabase.js';
 
-    const teachers = {
-        josephine: "Josephine H. Lapuz",
-        maria: "Maria Pauline B. Gonzales",
-        rochelle: "Rochelle R. Carpio"
-    };
+    const weekList = document.getElementById('weekList');
 
-    const teacherName = teachers[teacher];
-
-    if (teacherName) {
-        document.getElementById("teacherName").textContent =
-            teacherName + " - Learning Modules";
-
-        document.getElementById("backLink").href =
-            "teacher.html?teacher=" + encodeURIComponent(teacher);
-    } else {
-        document.getElementById("teacherName").textContent =
-            "Learning Modules";
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
     }
 
-    document.querySelectorAll(".week-button").forEach(button => {
-        button.addEventListener("click", () => {
-            const lessonList = document.getElementById(
-                button.getAttribute("aria-controls")
+    async function loadModules() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const user = sessionData.session?.user;
+
+            if (!user) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', user.id)
+                .single();
+
+            if (profileError) throw profileError;
+
+            if (profile.role !== 'student') {
+                weekList.innerHTML =
+                    '<div class="message">This page is for student accounts only.</div>';
+                return;
+            }
+
+            const { data: modules, error: modulesError } = await supabase
+                .from('modules')
+                .select(`
+                    id,
+                    title,
+                    week_number,
+                    description,
+                    lessons (
+                        id,
+                        title,
+                        content,
+                        position
+                    )
+                `)
+                .eq('is_published', true)
+                .order('week_number', { ascending: true });
+
+            if (modulesError) throw modulesError;
+
+            displayModules(modules || []);
+
+        } catch (error) {
+            console.error('Error loading modules:', error);
+
+            weekList.innerHTML = `
+                <div class="message">
+                    Unable to load learning modules.
+                    <br>
+                    Please try again later.
+                    <br><br>
+                    <small>${escapeHTML(error.message)}</small>
+                </div>
+            `;
+        }
+    }
+
+    function displayModules(modules) {
+        weekList.innerHTML = '';
+
+        if (modules.length === 0) {
+            weekList.innerHTML = `
+                <div class="message">
+                    No published learning modules yet.
+                    <br>
+                    Please check again later.
+                </div>
+            `;
+            return;
+        }
+
+        modules.forEach(module => {
+            const lessons = (module.lessons || []).sort(
+                (a, b) => (a.position || 0) - (b.position || 0)
             );
 
-            const isOpen = button.getAttribute("aria-expanded") === "true";
+            const card = document.createElement('div');
+            card.className = 'week-card';
 
-            button.setAttribute("aria-expanded", String(!isOpen));
-            lessonList.classList.toggle("open", !isOpen);
+            const lessonHTML = lessons.length > 0
+                ? lessons.map(lesson => `
+                    <div class="lesson">
+                        <h3>${escapeHTML(lesson.title)}</h3>
+                        <p>${escapeHTML(lesson.content || 'No lesson content provided yet.')}</p>
+                    </div>
+                `).join('')
+                : '<div class="message">No lessons added to this week yet.</div>';
+
+            card.innerHTML = `
+                <button class="week-button"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="lessons-${escapeHTML(module.id)}">
+                    <div>
+                        <h2>Week ${escapeHTML(module.week_number)}: ${escapeHTML(module.title)}</h2>
+                        <p>${escapeHTML(module.description || 'View the lessons for this week')}</p>
+                    </div>
+                    <span class="arrow">⌄</span>
+                </button>
+
+                <div class="lesson-list" id="lessons-${escapeHTML(module.id)}">
+                    ${lessonHTML}
+                </div>
+            `;
+
+            const button = card.querySelector('.week-button');
+            const lessonList = card.querySelector('.lesson-list');
+
+            button.addEventListener('click', () => {
+                const isOpen = button.getAttribute('aria-expanded') === 'true';
+
+                button.setAttribute('aria-expanded', String(!isOpen));
+                lessonList.classList.toggle('open', !isOpen);
+            });
+
+            weekList.appendChild(card);
         });
-    });
+    }
+
+    loadModules();
 </script>
 
 </body>
