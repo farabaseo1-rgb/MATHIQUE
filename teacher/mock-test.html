@@ -1,0 +1,796 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Teacher Mock Test</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #e5ecdf;
+            line-height: 1.6;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .primary-btn {
+            background: #294b38;
+            color: #fffef8;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .primary-btn:hover {
+            background: #3d624b;
+        }
+
+        .test-card {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .test-header h2 {
+            color: #294b38;
+            font-size: 21px;
+            margin-bottom: 6px;
+        }
+
+        .description {
+            color: #718675;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .published {
+            background: #dcebdd;
+            color: #315c3c;
+        }
+
+        .draft {
+            background: #f1ead6;
+            color: #80652c;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .small-btn {
+            border: none;
+            padding: 8px 13px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .edit-btn {
+            background: #e2eadf;
+            color: #294b38;
+        }
+
+        .delete-btn {
+            background: #f5e2df;
+            color: #a34336;
+        }
+
+        .publish-btn {
+            background: #294b38;
+            color: #fffef8;
+        }
+
+        .question-area {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid #dce5d8;
+        }
+
+        .question-area h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #294b38;
+        }
+
+        .question {
+            background: #edf1e8;
+            padding: 17px;
+            border-radius: 10px;
+            margin-top: 12px;
+            border-left: 4px solid #718c78;
+        }
+
+        .question h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #294b38;
+        }
+
+        .choice {
+            font-size: 13px;
+            color: #68796b;
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        .answer-info {
+            font-size: 12px;
+            color: #315c3c;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .empty {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: #718675;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #fffef8;
+            border-radius: 8px;
+            color: #68796b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" href="dashboard.html">
+        ← Back to Teacher Dashboard
+    </a>
+
+    <div class="header">
+        <h1>Mock Test Management</h1>
+        <p>Create and manage mathematics mock tests for your students.</p>
+    </div>
+
+    <div id="message"></div>
+
+    <div class="toolbar">
+        <button class="primary-btn" id="addTestBtn">
+            + Create Mock Test
+        </button>
+    </div>
+
+    <div id="testList">
+        <div class="empty">Loading mock tests...</div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const testList = document.getElementById('testList');
+    const messageBox = document.getElementById('message');
+    const addTestBtn = document.getElementById('addTestBtn');
+
+    let currentUser = null;
+    let tests = [];
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    function showMessage(text) {
+        messageBox.innerHTML = `
+            <div class="message">${escapeHTML(text)}</div>
+        `;
+    }
+
+    function clearMessage() {
+        messageBox.innerHTML = '';
+    }
+
+    async function initialize() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            currentUser = sessionData.session?.user;
+
+            if (!currentUser) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', currentUser.id)
+                .single();
+
+            if (profileError) throw profileError;
+
+            if (profile.role !== 'teacher') {
+                testList.innerHTML =
+                    '<div class="empty">This page is for teacher accounts only.</div>';
+                addTestBtn.disabled = true;
+                return;
+            }
+
+            await loadTests();
+
+        } catch (error) {
+            console.error(error);
+            showMessage('Unable to verify account: ' + error.message);
+        }
+    }
+
+    async function loadTests() {
+        clearMessage();
+
+        const { data, error } = await supabase
+            .from('mock_tests')
+            .select(`
+                id,
+                title,
+                description,
+                is_published,
+                created_at,
+                mock_test_questions (
+                    id,
+                    question_text,
+                    option_a,
+                    option_b,
+                    option_c,
+                    option_d,
+                    position,
+                    mock_test_answers (
+                        correct_answer,
+                        explanation
+                    )
+                )
+            `)
+            .eq('teacher_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            showMessage('Unable to load mock tests: ' + error.message);
+            return;
+        }
+
+        tests = data || [];
+        displayTests();
+    }
+
+    function displayTests() {
+        testList.innerHTML = '';
+
+        if (tests.length === 0) {
+            testList.innerHTML = `
+                <div class="empty">
+                    No mock tests yet. Click Create Mock Test to begin.
+                </div>
+            `;
+            return;
+        }
+
+        tests.forEach(test => {
+            const questions = (test.mock_test_questions || []).sort(
+                (a, b) => (a.position || 0) - (b.position || 0)
+            );
+
+            const card = document.createElement('div');
+            card.className = 'test-card';
+
+            const statusClass = test.is_published ? 'published' : 'draft';
+            const statusText = test.is_published ? 'PUBLISHED' : 'DRAFT';
+
+            const questionHTML = questions.length
+                ? questions.map((question, index) => {
+                    const answer = question.mock_test_answers?.[0];
+
+                    return `
+                        <div class="question">
+                            <h4>${index + 1}. ${escapeHTML(question.question_text)}</h4>
+
+                            <p class="choice">A. ${escapeHTML(question.option_a)}</p>
+                            <p class="choice">B. ${escapeHTML(question.option_b)}</p>
+                            <p class="choice">C. ${escapeHTML(question.option_c)}</p>
+                            <p class="choice">D. ${escapeHTML(question.option_d)}</p>
+
+                            <p class="answer-info">
+                                Correct Answer: ${escapeHTML(answer?.correct_answer || 'Not set')}
+                            </p>
+
+                            ${answer?.explanation ? `
+                                <p class="choice">
+                                    Explanation: ${escapeHTML(answer.explanation)}
+                                </p>
+                            ` : ''}
+
+                            <div class="actions">
+                                <button class="small-btn edit-btn"
+                                    data-action="edit-question"
+                                    data-question="${escapeHTML(question.id)}">
+                                    Edit Question
+                                </button>
+
+                                <button class="small-btn delete-btn"
+                                    data-action="delete-question"
+                                    data-question="${escapeHTML(question.id)}">
+                                    Delete Question
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')
+                : '<p class="description">No questions added yet.</p>';
+
+            card.innerHTML = `
+                <div class="test-header">
+                    <div>
+                        <h2>${escapeHTML(test.title)}</h2>
+                        <p class="description">
+                            ${escapeHTML(test.description || 'No description provided.')}
+                        </p>
+                        <span class="status ${statusClass}">${statusText}</span>
+                        <p class="description">${questions.length} question(s)</p>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="small-btn edit-btn" data-action="edit-test">
+                        Edit Test
+                    </button>
+
+                    <button class="small-btn delete-btn" data-action="delete-test">
+                        Delete Test
+                    </button>
+
+                    <button class="small-btn publish-btn" data-action="toggle-publish">
+                        ${test.is_published ? 'Unpublish' : 'Publish'}
+                    </button>
+
+                    <button class="small-btn edit-btn" data-action="add-question">
+                        + Add Question
+                    </button>
+                </div>
+
+                <div class="question-area">
+                    <h3>Test Questions</h3>
+                    ${questionHTML}
+                </div>
+            `;
+
+            card.querySelector('[data-action="edit-test"]')
+                .addEventListener('click', () => editTest(test));
+
+            card.querySelector('[data-action="delete-test"]')
+                .addEventListener('click', () => deleteTest(test));
+
+            card.querySelector('[data-action="toggle-publish"]')
+                .addEventListener('click', () => togglePublish(test));
+
+            card.querySelector('[data-action="add-question"]')
+                .addEventListener('click', () => addQuestion(test));
+
+            card.querySelectorAll('[data-action="edit-question"]')
+                .forEach(button => {
+                    button.addEventListener('click', () => {
+                        const question = questions.find(
+                            q => q.id === button.dataset.question
+                        );
+                        if (question) editQuestion(question);
+                    });
+                });
+
+            card.querySelectorAll('[data-action="delete-question"]')
+                .forEach(button => {
+                    button.addEventListener('click', () => {
+                        const question = questions.find(
+                            q => q.id === button.dataset.question
+                        );
+                        if (question) deleteQuestion(question);
+                    });
+                });
+
+            testList.appendChild(card);
+        });
+    }
+
+    async function createTest() {
+        const title = prompt('Enter Mock Test Title:');
+        if (title === null) return;
+
+        if (!title.trim()) {
+            alert('Please enter a test title.');
+            return;
+        }
+
+        const description = prompt('Enter Test Description:') || '';
+
+        const { error } = await supabase
+            .from('mock_tests')
+            .insert({
+                teacher_id: currentUser.id,
+                title: title.trim(),
+                description: description.trim()
+            });
+
+        if (error) {
+            alert('Unable to create test: ' + error.message);
+            return;
+        }
+
+        alert('Mock test created successfully!');
+        await loadTests();
+    }
+
+    async function editTest(test) {
+        const title = prompt('Edit Mock Test Title:', test.title);
+        if (title === null) return;
+
+        if (!title.trim()) {
+            alert('Test title cannot be empty.');
+            return;
+        }
+
+        const description = prompt(
+            'Edit Test Description:',
+            test.description || ''
+        );
+
+        if (description === null) return;
+
+        const { error } = await supabase
+            .from('mock_tests')
+            .update({
+                title: title.trim(),
+                description: description.trim()
+            })
+            .eq('id', test.id);
+
+        if (error) {
+            alert('Unable to update test: ' + error.message);
+            return;
+        }
+
+        alert('Test updated successfully!');
+        await loadTests();
+    }
+
+    async function deleteTest(test) {
+        if (!confirm(`Delete "${test.title}" and all its questions?`)) return;
+
+        const { error } = await supabase
+            .from('mock_tests')
+            .delete()
+            .eq('id', test.id);
+
+        if (error) {
+            alert('Unable to delete test: ' + error.message);
+            return;
+        }
+
+        alert('Mock test deleted.');
+        await loadTests();
+    }
+
+    async function togglePublish(test) {
+        if (!test.is_published && (!test.mock_test_questions ||
+            test.mock_test_questions.length === 0)) {
+            alert('Add at least one question before publishing.');
+            return;
+        }
+
+        if (!test.is_published) {
+            const missingAnswers = test.mock_test_questions.some(
+                question => !question.mock_test_answers?.length
+            );
+
+            if (missingAnswers) {
+                alert('Please set the correct answer for every question before publishing.');
+                return;
+            }
+        }
+
+        const newStatus = !test.is_published;
+
+        const { error } = await supabase
+            .from('mock_tests')
+            .update({ is_published: newStatus })
+            .eq('id', test.id);
+
+        if (error) {
+            alert('Unable to change publish status: ' + error.message);
+            return;
+        }
+
+        alert(newStatus ? 'Mock test published!' : 'Mock test unpublished.');
+        await loadTests();
+    }
+
+    async function addQuestion(test) {
+        const questionText = prompt('Enter Question:');
+        if (questionText === null) return;
+
+        if (!questionText.trim()) {
+            alert('Question cannot be empty.');
+            return;
+        }
+
+        const optionA = prompt('Enter Choice A:');
+        if (optionA === null) return;
+
+        const optionB = prompt('Enter Choice B:');
+        if (optionB === null) return;
+
+        const optionC = prompt('Enter Choice C:');
+        if (optionC === null) return;
+
+        const optionD = prompt('Enter Choice D:');
+        if (optionD === null) return;
+
+        if (![optionA, optionB, optionC, optionD].every(
+            option => option.trim()
+        )) {
+            alert('All four choices are required.');
+            return;
+        }
+
+        const correctAnswer = prompt(
+            'Enter Correct Answer (A, B, C, or D):'
+        );
+
+        if (correctAnswer === null) return;
+
+        const answer = correctAnswer.trim().toUpperCase();
+
+        if (!['A', 'B', 'C', 'D'].includes(answer)) {
+            alert('Correct answer must be A, B, C, or D.');
+            return;
+        }
+
+        const explanation = prompt('Enter Explanation (optional):') || '';
+
+        const { data: question, error: questionError } = await supabase
+            .from('mock_test_questions')
+            .insert({
+                test_id: test.id,
+                question_text: questionText.trim(),
+                option_a: optionA.trim(),
+                option_b: optionB.trim(),
+                option_c: optionC.trim(),
+                option_d: optionD.trim(),
+                position: (test.mock_test_questions?.length || 0) + 1
+            })
+            .select()
+            .single();
+
+        if (questionError) {
+            alert('Unable to add question: ' + questionError.message);
+            return;
+        }
+
+        const { error: answerError } = await supabase
+            .from('mock_test_answers')
+            .insert({
+                question_id: question.id,
+                correct_answer: answer,
+                explanation: explanation.trim()
+            });
+
+        if (answerError) {
+            alert('Question saved, but answer could not be saved: ' + answerError.message);
+            return;
+        }
+
+        alert('Question added successfully!');
+        await loadTests();
+    }
+
+    async function editQuestion(question) {
+        const questionText = prompt(
+            'Edit Question:',
+            question.question_text
+        );
+        if (questionText === null) return;
+
+        const optionA = prompt('Edit Choice A:', question.option_a);
+        if (optionA === null) return;
+
+        const optionB = prompt('Edit Choice B:', question.option_b);
+        if (optionB === null) return;
+
+        const optionC = prompt('Edit Choice C:', question.option_c);
+        if (optionC === null) return;
+
+        const optionD = prompt('Edit Choice D:', question.option_d);
+        if (optionD === null) return;
+
+        if (![questionText, optionA, optionB, optionC, optionD].every(
+            value => value.trim()
+        )) {
+            alert('All question fields and choices are required.');
+            return;
+        }
+
+        const existingAnswer = question.mock_test_answers?.[0];
+
+        const correctAnswer = prompt(
+            'Correct Answer (A, B, C, or D):',
+            existingAnswer?.correct_answer || 'A'
+        );
+
+        if (correctAnswer === null) return;
+
+        const answer = correctAnswer.trim().toUpperCase();
+
+        if (!['A', 'B', 'C', 'D'].includes(answer)) {
+            alert('Correct answer must be A, B, C, or D.');
+            return;
+        }
+
+        const explanation = prompt(
+            'Explanation:',
+            existingAnswer?.explanation || ''
+        );
+
+        if (explanation === null) return;
+
+        const { error: questionError } = await supabase
+            .from('mock_test_questions')
+            .update({
+                question_text: questionText.trim(),
+                option_a: optionA.trim(),
+                option_b: optionB.trim(),
+                option_c: optionC.trim(),
+                option_d: optionD.trim()
+            })
+            .eq('id', question.id);
+
+        if (questionError) {
+            alert('Unable to update question: ' + questionError.message);
+            return;
+        }
+
+        const { error: answerError } = await supabase
+            .from('mock_test_answers')
+            .upsert({
+                question_id: question.id,
+                correct_answer: answer,
+                explanation: explanation.trim()
+            }, {
+                onConflict: 'question_id'
+            });
+
+        if (answerError) {
+            alert('Question updated, but answer could not be saved: ' + answerError.message);
+            return;
+        }
+
+        alert('Question updated successfully!');
+        await loadTests();
+    }
+
+    async function deleteQuestion(question) {
+        if (!confirm('Are you sure you want to delete this question?')) return;
+
+        const { error } = await supabase
+            .from('mock_test_questions')
+            .delete()
+            .eq('id', question.id);
+
+        if (error) {
+            alert('Unable to delete question: ' + error.message);
+            return;
+        }
+
+        alert('Question deleted.');
+        await loadTests();
+    }
+
+    addTestBtn.addEventListener('click', createTest);
+
+    initialize();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Answer Keys</title>
+
+    <link rel="stylesheet" href="../assets/css/teacher_dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .content {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #294b38;
+        }
+
+        .test-card {
+            background: #fffef8;
+            padding: 22px;
+            margin: 18px 0;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        }
+
+        .question {
+            border-top: 1px solid #dce5d8;
+            padding: 15px 0;
+        }
+
+        .answer {
+            color: #28734a;
+            font-weight: 600;
+        }
+
+        .explanation {
+            color: #718174;
+            font-size: 14px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+<div class="content">
+
+    <a class="back" href="dashboard.html">← Back to Dashboard</a>
+
+    <h1>Answer Keys</h1>
+    <p>View the correct answers and explanations for your mock tests.</p>
+
+    <div id="answerKeys">
+        Loading answer keys...
+    </div>
+
+</div>
+
+<script type="module">
+import { supabase } from '../js/supabase.js';
+
+const container = document.getElementById('answerKeys');
+
+async function loadAnswerKeys() {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+        container.textContent = 'Please log in first.';
+        return;
+    }
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .single();
+
+    if (!profile || profile.role !== 'teacher') {
+        container.textContent = 'Teacher access only.';
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('mock_tests')
+        .select(`
+            id,
+            title,
+            mock_test_questions (
+                id,
+                question_text,
+                position,
+                mock_test_answers (
+                    correct_answer,
+                    explanation
+                )
+            )
+        `)
+        .eq('teacher_id', session.user.id)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        container.textContent = 'Unable to load answer keys: ' + error.message;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        container.textContent = 'No mock tests available yet.';
+        return;
+    }
+
+    container.innerHTML = '';
+
+    data.forEach(test => {
+        const card = document.createElement('div');
+        card.className = 'test-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = test.title;
+        card.appendChild(heading);
+
+        const questions = [...(test.mock_test_questions || [])]
+            .sort((a, b) => a.position - b.position);
+
+        if (questions.length === 0) {
+            const empty = document.createElement('p');
+            empty.textContent = 'No questions added yet.';
+            card.appendChild(empty);
+        }
+
+        questions.forEach((question, index) => {
+            const item = document.createElement('div');
+            item.className = 'question';
+
+            const title = document.createElement('p');
+            title.textContent = `${index + 1}. ${question.question_text}`;
+            item.appendChild(title);
+
+            const answer = question.mock_test_answers?.[0];
+
+            const answerText = document.createElement('p');
+            answerText.className = 'answer';
+            answerText.textContent = answer
+                ? `Correct Answer: ${answer.correct_answer}`
+                : 'No answer key added yet.';
+            item.appendChild(answerText);
+
+            if (answer?.explanation) {
+                const explanation = document.createElement('p');
+                explanation.className = 'explanation';
+                explanation.textContent = `Explanation: ${answer.explanation}`;
+                item.appendChild(explanation);
+            }
+
+            card.appendChild(item);
+        });
+
+        container.appendChild(card);
+    });
+}
+
+loadAnswerKeys();
+</script>
+</body>
+</html>
