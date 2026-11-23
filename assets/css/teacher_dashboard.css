@@ -427,3 +427,44 @@ body.sidebar-collapsed .top-header {
         padding-left: 65px;
     }
 }
+.top-header h1 {
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.top-header p {
+    font-size: 16px;
+    color: #7A887D;
+    margin-top: 8px;
+}
+
+/* BUMP-STYLE SIDEBAR ARROW */
+.sidebar {
+    overflow: visible !important;
+}
+
+.sidebar-close {
+    position: absolute !important;
+    top: 130px !important;
+    left: 100% !important;
+    right: auto !important;
+
+    width: 48px !important;
+    height: 70px !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #8FA58B !important;
+    color: #FFFEF8 !important;
+
+    border: none !important;
+    border-radius: 0 30px 30px 0 !important;
+
+    font-size: 32px !important;
+    cursor: pointer;
+    z-index: 1000;
+    touch-action: manipulation;
+    box-shadow: 3px 2px 8px rgba(0, 0, 0, 0.12);
+}
