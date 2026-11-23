@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Video Tutorials</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 { color: #294b38; }
+
+        .back {
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .video-card, .form-card {
+            background: #fffef8;
+            padding: 22px;
+            margin: 18px 0;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        }
+
+        input, textarea {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #cbd8c9;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        button {
+            padding: 10px 16px;
+            margin: 5px 5px 5px 0;
+            border: none;
+            border-radius: 8px;
+            background: #294b38;
+            color: white;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        button.delete { background: #a34b4b; }
+
+        .video-link {
+            color: #28734a;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            color: #718174;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back" id="backLink" href="index.html">← Back</a>
+
+    <h1>Video Tutorials</h1>
+    <p>Watch and learn through mathematics video tutorials.</p>
+
+    <div id="teacherForm" class="form-card" hidden>
+        <h2 id="formTitle">Add Video Tutorial</h2>
+
+        <input type="text" id="videoTitle" placeholder="Video title" required>
+        <textarea id="videoDescription" placeholder="Video description"></textarea>
+        <input type="url" id="videoURL" placeholder="Paste video URL" required>
+
+        <button id="saveButton">Add Video</button>
+        <button id="cancelButton" type="button" hidden>Cancel</button>
+    </div>
+
+    <div id="videoList">Loading video tutorials...</div>
+
+</div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+
+const videoList = document.getElementById('videoList');
+const teacherForm = document.getElementById('teacherForm');
+const titleInput = document.getElementById('videoTitle');
+const descriptionInput = document.getElementById('videoDescription');
+const urlInput = document.getElementById('videoURL');
+const saveButton = document.getElementById('saveButton');
+const cancelButton = document.getElementById('cancelButton');
+
+let currentUser = null;
+let currentRole = null;
+let editingVideoId = null;
+
+async function initialize() {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+        videoList.textContent = 'Please log in to view video tutorials.';
+        return;
+    }
+
+    currentUser = session.user;
+
+    const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', currentUser.id)
+        .single();
+
+    if (error || !profile) {
+        videoList.textContent = 'Unable to verify your account.';
+        return;
+    }
+
+    currentRole = profile.role;
+
+    if (currentRole === 'teacher') {
+        teacherForm.hidden = false;
+        document.getElementById('backLink').href = './teacher/dashboard.html';
+    } else if (currentRole === 'student') {
+        document.getElementById('backLink').href = './student/dashboard.html';
+    } else {
+        videoList.textContent = 'You do not have permission to view this page.';
+        return;
+    }
+
+    await loadVideos();
+}
+
+async function loadVideos() {
+    let query = supabase
+        .from('video_tutorials')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (currentRole === 'teacher') {
+        query = query.eq('teacher_id', currentUser.id);
+    } else {
+        query = query.eq('is_published', true);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        videoList.textContent = 'Unable to load videos: ' + error.message;
+        return;
+    }
+
+    videoList.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        videoList.textContent = 'No video tutorials available yet.';
+        return;
+    }
+
+    data.forEach(video => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = video.title;
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.textContent = video.description || 'No description provided.';
+        card.appendChild(description);
+
+        const link = document.createElement('a');
+        link.href = video.video_url;
+        link.textContent = 'Watch Video Tutorial ↗';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'video-link';
+        card.appendChild(link);
+
+        if (currentRole === 'teacher') {
+            const status = document.createElement('p');
+            status.className = 'status';
+            status.textContent = video.is_published ? 'Published' : 'Not published';
+            card.appendChild(status);
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.addEventListener('click', () => editVideo(video));
+            card.appendChild(editButton);
+
+            const publishButton = document.createElement('button');
+            publishButton.textContent = video.is_published ? 'Unpublish' : 'Publish';
+            publishButton.addEventListener('click', () => togglePublish(video));
+            card.appendChild(publishButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'delete';
+            deleteButton.addEventListener('click', () => deleteVideo(video.id));
+            card.appendChild(deleteButton);
+        }
+
+        videoList.appendChild(card);
+    });
+}
+
+async function saveVideo() {
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const videoURL = urlInput.value.trim();
+
+    if (!title || !videoURL) {
+        alert('Please enter a video title and URL.');
+        return;
+    }
+
+    try {
+        const parsedURL = new URL(videoURL);
+        if (!['http:', 'https:'].includes(parsedURL.protocol)) {
+            alert('Please enter a valid HTTP or HTTPS video URL.');
+            return;
+        }
+    } catch {
+        alert('Please enter a valid video URL.');
+        return;
+    }
+
+    saveButton.disabled = true;
+
+    const videoData = {
+        title,
+        description,
+        video_url: videoURL
+    };
+
+    let result;
+
+    if (editingVideoId) {
+        result = await supabase
+            .from('video_tutorials')
+            .update(videoData)
+            .eq('id', editingVideoId)
+            .eq('teacher_id', currentUser.id);
+    } else {
+        result = await supabase
+            .from('video_tutorials')
+            .insert({
+                ...videoData,
+                teacher_id: currentUser.id
+            });
+    }
+
+    saveButton.disabled = false;
+
+    if (result.error) {
+        alert('Unable to save video: ' + result.error.message);
+        return;
+    }
+
+    resetForm();
+    await loadVideos();
+    alert('Video tutorial saved successfully!');
+}
+
+function editVideo(video) {
+    editingVideoId = video.id;
+
+    titleInput.value = video.title;
+    descriptionInput.value = video.description || '';
+    urlInput.value = video.video_url;
+
+    document.getElementById('formTitle').textContent = 'Edit Video Tutorial';
+    saveButton.textContent = 'Save Changes';
+    cancelButton.hidden = false;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function togglePublish(video) {
+    const { error } = await supabase
+        .from('video_tutorials')
+        .update({ is_published: !video.is_published })
+        .eq('id', video.id)
+        .eq('teacher_id', currentUser.id);
+
+    if (error) {
+        alert('Unable to update video: ' + error.message);
+        return;
+    }
+
+    await loadVideos();
+}
+
+async function deleteVideo(id) {
+    if (!confirm('Are you sure you want to delete this video?')) return;
+
+    const { error } = await supabase
+        .from('video_tutorials')
+        .delete()
+        .eq('id', id)
+        .eq('teacher_id', currentUser.id);
+
+    if (error) {
+        alert('Unable to delete video: ' + error.message);
+        return;
+    }
+
+    await loadVideos();
+}
+
+function resetForm() {
+    editingVideoId = null;
+    titleInput.value = '';
+    descriptionInput.value = '';
+    urlInput.value = '';
+
+    document.getElementById('formTitle').textContent = 'Add Video Tutorial';
+    saveButton.textContent = 'Add Video';
+    cancelButton.hidden = true;
+}
+
+saveButton.addEventListener('click', saveVideo);
+cancelButton.addEventListener('click', resetForm);
+
+initialize();
+</script>
+</body>
+</html>
