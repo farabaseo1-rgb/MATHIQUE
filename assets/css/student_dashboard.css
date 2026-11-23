@@ -574,3 +574,29 @@ footer {
     touch-action: manipulation;
     box-shadow: 3px 2px 8px rgba(0, 0, 0, 0.12);
 }
+
+/* STUDENT SIDEBAR ARROW VISIBILITY */
+body.sidebar-collapsed .sidebar-close {
+    display: none !important;
+}
+
+body:not(.sidebar-collapsed) .sidebar-close {
+    display: flex !important;
+    position: absolute !important;
+    top: 130px !important;
+    left: 100% !important;
+    right: auto !important;
+    width: 48px !important;
+    height: 70px !important;
+    align-items: center;
+    justify-content: center;
+    background: #8FA58B !important;
+    color: #FFFEF8 !important;
+    border: none !important;
+    border-radius: 0 30px 30px 0 !important;
+    font-size: 32px !important;
+    cursor: pointer;
+    z-index: 1000;
+    touch-action: manipulation;
+    box-shadow: 3px 2px 8px rgba(0, 0, 0, 0.12);
+}
