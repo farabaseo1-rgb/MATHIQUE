@@ -1,0 +1,639 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Teacher Learning Modules</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #e5ecdf;
+            font-size: 14px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .add-button {
+            background: #294b38;
+            color: #fffef8;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 9px;
+            font-weight: 600;
+        }
+
+        .add-button:hover {
+            background: #365a45;
+        }
+
+        .week-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .week-card {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .week-heading {
+            padding: 22px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .week-info h2 {
+            color: #294b38;
+            font-size: 19px;
+            margin-bottom: 5px;
+        }
+
+        .week-info p {
+            color: #718675;
+            font-size: 13px;
+        }
+
+        .week-actions,
+        .lesson-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .small-button {
+            border: none;
+            border-radius: 7px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .edit-button {
+            background: #e6eddf;
+            color: #294b38;
+        }
+
+        .delete-button {
+            background: #f5e3df;
+            color: #963f35;
+        }
+
+        .publish-button {
+            background: #879b83;
+            color: white;
+        }
+
+        .unpublish-button {
+            background: #e8efe5;
+            color: #294b38;
+        }
+
+        .status {
+            display: inline-block;
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-top: 7px;
+            font-weight: 600;
+        }
+
+        .published {
+            background: #e1eee0;
+            color: #356443;
+        }
+
+        .draft {
+            background: #f4ecd9;
+            color: #856b30;
+        }
+
+        .lesson-area {
+            padding: 0 25px 25px;
+        }
+
+        .lesson {
+            background: #edf1e8;
+            padding: 17px;
+            border-radius: 10px;
+            margin-top: 12px;
+            border-left: 4px solid #718c78;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lesson h3 {
+            color: #294b38;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .lesson p {
+            color: #68796b;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px 15px;
+            background: #fffef8;
+            border-radius: 12px;
+            color: #718675;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            font-size: 13px;
+            color: #294b38;
+        }
+
+        .lesson-add {
+            margin-top: 15px;
+            background: #e6eddf;
+            color: #294b38;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .week-heading {
+                padding: 18px;
+            }
+
+            .lesson-area {
+                padding: 0 18px 20px;
+            }
+
+            .lesson {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" href="dashboard.html">
+        ← Back to Teacher Dashboard
+    </a>
+
+    <div class="header">
+        <h1>Learning Modules</h1>
+        <p>Create and manage weekly mathematics lessons for your students.</p>
+    </div>
+
+    <div class="toolbar">
+        <h2>Weekly Modules</h2>
+        <button class="add-button" id="addWeekBtn">+ Add Week</button>
+    </div>
+
+    <p class="message" id="message"></p>
+
+    <div class="week-list" id="weekList">
+        Loading modules...
+    </div>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const weekList = document.getElementById('weekList');
+    const message = document.getElementById('message');
+    const addWeekBtn = document.getElementById('addWeekBtn');
+
+    let currentUser = null;
+
+    function showMessage(text) {
+        message.textContent = text;
+    }
+
+    function escapeHTML(value = '') {
+        return String(value).replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[char]);
+    }
+
+    async function initialize() {
+        const { data: { session }, error } =
+            await supabase.auth.getSession();
+
+        if (error || !session) {
+            alert('Please log in first.');
+            window.location.href = '../index.html';
+            return;
+        }
+
+        currentUser = session.user;
+
+        const { data: profile, error: profileError } =
+            await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', currentUser.id)
+                .single();
+
+        if (profileError || profile?.role !== 'teacher') {
+            alert('Teacher access only.');
+            window.location.href = '../index.html';
+            return;
+        }
+
+        await loadModules();
+    }
+
+    async function loadModules() {
+        weekList.textContent = 'Loading modules...';
+
+        const { data, error } = await supabase
+            .from('modules')
+            .select(`
+                id,
+                title,
+                week_number,
+                description,
+                is_published,
+                lessons (
+                    id,
+                    title,
+                    content,
+                    position
+                )
+            `)
+            .eq('teacher_id', currentUser.id)
+            .order('week_number', { ascending: true });
+
+        if (error) {
+            weekList.textContent = 'Unable to load modules: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            weekList.innerHTML = `
+                <div class="empty-message">
+                    <h3>No learning modules yet.</h3>
+                    <p>Click "+ Add Week" to create your first module.</p>
+                </div>
+            `;
+            return;
+        }
+
+        weekList.innerHTML = '';
+
+        data.forEach(module => {
+            const lessons = (module.lessons || []).sort(
+                (a, b) => a.position - b.position
+            );
+
+            const card = document.createElement('div');
+            card.className = 'week-card';
+
+            card.innerHTML = `
+                <div class="week-heading">
+                    <div class="week-info">
+                        <h2>Week ${module.week_number}: ${escapeHTML(module.title)}</h2>
+                        <p>${escapeHTML(module.description || 'No description added.')}</p>
+                        <span class="status ${module.is_published ? 'published' : 'draft'}">
+                            ${module.is_published ? 'Published' : 'Draft'}
+                        </span>
+                    </div>
+
+                    <div class="week-actions">
+                        <button class="small-button edit-button" data-action="edit-week">
+                            Edit
+                        </button>
+
+                        <button class="small-button delete-button" data-action="delete-week">
+                            Delete
+                        </button>
+
+                        <button class="small-button ${module.is_published ? 'unpublish-button' : 'publish-button'}"
+                                data-action="publish">
+                            ${module.is_published ? 'Unpublish' : 'Publish'}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lesson-area">
+                    <h3>Lessons</h3>
+
+                    <div class="lesson-list">
+                        ${lessons.length ? lessons.map((lesson, index) => `
+                            <div class="lesson">
+                                <div>
+                                    <h3>${index + 1}. ${escapeHTML(lesson.title)}</h3>
+                                    <p>${escapeHTML(lesson.content || 'No lesson content added.')}</p>
+                                </div>
+
+                                <div class="lesson-actions">
+                                    <button class="small-button edit-button"
+                                            data-action="edit-lesson"
+                                            data-id="${lesson.id}">
+                                        Edit
+                                    </button>
+
+                                    <button class="small-button delete-button"
+                                            data-action="delete-lesson"
+                                            data-id="${lesson.id}">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('') : '<p class="message">No lessons added yet.</p>'}
+                    </div>
+
+                    <button class="lesson-add" data-action="add-lesson">
+                        + Add Lesson
+                    </button>
+                </div>
+            `;
+
+            card.querySelector('[data-action="edit-week"]').addEventListener(
+                'click', () => editWeek(module)
+            );
+
+            card.querySelector('[data-action="delete-week"]').addEventListener(
+                'click', () => deleteWeek(module)
+            );
+
+            card.querySelector('[data-action="publish"]').addEventListener(
+                'click', () => togglePublish(module)
+            );
+
+            card.querySelector('[data-action="add-lesson"]').addEventListener(
+                'click', () => addLesson(module, lessons.length)
+            );
+
+            card.querySelectorAll('[data-action="edit-lesson"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const lesson = lessons.find(item => item.id === button.dataset.id);
+                    editLesson(lesson);
+                });
+            });
+
+            card.querySelectorAll('[data-action="delete-lesson"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const lesson = lessons.find(item => item.id === button.dataset.id);
+                    deleteLesson(lesson);
+                });
+            });
+
+            weekList.appendChild(card);
+        });
+    }
+
+    async function addWeek() {
+        const title = prompt('Enter week title:');
+        if (!title || !title.trim()) return;
+
+        const weekNumberInput = prompt('Enter week number:');
+        const weekNumber = Number(weekNumberInput);
+
+        if (!Number.isInteger(weekNumber) || weekNumber < 1) {
+            alert('Please enter a valid week number.');
+            return;
+        }
+
+        const description = prompt('Enter a short description:') || '';
+
+        const { error } = await supabase
+            .from('modules')
+            .insert({
+                teacher_id: currentUser.id,
+                title: title.trim(),
+                week_number: weekNumber,
+                description: description.trim()
+            });
+
+        if (error) {
+            alert('Could not add week: ' + error.message);
+            return;
+        }
+
+        showMessage('Week added successfully!');
+        await loadModules();
+    }
+
+    async function editWeek(module) {
+        const title = prompt('Edit week title:', module.title);
+        if (!title || !title.trim()) return;
+
+        const description = prompt(
+            'Edit description:',
+            module.description || ''
+        );
+
+        const { error } = await supabase
+            .from('modules')
+            .update({
+                title: title.trim(),
+                description: (description || '').trim()
+            })
+            .eq('id', module.id)
+            .eq('teacher_id', currentUser.id);
+
+        if (error) {
+            alert('Could not update week: ' + error.message);
+            return;
+        }
+
+        showMessage('Week updated successfully!');
+        await loadModules();
+    }
+
+    async function deleteWeek(module) {
+        if (!confirm(`Delete Week ${module.week_number} and all its lessons?`)) {
+            return;
+        }
+
+        const { error } = await supabase
+            .from('modules')
+            .delete()
+            .eq('id', module.id)
+            .eq('teacher_id', currentUser.id);
+
+        if (error) {
+            alert('Could not delete week: ' + error.message);
+            return;
+        }
+
+        showMessage('Week deleted successfully!');
+        await loadModules();
+    }
+
+    async function togglePublish(module) {
+        const newStatus = !module.is_published;
+
+        const { error } = await supabase
+            .from('modules')
+            .update({ is_published: newStatus })
+            .eq('id', module.id)
+            .eq('teacher_id', currentUser.id);
+
+        if (error) {
+            alert('Could not update publishing status: ' + error.message);
+            return;
+        }
+
+        showMessage(newStatus ? 'Module published!' : 'Module unpublished!');
+        await loadModules();
+    }
+
+    async function addLesson(module, lessonCount) {
+        const title = prompt('Enter lesson title:');
+        if (!title || !title.trim()) return;
+
+        const content = prompt('Enter lesson content or description:') || '';
+
+        const { error } = await supabase
+            .from('lessons')
+            .insert({
+                module_id: module.id,
+                title: title.trim(),
+                content: content.trim(),
+                position: lessonCount + 1
+            });
+
+        if (error) {
+            alert('Could not add lesson: ' + error.message);
+            return;
+        }
+
+        showMessage('Lesson added successfully!');
+        await loadModules();
+    }
+
+    async function editLesson(lesson) {
+        const title = prompt('Edit lesson title:', lesson.title);
+        if (!title || !title.trim()) return;
+
+        const content = prompt(
+            'Edit lesson content:',
+            lesson.content || ''
+        );
+
+        const { error } = await supabase
+            .from('lessons')
+            .update({
+                title: title.trim(),
+                content: (content || '').trim()
+            })
+            .eq('id', lesson.id);
+
+        if (error) {
+            alert('Could not update lesson: ' + error.message);
+            return;
+        }
+
+        showMessage('Lesson updated successfully!');
+        await loadModules();
+    }
+
+    async function deleteLesson(lesson) {
+        if (!confirm(`Delete "${lesson.title}"?`)) return;
+
+        const { error } = await supabase
+            .from('lessons')
+            .delete()
+            .eq('id', lesson.id);
+
+        if (error) {
+            alert('Could not delete lesson: ' + error.message);
+            return;
+        }
+
+        showMessage('Lesson deleted successfully!');
+        await loadModules();
+    }
+
+    addWeekBtn.addEventListener('click', addWeek);
+
+    initialize();
+</script>
+
+</body>
+</html>
