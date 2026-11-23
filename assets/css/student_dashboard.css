@@ -33,8 +33,7 @@ body {
     padding: 25px 20px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    overflow-x: visible;
+    overflow: visible;
     transition: transform 0.3s ease;
 }
 
@@ -163,40 +162,51 @@ body {
     background: #496b53;
 }
 
-/* Hide hamburger while sidebar is open */
-
 body:not(.sidebar-collapsed) .sidebar-toggle {
     display: none;
 }
 
 /* =====================================
-   SIDEBAR ARROW TAB
+   BUMP-STYLE SIDEBAR ARROW
 ===================================== */
 
 .sidebar-close {
-    position: fixed !important;
-    top: 130px;
-    left: 212px !important;
+    position: absolute !important;
+    top: 124px !important;
+    left: 100% !important;
     right: auto !important;
-    width: 38px;
-    height: 64px;
+
+    width: 25px !important;
+    height: 80px !important;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #294b38;
-    color: #fffef8;
-    border: none;
-    border-radius: 0 14px 14px 0;
-    font-size: 38px;
+
+    background: #294b38 !important;
+    color: #fffef8 !important;
+
+    border: none !important;
+    border-radius: 0 18px 18px 0 !important;
+
+    font-size: 25px !important;
     line-height: 1;
     cursor: pointer;
     z-index: 1200;
+
+    box-shadow: none !important;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
 
 .sidebar-close:active {
-    background: #496b53;
+    background: #496b53 !important;
+}
+
+/* Hide arrow when sidebar is closed */
+
+body.sidebar-collapsed .sidebar-close {
+    display: none !important;
 }
 
 /* =====================================
@@ -223,8 +233,6 @@ body.sidebar-collapsed .main-content {
     margin-left: 0;
     width: 100%;
 }
-
-/* Keep title clear of hamburger */
 
 body.sidebar-collapsed .topbar {
     padding-left: 70px;
@@ -273,7 +281,8 @@ body.sidebar-collapsed .topbar {
 ===================================== */
 
 .welcome-card {
-    background: #fffef8;
+    background: #8FA58B;
+    color: #FFFEF8;
     padding: 30px;
     border-radius: 15px;
     margin-bottom: 30px;
@@ -281,12 +290,12 @@ body.sidebar-collapsed .topbar {
 }
 
 .welcome-card h2 {
-    color: #294b38;
+    color: #FFFEF8;
     margin-bottom: 10px;
 }
 
 .welcome-card p {
-    color: #718174;
+    color: #FFFEF8;
     line-height: 1.7;
 }
 
@@ -469,6 +478,10 @@ footer {
         left: 12px;
     }
 
+    .sidebar-close {
+        top: 124px !important;
+    }
+
     .main-content {
         margin-left: 0;
         width: 100%;
@@ -527,76 +540,4 @@ footer {
         width: 100px;
         height: 100px;
     }
-}
-.top-header h1,
-.top-header h1 {
-    font-size: 34px;
-    font-weight: 700;
-}
-
-.welcome-card {
-    background: #8FA58B;
-    color: #FFFEF8;
-}
-
-.welcome-card h2,
-.welcome-card p {
-    color: #FFFEF8;
-}
-
-/* BUMP-STYLE SIDEBAR ARROW */
-.sidebar {
-    overflow: visible !important;
-}
-
-.sidebar-close {
-    position: absolute !important;
-    top: 130px !important;
-    left: 100% !important;
-    right: auto !important;
-
-    width: 48px !important;
-    height: 70px !important;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #8FA58B !important;
-    color: #FFFEF8 !important;
-
-    border: none !important;
-    border-radius: 0 30px 30px 0 !important;
-
-    font-size: 32px !important;
-    cursor: pointer;
-    z-index: 1000;
-    touch-action: manipulation;
-    box-shadow: 3px 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-/* STUDENT SIDEBAR ARROW VISIBILITY */
-body.sidebar-collapsed .sidebar-close {
-    display: none !important;
-}
-
-body:not(.sidebar-collapsed) .sidebar-close {
-    display: flex !important;
-    position: absolute !important;
-    top: 130px !important;
-    left: 100% !important;
-    right: auto !important;
-    width: 48px !important;
-    height: 70px !important;
-    align-items: center;
-    justify-content: center;
-    background: #8FA58B !important;
-    color: #FFFEF8 !important;
-    border: none !important;
-    border-radius: 0 30px 30px 0 !important;
-    font-size: 32px !important;
-    cursor: pointer;
-    z-index: 1000;
-    touch-action: manipulation;
-    box-shadow: 3px 2px 8px rgba(0, 0, 0, 0.12);
 }
