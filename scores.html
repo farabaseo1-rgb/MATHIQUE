@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Scores</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .back {
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 { color: #294b38; }
+
+        .score-card {
+            background: #fffef8;
+            padding: 22px;
+            margin: 18px 0;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        }
+
+        .score {
+            color: #28734a;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .status {
+            color: #718174;
+            font-size: 14px;
+        }
+
+        .summary {
+            background: #dce8d9;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back" id="backLink" href="index.html">← Back</a>
+
+    <h1>My Scores</h1>
+    <p>Track your mathematics mock test performance.</p>
+
+    <div id="summary" class="summary" hidden></div>
+    <div id="scoreList">Loading scores...</div>
+
+</div>
+
+<script type="module">
+import { supabase } from './js/supabase.js';
+
+const scoreList = document.getElementById('scoreList');
+const summary = document.getElementById('summary');
+
+async function loadScores() {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+        scoreList.textContent = 'Please log in to view scores.';
+        return;
+    }
+
+    const user = session.user;
+
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+
+    if (profileError || !profile) {
+        scoreList.textContent = 'Unable to verify your account.';
+        return;
+    }
+
+    let query = supabase
+        .from('mock_test_scores')
+        .select(`
+            id,
+            score,
+            total_questions,
+            submitted_at,
+            mock_tests (
+                title,
+                teacher_id
+            )
+        `)
+        .order('submitted_at', { ascending: false });
+
+    if (profile.role === 'student') {
+        document.getElementById('backLink').href = './student/dashboard.html';
+        query = query.eq('student_id', user.id);
+    } else if (profile.role === 'teacher') {
+        document.getElementById('backLink').href = './teacher/dashboard.html';
+        // Teacher records are filtered below to their own tests.
+    } else {
+        scoreList.textContent = 'You do not have permission to view this page.';
+        return;
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        scoreList.textContent = 'Unable to load scores: ' + error.message;
+        return;
+    }
+
+    let scores = data || [];
+
+    if (profile.role === 'teacher') {
+        scores = scores.filter(
+            item => item.mock_tests?.teacher_id === user.id
+        );
+    }
+
+    scoreList.innerHTML = '';
+
+    if (scores.length === 0) {
+        scoreList.textContent = profile.role === 'teacher'
+            ? 'No student scores available for your mock tests yet.'
+            : 'No scores available yet. Complete a mock test to see your results.';
+        return;
+    }
+
+    if (profile.role === 'student') {
+        const totalScore = scores.reduce((sum, item) => sum + item.score, 0);
+        const totalQuestions = scores.reduce((sum, item) => sum + item.total_questions, 0);
+        const average = totalQuestions > 0
+            ? Math.round((totalScore / totalQuestions) * 100)
+            : 0;
+
+        summary.hidden = false;
+        summary.innerHTML = `
+            <strong>Completed Mock Tests:</strong> ${scores.length}<br>
+            <strong>Overall Average:</strong> ${average}%
+        `;
+    } else {
+        summary.hidden = false;
+        summary.textContent = `Total student submissions: ${scores.length}`;
+    }
+
+    scores.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'score-card';
+
+        const title = document.createElement('h2');
+        title.textContent = item.mock_tests?.title || 'Mock Test';
+        card.appendChild(title);
+
+        const result = document.createElement('p');
+        result.className = 'score';
+        result.textContent = `${item.score} / ${item.total_questions}`;
+        card.appendChild(result);
+
+        const percentage = document.createElement('p');
+        const percent = item.total_questions > 0
+            ? Math.round((item.score / item.total_questions) * 100)
+            : 0;
+        percentage.textContent = `Percentage: ${percent}%`;
+        card.appendChild(percentage);
+
+        const date = document.createElement('p');
+        date.className = 'status';
+        date.textContent = `Submitted: ${new Date(item.submitted_at).toLocaleString()}`;
+        card.appendChild(date);
+
+        scoreList.appendChild(card);
+    });
+}
+
+loadScores();
+</script>
+</body>
+</html>
