@@ -177,8 +177,8 @@
     <aside class="sidebar">
 
         <div class="student-profile">
-            <div class="student-photo">S</div>
-            <h3>Student Name</h3>
+            <div class="student-photo" id="sidebarInitial">S</div>
+            <h3 id="sidebarName">Loading...</h3>
             <a href="profile.html" class="view-profile">View Profile</a>
         </div>
 
@@ -187,10 +187,10 @@
 
         <nav>
             <a href="dashboard.html">Dashboard</a>
-            <a href="teachers.html">Our Teachers</a>
-            <a href="modules.html">Learning Modules</a>
-            <a href="mock-test.html">Mock Test</a>
-            <a href="video-tutorials.html">Video Tutorials</a>
+            <a href="teacher.html">Our Teachers</a>
+            <a href="select-teacher.html?section=modules">Learning Modules</a>
+            <a href="select-teacher.html?section=mock-test">Mock Test</a>
+            <a href="select-teacher.html?section=videos">Video Tutorials</a>
         </nav>
 
         <a href="../index.html" class="logout">Log Out</a>
@@ -218,7 +218,7 @@
                 <div class="profile-photo" id="profilePhoto">S</div>
 
                 <div>
-                    <h2 id="displayName">Student Name</h2>
+                    <h2 id="displayName">Loading...</h2>
                     <p>Student Account</p>
 
                     <input
@@ -238,26 +238,24 @@
 
                     <div class="detail-group">
                         <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName"
-                               value="Student Name" disabled>
+                        <input type="text" id="fullName" disabled>
                     </div>
 
                     <div class="detail-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email"
-                               placeholder="Enter student email" disabled>
+                        <input type="email" id="email" disabled>
                     </div>
 
                     <div class="detail-group">
                         <label for="username">Username</label>
                         <input type="text" id="username"
-                               placeholder="Enter username" disabled>
+                            placeholder="Enter username" disabled>
                     </div>
 
                     <div class="detail-group">
                         <label for="gradeSection">Grade &amp; Section</label>
                         <input type="text" id="gradeSection"
-                               placeholder="Enter grade and section" disabled>
+                            placeholder="Enter grade and section" disabled>
                     </div>
 
                     <div class="detail-group">
@@ -291,24 +289,94 @@
 
     </main>
 
-    <script>
+    <script type="module">
+        import { supabase } from '../js/supabase.js';
+
         const fields = [
-            "fullName",
-            "email",
-            "username",
-            "gradeSection"
+            'fullName',
+            'email',
+            'username',
+            'gradeSection'
         ];
 
-        const form = document.getElementById("profileForm");
-        const editBtn = document.getElementById("editBtn");
-        const saveBtn = document.getElementById("saveBtn");
-        const cancelBtn = document.getElementById("cancelBtn");
-        const photoInput = document.getElementById("photoInput");
-        const profilePhoto = document.getElementById("profilePhoto");
-        const displayName = document.getElementById("displayName");
-        const statusMessage = document.getElementById("statusMessage");
+        const form = document.getElementById('profileForm');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const photoInput = document.getElementById('photoInput');
+        const profilePhoto = document.getElementById('profilePhoto');
+        const displayName = document.getElementById('displayName');
+        const statusMessage = document.getElementById('statusMessage');
+        const sidebarName = document.getElementById('sidebarName');
+        const sidebarInitial = document.getElementById('sidebarInitial');
 
+        let currentUser = null;
         let originalValues = {};
+
+        function updateNames(name) {
+            const safeName = name || 'Student Name';
+            const initial = safeName !== 'Student Name'
+                ? safeName.charAt(0).toUpperCase()
+                : 'S';
+
+            displayName.textContent = safeName;
+            sidebarName.textContent = safeName;
+            sidebarInitial.textContent = initial;
+
+            if (!profilePhoto.querySelector('img')) {
+                profilePhoto.textContent = initial;
+            }
+        }
+
+        async function loadProfile() {
+            const { data: { session }, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError || !session) {
+                alert('Please log in first.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            currentUser = session.user;
+
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('full_name, email, role')
+                .eq('user_id', currentUser.id)
+                .single();
+
+            if (error) {
+                console.error(error);
+                statusMessage.textContent =
+                    'Unable to load profile: ' + error.message;
+                return;
+            }
+
+            if (profile.role !== 'student') {
+                alert('Student access only.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const savedLocal = JSON.parse(
+                localStorage.getItem('mathiqueStudentProfile') || 'null'
+            ) || {};
+
+            document.getElementById('fullName').value =
+                profile.full_name || '';
+
+            document.getElementById('email').value =
+                profile.email || currentUser.email || '';
+
+            document.getElementById('username').value =
+                savedLocal.username || '';
+
+            document.getElementById('gradeSection').value =
+                savedLocal.gradeSection || '';
+
+            updateNames(profile.full_name || 'Student Name');
+        }
 
         function startEditing() {
             originalValues = {};
@@ -319,14 +387,16 @@
                 field.disabled = false;
             });
 
+            document.getElementById('email').disabled = true;
+
             photoInput.disabled = false;
-            photoInput.style.display = "block";
+            photoInput.style.display = 'block';
 
             editBtn.hidden = true;
             saveBtn.hidden = false;
             cancelBtn.hidden = false;
 
-            statusMessage.textContent = "";
+            statusMessage.textContent = '';
         }
 
         function stopEditing() {
@@ -335,85 +405,100 @@
             });
 
             photoInput.disabled = true;
-            photoInput.style.display = "none";
+            photoInput.style.display = 'none';
 
             editBtn.hidden = false;
             saveBtn.hidden = true;
             cancelBtn.hidden = true;
         }
 
-        editBtn.addEventListener("click", startEditing);
+        editBtn.addEventListener('click', startEditing);
 
-        cancelBtn.addEventListener("click", () => {
+        cancelBtn.addEventListener('click', () => {
             fields.forEach(id => {
-                document.getElementById(id).value = originalValues[id];
+                document.getElementById(id).value = originalValues[id] || '';
             });
 
-            displayName.textContent = originalValues.fullName;
+            updateNames(originalValues.fullName || 'Student Name');
 
             stopEditing();
-            statusMessage.textContent = "Changes cancelled.";
+            statusMessage.textContent = 'Changes cancelled.';
         });
 
-        form.addEventListener("submit", event => {
+        form.addEventListener('submit', async event => {
             event.preventDefault();
 
-            const name = document.getElementById("fullName").value.trim();
+            const name = document.getElementById('fullName').value.trim();
 
             if (!name) {
-                statusMessage.textContent = "Please enter your full name.";
+                statusMessage.textContent = 'Please enter your full name.';
                 return;
             }
 
-            displayName.textContent = name;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            statusMessage.textContent = 'Saving your profile...';
 
-            const profileData = {};
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    full_name: name
+                })
+                .eq('user_id', currentUser.id);
 
-            fields.forEach(id => {
-                profileData[id] = document.getElementById(id).value.trim();
-            });
+            if (error) {
+                console.error(error);
+                statusMessage.textContent =
+                    'Could not save name: ' + error.message;
+
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+                return;
+            }
+
+            const profileData = {
+                fullName: name,
+                email: document.getElementById('email').value,
+                username: document.getElementById('username').value.trim(),
+                gradeSection: document.getElementById('gradeSection').value.trim()
+            };
 
             localStorage.setItem(
-                "mathiqueStudentProfile",
+                'mathiqueStudentProfile',
                 JSON.stringify(profileData)
             );
 
+            updateNames(name);
+
             stopEditing();
-            statusMessage.textContent = "Profile saved in this browser.";
+
+            statusMessage.textContent =
+                'Profile updated successfully!';
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Changes';
         });
 
-        photoInput.addEventListener("change", () => {
+        photoInput.addEventListener('change', () => {
             const file = photoInput.files[0];
 
-            if (file) {
-                const reader = new FileReader();
+            if (!file) return;
 
-                reader.onload = event => {
-                    profilePhoto.innerHTML = "";
+            const reader = new FileReader();
 
-                    const img = document.createElement("img");
-                    img.src = event.target.result;
+            reader.onload = event => {
+                profilePhoto.innerHTML = '';
 
-                    profilePhoto.appendChild(img);
-                };
+                const img = document.createElement('img');
+                img.src = event.target.result;
 
-                reader.readAsDataURL(file);
-            }
+                profilePhoto.appendChild(img);
+            };
+
+            reader.readAsDataURL(file);
         });
 
-        const savedProfile = JSON.parse(
-            localStorage.getItem("mathiqueStudentProfile") || "null"
-        );
-
-        if (savedProfile) {
-            fields.forEach(id => {
-                if (savedProfile[id] !== undefined) {
-                    document.getElementById(id).value = savedProfile[id];
-                }
-            });
-
-            displayName.textContent = savedProfile.fullName || "Student Name";
-        }
+        loadProfile();
     </script>
 
 </body>
