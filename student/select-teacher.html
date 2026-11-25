@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MATHIQUE | Select Teacher</title>
+
+    <link rel="stylesheet" href="../assets/css/student_dashboard.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .selection-container {
+            padding: 35px;
+        }
+
+        .selection-heading {
+            margin-bottom: 30px;
+        }
+
+        .selection-heading h2 {
+            color: #294b38;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .selection-heading p {
+            color: #777;
+        }
+
+        .teacher-selection-cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 25px;
+        }
+
+        .select-card {
+            display: block;
+            text-decoration: none;
+            text-align: center;
+            background: #fffef8;
+            padding: 25px 18px;
+            border-radius: 16px;
+            border: 1px solid #dce5dc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: 0.3s;
+            color: #294b38;
+        }
+
+        .select-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .select-card img {
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid #dce8dc;
+        }
+
+        .select-card h3 {
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .select-card p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .select-button {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 10px 22px;
+            background: #294b38;
+            color: #fffef8;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 800px) {
+            .teacher-selection-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+            .selection-container {
+                padding: 20px;
+            }
+
+            .teacher-selection-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="main-content">
+
+        <div class="selection-container">
+
+            <a href="dashboard.html" class="back-button">
+                ← Back to Dashboard
+            </a>
+
+            <div class="selection-heading">
+                <h2 id="sectionTitle">Select Your Teacher</h2>
+
+                <p id="sectionDescription">
+                    Choose a mathematics teacher to continue.
+                </p>
+            </div>
+
+            <div class="teacher-selection-cards">
+
+                <!-- JOSEPHINE -->
+                <a href="#" class="select-card"
+                   onclick="selectTeacher('josephine'); return false;">
+
+                    <img src="../assets/images/josephine.jpg"
+                         alt="Josephine H. Lapuz">
+
+                    <h3>Josephine H. Lapuz</h3>
+                    <p>Teacher V</p>
+
+                    <span class="select-button">Select Teacher</span>
+                </a>
+
+                <!-- MARIA -->
+                <a href="#" class="select-card"
+                   onclick="selectTeacher('maria'); return false;">
+
+                    <img src="../assets/images/maria.jpg"
+                         alt="Maria Pauline B. Gonzales">
+
+                    <h3>Maria Pauline B. Gonzales</h3>
+                    <p>Teacher III</p>
+
+                    <span class="select-button">Select Teacher</span>
+                </a>
+
+                <!-- ROCHELLE -->
+                <a href="#" class="select-card"
+                   onclick="selectTeacher('rochelle'); return false;">
+
+                    <img src="../assets/images/rochelle_profile.jpg"
+                         alt="Rochelle R. Carpio">
+
+                    <h3>Rochelle R. Carpio</h3>
+                    <p>Teacher III</p>
+
+                    <span class="select-button">Select Teacher</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const section = params.get("section");
+
+        const sectionDetails = {
+            "modules": {
+                title: "Select a Teacher",
+                description: "Choose a teacher to access their Learning Modules.",
+                page: "modules.html"
+            },
+
+            "mock-test": {
+                title: "Select a Teacher",
+                description: "Choose a teacher to access their Mock Tests.",
+                page: "mock-test.html"
+            },
+
+            "videos": {
+                title: "Select a Teacher",
+                description: "Choose a teacher to access their Video Tutorials.",
+                page: "videos.html"
+            }
+        };
+
+        const selectedSection = sectionDetails[section];
+
+        if (!selectedSection) {
+            document.getElementById("sectionTitle").textContent =
+                "Select Your Teacher";
+
+            document.getElementById("sectionDescription").textContent =
+                "Please choose a valid section from your dashboard.";
+        } else {
+            document.getElementById("sectionTitle").textContent =
+                selectedSection.title;
+
+            document.getElementById("sectionDescription").textContent =
+                selectedSection.description;
+        }
+
+        function selectTeacher(teacher) {
+
+            if (!selectedSection) {
+                alert("Please return to the dashboard and select a section first.");
+                return;
+            }
+
+            window.location.href =
+                selectedSection.page + "?teacher=" + teacher;
+        }
+    </script>
+
+</body>
+</html>
