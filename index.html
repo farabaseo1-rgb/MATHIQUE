@@ -91,17 +91,6 @@
     button:hover { background: #5e765d; }
     button:disabled { opacity: .6; cursor: wait; }
 
-    .secondary {
-      background: transparent;
-      color: #526b50;
-      border: 1px solid #718A70;
-    }
-
-    .secondary:hover {
-      background: #edf1e9;
-      color: #344d3c;
-    }
-
     .links {
       margin-top: 17px;
       text-align: center;
@@ -233,7 +222,6 @@
   <script type="module">
     import { supabase } from './js/supabase.js';
 
-
     const messageBox = document.getElementById('message');
 
     window.showScreen = function(screenId) {
@@ -280,7 +268,7 @@
       setLoading(form, true);
 
       try {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -327,23 +315,30 @@
 
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, is_developer')
           .eq('user_id', data.user.id)
           .single();
 
-        if (profileError) {
-          throw new Error('Login succeeded, but the account role could not be loaded. Please contact the administrator.');
+        if (profileError || !profile) {
+          throw new Error('Unable to verify account access.');
         }
 
-        const role = profile.role.toLowerCase();
+        // DEVELOPER ACCESS
+        if (profile.is_developer === true) {
+          window.location.href = './teacher/dashboard.html';
+          return;
+        }
+
+        // NORMAL ROLE REDIRECT
+        const role = profile.role?.toLowerCase();
 
         if (role === 'student') {
           window.location.href = './student/dashboard.html';
-          } else if (role === 'teacher') {
-            window.location.href = './teacher/dashboard.html';
-            } else {
-              throw new Error('Unknown account role.');
-              }
+        } else if (role === 'teacher') {
+          window.location.href = './teacher/dashboard.html';
+        } else {
+          throw new Error('Unknown account role.');
+        }
 
       } catch (error) {
         showMessage(error.message, 'error');
@@ -380,22 +375,5 @@
       }
     });
   </script>
-  <script type="module">
-  import { supabase } from './js/supabase.js';
-  supabase
-  .from('profiles')
-  .select('user_id')
-  .limit(1)
-  .then(({ data, error }) => {
-    if (error) {
-      console.error('Supabase test failed:', error);
-    } else {
-      console.log('Supabase database connected!', data);
-    }
-  });
-
-
-  console.log('MATHIQUE Supabase connected!');
-</script>
 </body>
 </html>
