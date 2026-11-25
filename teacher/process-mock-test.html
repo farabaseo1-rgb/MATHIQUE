@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MATHIQUE | Process Mock Test</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -75,11 +76,12 @@
             white-space: pre-wrap;
             overflow-wrap: anywhere;
             background: #f4f6f0;
-            padding: 16px;
+            padding: 18px;
             border-radius: 8px;
             min-height: 120px;
             margin-top: 12px;
             font-size: 14px;
+            line-height: 1.9;
         }
 
         .status {
@@ -89,7 +91,7 @@
 
         .label {
             font-weight: 600;
-            margin-top: 18px;
+            margin-top: 22px;
         }
 
         .back {
@@ -98,50 +100,85 @@
             color: #294b38;
             text-decoration: none;
         }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                margin: 15px auto;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+        }
     </style>
 </head>
 
 <body>
+
 <div class="container">
 
-    <a class="back" href="dashboard.html">← Back to Dashboard</a>
+    <a class="back" href="dashboard.html">
+        ← Back to Dashboard
+    </a>
 
     <h1>Process Mock Test</h1>
+
     <p class="subtitle">
         Extract text from uploaded questionnaire and answer key PDFs.
     </p>
 
+    <!-- PENDING UPLOADS -->
     <section class="panel">
+
         <h3>Pending PDF Uploads</h3>
+
         <select id="uploadSelect">
             <option value="">Loading uploads...</option>
         </select>
 
-        <button id="loadButton" type="button">Load Selected PDFs</button>
-        <p id="status" class="status">Loading...</p>
+        <button id="loadButton" type="button">
+            Load Selected PDFs
+        </button>
+
+        <p id="status" class="status">
+            Loading...
+        </p>
+
     </section>
 
+    <!-- PDF EXTRACTION -->
     <section class="panel">
+
         <h3>Questionnaire Text</h3>
+
         <button id="extractQuestionnaire" type="button" disabled>
             Extract Questionnaire
         </button>
+
         <div id="questionnaireOutput" class="output">
             No questionnaire extracted yet.
         </div>
 
         <h3 class="label">Answer Key Text</h3>
+
         <button id="extractAnswerKey" type="button" disabled>
             Extract Answer Key
         </button>
+
         <div id="answerOutput" class="output">
             No answer key extracted yet.
         </div>
+
     </section>
 
 </div>
 
 <script type="module">
+
     import { supabase } from "../js/supabase.js";
 
     import * as pdfjsLib from
@@ -150,14 +187,29 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
 
+
+    // ELEMENTS
     const select = document.getElementById("uploadSelect");
+
     const status = document.getElementById("status");
 
     const loadButton = document.getElementById("loadButton");
+
     const questionnaireButton =
         document.getElementById("extractQuestionnaire");
+
     const answerButton =
         document.getElementById("extractAnswerKey");
+
+    const questionnaireOutput =
+        document.getElementById("questionnaireOutput");
+
+    const answerOutput =
+        document.getElementById("answerOutput");
+
+
+    // VARIABLES
+    let uploadRecords = [];
 
     let questionnairePath = "";
     let answerKeyPath = "";
@@ -165,13 +217,16 @@
     let questionnaireText = "";
     let answerKeyText = "";
 
-    let currentUpload = null;
 
+    // STATUS MESSAGE
     function showStatus(message) {
         status.textContent = message;
     }
 
+
+    // CHECK TEACHER OR DEVELOPER ACCESS
     async function checkAccess() {
+
         const { data: { user }, error } =
             await supabase.auth.getUser();
 
@@ -187,9 +242,18 @@
                 .eq("user_id", user.id)
                 .maybeSingle();
 
-        if (profileError || !profile ||
-            (profile.role !== "teacher" &&
-             profile.is_developer !== true)) {
+        if (profileError || !profile) {
+            window.location.replace("../index.html");
+            return null;
+        }
+
+        const isTeacher =
+            profile.role?.toLowerCase() === "teacher";
+
+        const isDeveloper =
+            profile.is_developer === true;
+
+        if (!isTeacher && !isDeveloper) {
             window.location.replace("../index.html");
             return null;
         }
@@ -197,78 +261,120 @@
         return user;
     }
 
+
+    // LOAD PENDING UPLOADS
     async function loadUploads() {
+
         const user = await checkAccess();
+
         if (!user) return;
 
         const { data, error } = await supabase
             .from("mock_test_uploads")
-            .select("id, title, questionnaire_path, answer_key_path, status")
+            .select(`
+                id,
+                title,
+                questionnaire_path,
+                answer_key_path,
+                status
+            `)
             .eq("teacher_id", user.id)
             .eq("status", "pending")
             .order("id", { ascending: false });
 
         if (error) {
-            showStatus("Could not load uploads: " + error.message);
+            select.innerHTML =
+                '<option value="">Unable to load uploads</option>';
+
+            showStatus(
+                "Could not load uploads: " + error.message
+            );
+
             return;
         }
+
+        uploadRecords = data || [];
 
         select.innerHTML = "";
 
-        if (!data || data.length === 0) {
+        if (uploadRecords.length === 0) {
+
             select.innerHTML =
                 '<option value="">No pending uploads found</option>';
+
             showStatus("No pending PDF uploads.");
+
             return;
         }
 
-        data.forEach(upload => {
+        uploadRecords.forEach(upload => {
+
             const option = document.createElement("option");
+
             option.value = upload.id;
+
             option.textContent = upload.title;
+
             select.appendChild(option);
+
         });
 
-        window.uploadRecords = data;
-        showStatus(data.length + " pending upload(s) found.");
+        showStatus(
+            uploadRecords.length + " pending upload(s) found."
+        );
     }
 
-    async function loadSelectedPDFs() {
+
+    // LOAD SELECTED PDF PATHS
+    function loadSelectedPDFs() {
+
         const uploadId = select.value;
 
-        const upload = window.uploadRecords?.find(
+        const upload = uploadRecords.find(
             item => String(item.id) === String(uploadId)
         );
 
         if (!upload) {
+
             showStatus("Please select an upload.");
+
             return;
         }
 
         questionnairePath = upload.questionnaire_path;
+
         answerKeyPath = upload.answer_key_path;
-        currentUpload = upload;
 
         questionnaireText = "";
+
         answerKeyText = "";
 
-        document.getElementById("questionnaireOutput").textContent =
+        questionnaireOutput.textContent =
             "Ready to extract questionnaire.";
-        document.getElementById("answerOutput").textContent =
+
+        answerOutput.textContent =
             "Ready to extract answer key.";
 
         questionnaireButton.disabled = false;
+
         answerButton.disabled = false;
 
-        showStatus("PDF files selected: " + upload.title);
+        showStatus(
+            "PDF files selected: " + upload.title
+        );
     }
 
+
+    // EXTRACT TEXT WHILE PRESERVING LINE BREAKS
     async function extractPDF(path) {
+
         const { data, error } = await supabase.storage
             .from("mock-test-pdfs")
             .download(path);
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
         const buffer = await data.arrayBuffer();
 
@@ -278,64 +384,181 @@
 
         let fullText = "";
 
-        for (let pageNumber = 1;
-             pageNumber <= pdf.numPages;
-             pageNumber++) {
+        for (
+            let pageNumber = 1;
+            pageNumber <= pdf.numPages;
+            pageNumber++
+        ) {
 
             const page = await pdf.getPage(pageNumber);
+
             const content = await page.getTextContent();
 
-            const pageText = content.items
-                .map(item => item.str)
-                .join(" ");
+            const lines = [];
+
+            content.items.forEach(item => {
+
+                if (!item.str || !item.str.trim()) {
+                    return;
+                }
+
+                const x = item.transform[4];
+
+                const y = item.transform[5];
+
+                // Find an existing line with a similar vertical position
+                let line = lines.find(existing =>
+                    Math.abs(existing.y - y) < 3
+                );
+
+                if (!line) {
+
+                    line = {
+                        y: y,
+                        items: []
+                    };
+
+                    lines.push(line);
+                }
+
+                line.items.push({
+                    x: x,
+                    text: item.str
+                });
+
+            });
+
+
+            // Arrange lines from top to bottom
+            lines.sort((a, b) => b.y - a.y);
+
+
+            // Arrange text from left to right
+            const pageText = lines.map(line => {
+
+                line.items.sort((a, b) => a.x - b.x);
+
+                return line.items
+                    .map(item => item.text.trim())
+                    .filter(Boolean)
+                    .join("    ");
+
+            }).join("\n");
+
 
             fullText +=
-                "\n\n--- PAGE " + pageNumber + " ---\n\n" +
+                "\n\n--- PAGE " +
+                pageNumber +
+                " ---\n\n" +
                 pageText;
+
         }
 
         return fullText.trim();
     }
 
-    loadButton.addEventListener("click", loadSelectedPDFs);
 
-    questionnaireButton.addEventListener("click", async () => {
+    // EXTRACT QUESTIONNAIRE
+    async function handleQuestionnaireExtraction() {
+
         questionnaireButton.disabled = true;
+
         showStatus("Extracting questionnaire...");
 
+        questionnaireOutput.textContent =
+            "Please wait while the PDF is being processed...";
+
         try {
-            questionnaireText = await extractPDF(questionnairePath);
 
-            document.getElementById("questionnaireOutput").textContent =
-                questionnaireText || "No selectable text found in this PDF.";
+            questionnaireText =
+                await extractPDF(questionnairePath);
 
-            showStatus("Questionnaire extraction complete.");
+            questionnaireOutput.textContent =
+                questionnaireText ||
+                "No selectable text found in this PDF.";
+
+            showStatus(
+                "Questionnaire extraction complete."
+            );
+
         } catch (error) {
-            showStatus("Questionnaire error: " + error.message);
-        } finally {
-            questionnaireButton.disabled = false;
-        }
-    });
 
-    answerButton.addEventListener("click", async () => {
+            questionnaireOutput.textContent =
+                "Unable to extract questionnaire.";
+
+            showStatus(
+                "Questionnaire error: " + error.message
+            );
+
+        } finally {
+
+            questionnaireButton.disabled = false;
+
+        }
+    }
+
+
+    // EXTRACT ANSWER KEY
+    async function handleAnswerKeyExtraction() {
+
         answerButton.disabled = true;
+
         showStatus("Extracting answer key...");
 
+        answerOutput.textContent =
+            "Please wait while the PDF is being processed...";
+
         try {
-            answerKeyText = await extractPDF(answerKeyPath);
 
-            document.getElementById("answerOutput").textContent =
-                answerKeyText || "No selectable text found in this PDF.";
+            answerKeyText =
+                await extractPDF(answerKeyPath);
 
-            showStatus("Answer key extraction complete.");
+            answerOutput.textContent =
+                answerKeyText ||
+                "No selectable text found in this PDF.";
+
+            showStatus(
+                "Answer key extraction complete."
+            );
+
         } catch (error) {
-            showStatus("Answer key error: " + error.message);
-        } finally {
-            answerButton.disabled = false;
-        }
-    });
 
+            answerOutput.textContent =
+                "Unable to extract answer key.";
+
+            showStatus(
+                "Answer key error: " + error.message
+            );
+
+        } finally {
+
+            answerButton.disabled = false;
+
+        }
+    }
+
+
+    // BUTTON EVENTS
+    loadButton.addEventListener(
+        "click",
+        loadSelectedPDFs
+    );
+
+    questionnaireButton.addEventListener(
+        "click",
+        handleQuestionnaireExtraction
+    );
+
+    answerButton.addEventListener(
+        "click",
+        handleAnswerKeyExtraction
+    );
+
+
+    // INITIALIZE PAGE
     await loadUploads();
+
 </script>
+
 </body>
 </html>
