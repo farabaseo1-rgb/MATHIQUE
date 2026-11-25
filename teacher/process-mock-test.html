@@ -32,6 +32,10 @@
             margin-bottom: 8px;
         }
 
+        h3 {
+            margin-bottom: 12px;
+        }
+
         .subtitle {
             margin-bottom: 25px;
             color: #718174;
@@ -72,16 +76,22 @@
             cursor: not-allowed;
         }
 
+        .secondary {
+            background: #718174;
+        }
+
         .output {
             white-space: pre-wrap;
             overflow-wrap: anywhere;
             background: #f4f6f0;
             padding: 18px;
             border-radius: 8px;
-            min-height: 120px;
+            min-height: 100px;
             margin-top: 12px;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.9;
+            max-height: 450px;
+            overflow-y: auto;
         }
 
         .status {
@@ -99,6 +109,60 @@
             margin-bottom: 20px;
             color: #294b38;
             text-decoration: none;
+        }
+
+        .question-card {
+            background: #f4f6f0;
+            border: 1px solid #dce4d9;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .question-card h4 {
+            margin-bottom: 12px;
+            color: #294b38;
+        }
+
+        .choice {
+            padding: 8px 12px;
+            margin: 6px 0;
+            background: white;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .correct {
+            border: 2px solid #56845e;
+            background: #edf7ed;
+        }
+
+        .answer {
+            margin-top: 12px;
+            font-weight: 600;
+            color: #294b38;
+        }
+
+        .warning {
+            color: #9b6424;
+            background: #fff4df;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .success {
+            color: #294b38;
+            background: #e8f3e8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none;
         }
 
         @media (max-width: 600px) {
@@ -128,7 +192,7 @@
     <h1>Process Mock Test</h1>
 
     <p class="subtitle">
-        Extract text from uploaded questionnaire and answer key PDFs.
+        Extract, organize, and review uploaded mock test PDFs.
     </p>
 
     <!-- PENDING UPLOADS -->
@@ -144,9 +208,7 @@
             Load Selected PDFs
         </button>
 
-        <p id="status" class="status">
-            Loading...
-        </p>
+        <p id="status" class="status">Loading...</p>
 
     </section>
 
@@ -175,6 +237,43 @@
 
     </section>
 
+    <!-- AUTOMATIC PARSER -->
+    <section class="panel">
+
+        <h3>Automatic Question Parser</h3>
+
+        <p class="subtitle">
+            Automatically separates questions, choices, and correct answers.
+        </p>
+
+        <button id="parseButton" type="button" disabled>
+            Parse Mock Test
+        </button>
+
+        <p id="parseStatus" class="status">
+            Extract both PDFs first before parsing.
+        </p>
+
+    </section>
+
+    <!-- TEACHER REVIEW -->
+    <section id="reviewSection" class="panel hidden">
+
+        <h3>Teacher Review</h3>
+
+        <p id="reviewSummary"></p>
+
+        <div id="reviewWarnings"></div>
+
+        <div id="reviewQuestions"></div>
+
+        <p class="warning">
+            Please check every question, choice, and correct answer
+            against the original PDFs before publishing.
+        </p>
+
+    </section>
+
 </div>
 
 <script type="module">
@@ -189,10 +288,9 @@
 
 
     // ELEMENTS
+
     const select = document.getElementById("uploadSelect");
-
     const status = document.getElementById("status");
-
     const loadButton = document.getElementById("loadButton");
 
     const questionnaireButton =
@@ -207,8 +305,27 @@
     const answerOutput =
         document.getElementById("answerOutput");
 
+    const parseButton =
+        document.getElementById("parseButton");
+
+    const parseStatus =
+        document.getElementById("parseStatus");
+
+    const reviewSection =
+        document.getElementById("reviewSection");
+
+    const reviewSummary =
+        document.getElementById("reviewSummary");
+
+    const reviewWarnings =
+        document.getElementById("reviewWarnings");
+
+    const reviewQuestions =
+        document.getElementById("reviewQuestions");
+
 
     // VARIABLES
+
     let uploadRecords = [];
 
     let questionnairePath = "";
@@ -217,18 +334,22 @@
     let questionnaireText = "";
     let answerKeyText = "";
 
+    let parsedQuestions = [];
 
-    // STATUS MESSAGE
+
     function showStatus(message) {
         status.textContent = message;
     }
 
 
     // CHECK TEACHER OR DEVELOPER ACCESS
+
     async function checkAccess() {
 
-        const { data: { user }, error } =
-            await supabase.auth.getUser();
+        const {
+            data: { user },
+            error
+        } = await supabase.auth.getUser();
 
         if (error || !user) {
             window.location.replace("../index.html");
@@ -263,6 +384,7 @@
 
 
     // LOAD PENDING UPLOADS
+
     async function loadUploads() {
 
         const user = await checkAccess();
@@ -283,6 +405,7 @@
             .order("id", { ascending: false });
 
         if (error) {
+
             select.innerHTML =
                 '<option value="">Unable to load uploads</option>';
 
@@ -312,7 +435,6 @@
             const option = document.createElement("option");
 
             option.value = upload.id;
-
             option.textContent = upload.title;
 
             select.appendChild(option);
@@ -326,6 +448,7 @@
 
 
     // LOAD SELECTED PDF PATHS
+
     function loadSelectedPDFs() {
 
         const uploadId = select.value;
@@ -342,12 +465,11 @@
         }
 
         questionnairePath = upload.questionnaire_path;
-
         answerKeyPath = upload.answer_key_path;
 
         questionnaireText = "";
-
         answerKeyText = "";
+        parsedQuestions = [];
 
         questionnaireOutput.textContent =
             "Ready to extract questionnaire.";
@@ -356,8 +478,13 @@
             "Ready to extract answer key.";
 
         questionnaireButton.disabled = false;
-
         answerButton.disabled = false;
+        parseButton.disabled = true;
+
+        reviewSection.classList.add("hidden");
+
+        parseStatus.textContent =
+            "Extract both PDFs first before parsing.";
 
         showStatus(
             "PDF files selected: " + upload.title
@@ -365,7 +492,8 @@
     }
 
 
-    // EXTRACT TEXT WHILE PRESERVING LINE BREAKS
+    // EXTRACT PDF TEXT WHILE PRESERVING LINE BREAKS
+
     async function extractPDF(path) {
 
         const { data, error } = await supabase.storage
@@ -403,10 +531,8 @@
                 }
 
                 const x = item.transform[4];
-
                 const y = item.transform[5];
 
-                // Find an existing line with a similar vertical position
                 let line = lines.find(existing =>
                     Math.abs(existing.y - y) < 3
                 );
@@ -428,12 +554,8 @@
 
             });
 
-
-            // Arrange lines from top to bottom
             lines.sort((a, b) => b.y - a.y);
 
-
-            // Arrange text from left to right
             const pageText = lines.map(line => {
 
                 line.items.sort((a, b) => a.x - b.x);
@@ -444,7 +566,6 @@
                     .join("    ");
 
             }).join("\n");
-
 
             fullText +=
                 "\n\n--- PAGE " +
@@ -459,6 +580,7 @@
 
 
     // EXTRACT QUESTIONNAIRE
+
     async function handleQuestionnaireExtraction() {
 
         questionnaireButton.disabled = true;
@@ -481,6 +603,8 @@
                 "Questionnaire extraction complete."
             );
 
+            updateParseButton();
+
         } catch (error) {
 
             questionnaireOutput.textContent =
@@ -499,6 +623,7 @@
 
 
     // EXTRACT ANSWER KEY
+
     async function handleAnswerKeyExtraction() {
 
         answerButton.disabled = true;
@@ -521,6 +646,8 @@
                 "Answer key extraction complete."
             );
 
+            updateParseButton();
+
         } catch (error) {
 
             answerOutput.textContent =
@@ -538,7 +665,378 @@
     }
 
 
+    // ENABLE PARSER WHEN BOTH PDFS ARE EXTRACTED
+
+    function updateParseButton() {
+
+        const ready =
+            questionnaireText.trim().length > 0 &&
+            answerKeyText.trim().length > 0;
+
+        parseButton.disabled = !ready;
+
+        if (ready) {
+            parseStatus.textContent =
+                "Both PDFs are ready. You can now parse the mock test.";
+        }
+    }
+
+
+    // CLEAN EXTRACTED TEXT
+
+    function cleanLine(line) {
+
+        return line
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+
+    // PARSE QUESTIONNAIRE
+
+    function parseQuestionnaire(text) {
+
+        const lines = text
+            .split(/\r?\n/)
+            .map(cleanLine)
+            .filter(Boolean);
+
+        const questions = [];
+
+        let currentQuestion = null;
+        let currentChoice = null;
+
+        function saveQuestion() {
+
+            if (currentQuestion) {
+
+                questions.push(currentQuestion);
+
+                currentQuestion = null;
+                currentChoice = null;
+
+            }
+        }
+
+        lines.forEach(line => {
+
+            // Ignore PDF page headers
+
+            if (/^---\s*PAGE\s+\d+\s*---$/i.test(line)) {
+                return;
+            }
+
+            // Ignore common document headings
+
+            if (
+                /^(MATHIQUE|SAMPLE MATHEMATICS MOCK TEST|INSTRUCTIONS|NAME:.*|SECTION:.*|DATE:.*)$/i.test(line)
+            ) {
+                return;
+            }
+
+            if (/^Instructions:/i.test(line)) {
+                return;
+            }
+
+            // Detect question number: 1. or 1)
+
+            const questionMatch =
+                line.match(/^(\d{1,3})\s*[.)]\s*(.*)$/);
+
+            if (questionMatch) {
+
+                saveQuestion();
+
+                currentQuestion = {
+                    number: Number(questionMatch[1]),
+                    text: questionMatch[2].trim(),
+                    choices: {},
+                    correctAnswer: null
+                };
+
+                return;
+            }
+
+            if (!currentQuestion) {
+                return;
+            }
+
+            // Detect choices: A. / B. / C. / D.
+
+            const choiceMatch =
+                line.match(/^([A-D])\s*[.)]\s*(.*)$/i);
+
+            if (choiceMatch) {
+
+                const letter = choiceMatch[1].toUpperCase();
+
+                currentQuestion.choices[letter] =
+                    choiceMatch[2].trim();
+
+                currentChoice = letter;
+
+                return;
+            }
+
+            // Continue a question or choice if text wraps
+
+            if (currentChoice) {
+
+                currentQuestion.choices[currentChoice] +=
+                    " " + line;
+
+            } else {
+
+                currentQuestion.text += " " + line;
+
+            }
+
+        });
+
+        saveQuestion();
+
+        return questions;
+    }
+
+
+    // PARSE ANSWER KEY
+
+    function parseAnswerKey(text) {
+
+        const answers = {};
+
+        const lines = text
+            .split(/\r?\n/)
+            .map(cleanLine)
+            .filter(Boolean);
+
+        lines.forEach(line => {
+
+            if (/^---\s*PAGE\s+\d+\s*---$/i.test(line)) {
+                return;
+            }
+
+            // Accept formats such as:
+            // 1. C
+            // 1) C
+            // 1 - C
+            // 1 C
+
+            const match = line.match(
+                /^(\d{1,3})\s*[.)-]?\s+([A-D])(?:\s|$)/i
+            );
+
+            if (match) {
+
+                answers[Number(match[1])] =
+                    match[2].toUpperCase();
+
+            }
+
+        });
+
+        return answers;
+    }
+
+
+    // AUTOMATIC PARSING
+
+    function handleParsing() {
+
+        if (!questionnaireText || !answerKeyText) {
+
+            parseStatus.textContent =
+                "Please extract both PDFs first.";
+
+            return;
+        }
+
+        parseButton.disabled = true;
+
+        parseStatus.textContent =
+            "Parsing questions and matching answers...";
+
+        reviewSection.classList.add("hidden");
+
+        try {
+
+            parsedQuestions =
+                parseQuestionnaire(questionnaireText);
+
+            const answerMap =
+                parseAnswerKey(answerKeyText);
+
+            parsedQuestions.forEach(question => {
+
+                question.correctAnswer =
+                    answerMap[question.number] || null;
+
+            });
+
+            if (parsedQuestions.length === 0) {
+
+                parseStatus.textContent =
+                    "No questions were detected. Please check the PDF format.";
+
+                return;
+            }
+
+            displayReview();
+
+            parseStatus.textContent =
+                "Parsing complete! Please review the questions below.";
+
+        } catch (error) {
+
+            parseStatus.textContent =
+                "Parsing error: " + error.message;
+
+        } finally {
+
+            parseButton.disabled = false;
+
+        }
+    }
+
+
+    // DISPLAY TEACHER REVIEW
+
+    function displayReview() {
+
+        reviewSection.classList.remove("hidden");
+
+        reviewQuestions.innerHTML = "";
+        reviewWarnings.innerHTML = "";
+
+        const missingAnswers = parsedQuestions.filter(
+            question => !question.correctAnswer
+        );
+
+        const incompleteQuestions = parsedQuestions.filter(
+            question => {
+
+                const hasText =
+                    question.text.trim().length > 0;
+
+                const hasAllChoices =
+                    ["A", "B", "C", "D"].every(letter =>
+                        question.choices[letter] &&
+                        question.choices[letter].trim().length > 0
+                    );
+
+                return !hasText || !hasAllChoices;
+
+            }
+        );
+
+        reviewSummary.textContent =
+            "Questions detected: " + parsedQuestions.length +
+            " | Answers matched: " +
+            (parsedQuestions.length - missingAnswers.length) +
+            " | Missing answers: " + missingAnswers.length;
+
+        if (missingAnswers.length > 0) {
+
+            const warning = document.createElement("div");
+
+            warning.className = "warning";
+
+            warning.textContent =
+                "Missing answer key entries for question(s): " +
+                missingAnswers.map(q => q.number).join(", ");
+
+            reviewWarnings.appendChild(warning);
+
+        }
+
+        if (incompleteQuestions.length > 0) {
+
+            const warning = document.createElement("div");
+
+            warning.className = "warning";
+
+            warning.textContent =
+                "Please check incomplete question(s): " +
+                incompleteQuestions.map(q => q.number).join(", ");
+
+            reviewWarnings.appendChild(warning);
+
+        }
+
+        if (
+            missingAnswers.length === 0 &&
+            incompleteQuestions.length === 0
+        ) {
+
+            const success = document.createElement("div");
+
+            success.className = "success";
+
+            success.textContent =
+                "All detected questions have four choices and a matched answer. Please still verify them against the original PDFs.";
+
+            reviewWarnings.appendChild(success);
+
+        }
+
+        parsedQuestions.forEach(question => {
+
+            const card = document.createElement("div");
+
+            card.className = "question-card";
+
+            const heading = document.createElement("h4");
+
+            heading.textContent =
+                "Question " + question.number;
+
+            card.appendChild(heading);
+
+            const questionText = document.createElement("p");
+
+            questionText.textContent =
+                question.text || "Missing question text";
+
+            card.appendChild(questionText);
+
+            ["A", "B", "C", "D"].forEach(letter => {
+
+                const choice = document.createElement("div");
+
+                choice.className = "choice";
+
+                if (question.correctAnswer === letter) {
+                    choice.classList.add("correct");
+                }
+
+                choice.textContent =
+                    letter + ". " +
+                    (question.choices[letter] || "Missing choice");
+
+                card.appendChild(choice);
+
+            });
+
+            const answer = document.createElement("p");
+
+            answer.className = "answer";
+
+            answer.textContent =
+                question.correctAnswer
+                    ? "Correct Answer: " + question.correctAnswer
+                    : "Correct Answer: Not found in answer key";
+
+            card.appendChild(answer);
+
+            reviewQuestions.appendChild(card);
+
+        });
+
+    }
+
+
     // BUTTON EVENTS
+
     loadButton.addEventListener(
         "click",
         loadSelectedPDFs
@@ -554,8 +1052,14 @@
         handleAnswerKeyExtraction
     );
 
+    parseButton.addEventListener(
+        "click",
+        handleParsing
+    );
+
 
     // INITIALIZE PAGE
+
     await loadUploads();
 
 </script>
