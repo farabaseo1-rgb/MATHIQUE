@@ -236,5 +236,41 @@
         });
     </script>
 
+<script type="module">
+    import { supabase } from "../js/supabase.js";
+
+    async function verifyDeveloperAccess() {
+        try {
+            const { data: { user }, error: authError } =
+                await supabase.auth.getUser();
+
+            if (authError || !user) {
+                window.location.replace("../index.html");
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("is_developer")
+                .eq("user_id", user.id)
+                .eq("is_developer", true)
+                .maybeSingle();
+
+            if (error || !data) {
+                window.location.replace("../index.html");
+                return;
+            }
+
+            console.log("Developer access granted.");
+
+        } catch (error) {
+            console.error("Access verification failed:", error);
+            window.location.replace("../index.html");
+        }
+    }
+
+    verifyDeveloperAccess();
+</script>
+
 </body>
 </html>
