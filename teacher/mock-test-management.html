@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Mock Test Management</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #e9efe8;
+            color: #294536;
+            padding: 30px 16px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 13px;
+            opacity: .9;
+        }
+
+        .section-title {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        #testList {
+            display: grid;
+            gap: 15px;
+        }
+
+        .test-card {
+            background: #fffef8;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+        }
+
+        .test-card h3 {
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .test-info {
+            font-size: 13px;
+            color: #64766a;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .draft {
+            background: #fff0cf;
+            color: #8a5b12;
+        }
+
+        .published {
+            background: #dcefe0;
+            color: #28613b;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 11px 18px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .publish-btn {
+            background: #416b4e;
+            color: white;
+        }
+
+        .publish-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .refresh-btn {
+            background: #dce8dc;
+            color: #294b38;
+            margin-bottom: 20px;
+        }
+
+        #message {
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .empty {
+            background: #fffef8;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: #64766a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>MATHIQUE</h1>
+        <p>Teacher Mock Test Management</p>
+    </header>
+
+    <h2 class="section-title">My Mock Tests</h2>
+
+    <button class="refresh-btn" id="refreshButton">
+        Refresh Tests
+    </button>
+
+    <p id="message">Loading mock tests...</p>
+
+    <div id="testList"></div>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const testList = document.getElementById('testList');
+    const message = document.getElementById('message');
+    const refreshButton = document.getElementById('refreshButton');
+
+    let currentUser = null;
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    async function checkAccess() {
+        const { data: sessionData, error: sessionError } =
+            await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        currentUser = sessionData.session?.user;
+
+        if (!currentUser) {
+            message.textContent = 'Please log in first.';
+            return false;
+        }
+
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('role, is_developer')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (error) throw error;
+
+        if (profile.role !== 'teacher' && !profile.is_developer) {
+            message.textContent = 'Access denied. Teacher access only.';
+            return false;
+        }
+
+        return true;
+    }
+
+    async function loadTests() {
+        testList.innerHTML = '';
+        message.textContent = 'Loading mock tests...';
+
+        try {
+            const allowed = await checkAccess();
+
+            if (!allowed) return;
+
+            const { data: tests, error } = await supabase
+                .from('pdf_mock_tests')
+                .select(`
+                    id,
+                    title,
+                    status,
+                    created_at,
+                    pdf_mock_test_questions(count)
+                `)
+                .eq('teacher_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            if (!tests || tests.length === 0) {
+                message.textContent = '';
+                testList.innerHTML = `
+                    <div class="empty">
+                        No saved mock tests yet.
+                    </div>
+                `;
+                return;
+            }
+
+            message.textContent = '';
+
+            tests.forEach(test => {
+                const questionCount =
+                    test.pdf_mock_test_questions?.[0]?.count ?? 0;
+
+                const isPublished = test.status === 'published';
+
+                const card = document.createElement('div');
+                card.className = 'test-card';
+
+                card.innerHTML = `
+                    <span class="status ${isPublished ? 'published' : 'draft'}">
+                        ${isPublished ? 'PUBLISHED' : 'DRAFT'}
+                    </span>
+
+                    <h3>${escapeHTML(test.title)}</h3>
+
+                    <p class="test-info">
+                        Questions: ${questionCount}<br>
+                        Created: ${new Date(test.created_at).toLocaleDateString()}
+                    </p>
+
+                    ${
+                        isPublished
+                        ? '<p> This test is now published for students.</p>'
+                        : `<button class="publish-btn" data-id="${escapeHTML(test.id)}">
+                            Publish Test
+                           </button>`
+                    }
+                `;
+
+                testList.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error(error);
+            message.textContent =
+                'Unable to load mock tests: ' + error.message;
+        }
+    }
+
+    testList.addEventListener('click', async event => {
+        const button = event.target.closest('.publish-btn');
+
+        if (!button) return;
+
+        const testId = button.dataset.id;
+
+        if (!confirm('Are you sure you want to publish this mock test?')) {
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = 'Publishing...';
+
+        try {
+            const { error } = await supabase
+                .from('pdf_mock_tests')
+                .update({ status: 'published' })
+                .eq('id', testId)
+                .eq('teacher_id', currentUser.id);
+
+            if (error) throw error;
+
+            alert('Mock test published successfully!');
+            await loadTests();
+
+        } catch (error) {
+            console.error(error);
+            alert('Publishing failed: ' + error.message);
+            button.disabled = false;
+            button.textContent = 'Publish Test';
+        }
+    });
+
+    refreshButton.addEventListener('click', loadTests);
+
+    loadTests();
+</script>
+
+</body>
+</html>
