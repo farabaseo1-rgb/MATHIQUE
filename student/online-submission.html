@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Online Submission</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #e5ecdf;
+            line-height: 1.7;
+        }
+
+        .module-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .module-card {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 14px;
+            padding: 25px;
+        }
+
+        .module-card h2 {
+            color: #294b38;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #718675;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .upload-box {
+            background: #edf1e8;
+            border: 2px dashed #a9bba9;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .upload-box p {
+            font-size: 13px;
+            color: #68796b;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            max-width: 420px;
+            margin: 12px auto;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+            justify-content: center;
+        }
+
+        .preview img {
+            width: 105px;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 9px;
+            border: 2px solid #dce5d8;
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            margin-top: 18px;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: #294b38;
+            color: #fffef8;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #3c654b;
+        }
+
+        .submit-button:disabled {
+            background: #9aaa9b;
+            cursor: not-allowed;
+        }
+
+        .status-box {
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 9px;
+            background: #edf1e8;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .status-submitted {
+            color: #315d40;
+            font-weight: 700;
+        }
+
+        .status-checked {
+            color: #245c83;
+            font-weight: 700;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            color: #526b58;
+            white-space: pre-wrap;
+        }
+
+        .file-links {
+            margin-top: 12px;
+        }
+
+        .file-links a {
+            display: inline-block;
+            margin: 5px 8px 0 0;
+            color: #294b38;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .notice {
+            font-size: 12px;
+            color: #718675;
+            margin-top: 15px;
+            line-height: 1.7;
+        }
+
+        .message {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            color: #68796b;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" id="backLink" href="dashboard.html">
+        ← Back to Dashboard
+    </a>
+
+    <div class="header">
+        <h1>Online Submission</h1>
+        <p>
+            Upload pictures of your completed activities for each module.
+            Your teacher will review your submitted proof and provide feedback.
+        </p>
+    </div>
+
+    <div class="module-list" id="moduleList">
+        <div class="message">Loading modules...</div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const moduleList = document.getElementById('moduleList');
+    const params = new URLSearchParams(window.location.search);
+    const teacherSlug = (params.get('teacher') || '').toLowerCase();
+
+    const BUCKET = 'module-submissions';
+    const MAX_FILES = 5;
+    const MAX_SIZE = 2 * 1024 * 1024;
+
+    let currentUser = null;
+
+    document.getElementById('backLink').href =
+        `teacher.html?teacher=${encodeURIComponent(teacherSlug)}`;
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    function showMessage(message) {
+        moduleList.innerHTML = `
+            <div class="message">${escapeHTML(message)}</div>
+        `;
+    }
+
+    async function getSelectedTeacher() {
+        const { data: teachers, error } = await supabase
+            .from('profiles')
+            .select('user_id, full_name, email, role')
+            .eq('role', 'teacher');
+
+        if (error) throw error;
+
+        return (teachers || []).find(item => {
+            const name = (item.full_name || '').toLowerCase().trim();
+            const email = (item.email || '').toLowerCase().trim();
+
+            return name.startsWith(teacherSlug) ||
+                   email.startsWith(teacherSlug);
+        }) || null;
+    }
+
+    async function loadModules() {
+        try {
+            if (!teacherSlug) {
+                showMessage('No teacher selected. Please select a teacher first.');
+                return;
+            }
+
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            currentUser = sessionData.session?.user;
+
+            if (!currentUser) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', currentUser.id)
+                .single();
+
+            if (profileError) throw profileError;
+
+            if (profile.role !== 'student') {
+                showMessage('This page is for student accounts only.');
+                return;
+            }
+
+            const teacher = await getSelectedTeacher();
+
+            if (!teacher) {
+                showMessage('The selected teacher account could not be found.');
+                return;
+            }
+
+            const { data: modules, error: modulesError } = await supabase
+                .from('modules')
+                .select('id, title, week_number, description')
+                .eq('teacher_id', teacher.user_id)
+                .eq('is_published', true)
+                .order('week_number', { ascending: true });
+
+            if (modulesError) throw modulesError;
+
+            await displayModules(modules || []);
+
+        } catch (error) {
+            console.error('Online Submission error:', error);
+            showMessage('Unable to load modules: ' + error.message);
+        }
+    }
+
+    async function displayModules(modules) {
+        moduleList.innerHTML = '';
+
+        if (modules.length === 0) {
+            showMessage('No published modules are available from this teacher yet.');
+            return;
+        }
+
+        for (const module of modules) {
+            const { data: submission, error } = await supabase
+                .from('submissions')
+                .select('id, file_paths, status, submitted_at, checked_at, feedback')
+                .eq('module_id', module.id)
+                .eq('student_id', currentUser.id)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            const card = document.createElement('section');
+            card.className = 'module-card';
+
+            card.innerHTML = `
+                <h2>Week ${escapeHTML(module.week_number)}: ${escapeHTML(module.title)}</h2>
+
+                <p class="description">
+                    ${escapeHTML(module.description || 'Upload your completed activities for this module.')}
+                </p>
+
+                ${
+                    submission
+                    ? `
+                        <div class="status-box">
+                            <div class="${submission.status === 'checked' ? 'status-checked' : 'status-submitted'}">
+                                Status: ${submission.status === 'checked' ? 'Checked' : 'Submitted'}
+                            </div>
+
+                            <p>
+                                Submitted:
+                                ${new Date(submission.submitted_at).toLocaleString()}
+                            </p>
+
+                            ${
+                                submission.checked_at
+                                ? `<p>Checked: ${new Date(submission.checked_at).toLocaleString()}</p>`
+                                : ''
+                            }
+
+                            ${
+                                submission.feedback
+                                ? `<div class="feedback"><strong>Teacher Feedback:</strong><br>${escapeHTML(submission.feedback)}</div>`
+                                : '<p class="feedback">No teacher feedback yet.</p>'
+                            }
+
+                            <div class="file-links">
+                                Loading submitted pictures...
+                            </div>
+                        </div>
+
+                        ${
+                            submission.status === 'submitted'
+                            ? `
+                                <div class="upload-box" style="margin-top:18px;">
+                                    <p>
+                                        <strong>RESUBMIT MODULE ${escapeHTML(module.week_number)} ACTIVITIES</strong>
+                                        <br>
+                                        You may replace your pictures until your teacher checks your submission.
+                                        <br>
+                                        JPG, JPEG, or PNG only. Maximum 2 MB per picture.
+                                    </p>
+
+                                    <input type="file" class="file-input"
+                                           accept="image/jpeg,image/png" multiple>
+
+                                    <div class="preview"></div>
+
+                                    <button class="submit-button" type="button">
+                                        Resubmit Activities
+                                    </button>
+                                </div>
+                            `
+                            : `
+                                <p class="notice">
+                                    This submission has already been checked.
+                                    Resubmission is no longer available.
+                                </p>
+                            `
+                        }
+                    `
+                    : `
+                        <div class="upload-box">
+                            <p>
+                                <strong>UPLOAD MODULE ${escapeHTML(module.week_number)} ACTIVITIES</strong>
+                                <br>
+                                Select up to 5 pictures of your completed activities.
+                                <br>
+                                JPG, JPEG, or PNG only. Maximum 2 MB per picture.
+                            </p>
+
+                            <input type="file" class="file-input"
+                                   accept="image/jpeg,image/png" multiple>
+
+                            <div class="preview"></div>
+
+                            <button class="submit-button" type="button">
+                                Submit Activities
+                            </button>
+
+                            <p class="notice">
+                                Make sure your pictures are clear and readable.
+                                Submit your actual paper activities to your teacher
+                                for checking as well.
+                            </p>
+                        </div>
+                    `
+                }
+            `;
+
+            moduleList.appendChild(card);
+
+            if (submission) {
+                await displaySubmittedFiles(
+                    submission.file_paths || [],
+                    card.querySelector('.file-links')
+                );
+            }
+
+            if (!submission || submission.status === 'submitted') {
+                setupUpload(card, module, submission);
+            }
+        }
+    }
+
+    async function displaySubmittedFiles(paths, container) {
+        if (!container) return;
+
+        if (!paths.length) {
+            container.textContent = 'No picture files found.';
+            return;
+        }
+
+        container.innerHTML = '<strong>Submitted pictures:</strong><br>';
+
+        for (let i = 0; i < paths.length; i++) {
+            const { data, error } = await supabase.storage
+                .from(BUCKET)
+                .createSignedUrl(paths[i], 3600);
+
+            if (error) {
+                console.error(error);
+                continue;
+            }
+
+            const link = document.createElement('a');
+            link.href = data.signedUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = `Picture ${i + 1}`;
+
+            container.appendChild(link);
+        }
+    }
+
+    function setupUpload(card, module, existingSubmission) {
+        const input = card.querySelector('.file-input');
+        const preview = card.querySelector('.preview');
+        const button = card.querySelector('.submit-button');
+
+        input.addEventListener('change', () => {
+            preview.innerHTML = '';
+
+            const files = Array.from(input.files || []);
+
+            if (files.length > MAX_FILES) {
+                alert('You can upload a maximum of 5 pictures per module.');
+                input.value = '';
+                return;
+            }
+
+            for (const file of files) {
+                if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                    alert('Only JPG, JPEG, and PNG pictures are allowed.');
+                    input.value = '';
+                    preview.innerHTML = '';
+                    return;
+                }
+
+                if (file.size > MAX_SIZE) {
+                    alert(`${file.name} is larger than 2 MB.`);
+                    input.value = '';
+                    preview.innerHTML = '';
+                    return;
+                }
+            }
+
+            files.forEach(file => {
+                const image = document.createElement('img');
+                const imageURL = URL.createObjectURL(file);
+
+                image.src = imageURL;
+                image.alt = 'Selected activity picture';
+
+                image.onload = () => URL.revokeObjectURL(imageURL);
+
+                preview.appendChild(image);
+            });
+        });
+
+        button.addEventListener('click', async () => {
+            const files = Array.from(input.files || []);
+
+            if (files.length === 0) {
+                alert('Please select at least one picture.');
+                return;
+            }
+
+            if (files.length > MAX_FILES) {
+                alert('You can upload a maximum of 5 pictures.');
+                return;
+            }
+
+            for (const file of files) {
+                if (!['image/jpeg', 'image/png'].includes(file.type) ||
+                    file.size > MAX_SIZE) {
+                    alert('JPG or PNG only, maximum 2 MB per picture.');
+                    return;
+                }
+            }
+
+            const message = existingSubmission
+                ? 'Replace your previous pictures with these new pictures?'
+                : 'Are you sure you want to submit these pictures?';
+
+            if (!confirm(message)) return;
+
+            button.disabled = true;
+            button.textContent = existingSubmission
+                ? 'Resubmitting...'
+                : 'Uploading...';
+
+            const newPaths = [];
+
+            try {
+                for (const file of files) {
+                    const extension = file.type === 'image/png' ? 'png' : 'jpg';
+
+                    const fileName =
+                        `${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+                    const filePath =
+                        `${currentUser.id}/${module.id}/${fileName}`;
+
+                    const { error: uploadError } = await supabase.storage
+                        .from(BUCKET)
+                        .upload(filePath, file, {
+                            contentType: file.type,
+                            upsert: false
+                        });
+
+                    if (uploadError) throw uploadError;
+
+                    newPaths.push(filePath);
+                }
+
+                let saveError = null;
+
+                if (existingSubmission) {
+                    const { data, error } = await supabase
+                        .from('submissions')
+                        .update({
+                            file_paths: newPaths,
+                            status: 'submitted',
+                            submitted_at: new Date().toISOString()
+                        })
+                        .eq('id', existingSubmission.id)
+                        .eq('status', 'submitted')
+                        .select('id')
+                        .maybeSingle();
+
+                    saveError = error;
+
+                    if (!saveError && !data) {
+                        saveError = new Error(
+                            'Your submission may already have been checked. Please refresh the page.'
+                        );
+                    }
+                } else {
+                    const { error } = await supabase
+                        .from('submissions')
+                        .insert({
+                            module_id: module.id,
+                            student_id: currentUser.id,
+                            file_paths: newPaths,
+                            status: 'submitted'
+                        });
+
+                    saveError = error;
+                }
+
+                if (saveError) throw saveError;
+
+                // The database now points to the new files.
+                // Remove the previous files only after the save succeeds.
+                if (existingSubmission &&
+                    existingSubmission.file_paths?.length) {
+
+                    const { error: deleteError } = await supabase.storage
+                        .from(BUCKET)
+                        .remove(existingSubmission.file_paths);
+
+                    if (deleteError) {
+                        console.error(
+                            'Old files could not be removed:',
+                            deleteError
+                        );
+                    }
+                }
+
+                alert(
+                    existingSubmission
+                    ? 'Your pictures have been successfully resubmitted!'
+                    : 'Your activities have been successfully submitted!'
+                );
+
+                await loadModules();
+
+            } catch (error) {
+                console.error('Submission error:', error);
+
+                // Clean up only files uploaded during this attempt.
+                if (newPaths.length > 0) {
+                    const { error: cleanupError } = await supabase.storage
+                        .from(BUCKET)
+                        .remove(newPaths);
+
+                    if (cleanupError) {
+                        console.error('Upload cleanup error:', cleanupError);
+                    }
+                }
+
+                alert('Submission failed: ' + error.message);
+
+                button.disabled = false;
+                button.textContent = existingSubmission
+                    ? 'Resubmit Activities'
+                    : 'Submit Activities';
+            }
+        });
+    }
+
+    loadModules();
+</script>
+
+</body>
+</html>

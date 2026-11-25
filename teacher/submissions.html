@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Student Submissions</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #294b38;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #294b38;
+            color: #fffef8;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #e5ecdf;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        select, button, textarea {
+            font-family: inherit;
+        }
+
+        select {
+            padding: 10px 14px;
+            border: 1px solid #cbd8c8;
+            border-radius: 8px;
+            background: #fffef8;
+            color: #294b38;
+        }
+
+        .submission-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .submission-card {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 14px;
+            padding: 25px;
+        }
+
+        .submission-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .submission-heading h2 {
+            color: #294b38;
+            font-size: 19px;
+            margin-bottom: 5px;
+        }
+
+        .student-info {
+            color: #718675;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .submitted {
+            background: #f4ecd9;
+            color: #856b30;
+        }
+
+        .checked {
+            background: #e1eee0;
+            color: #356443;
+        }
+
+        .picture-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 18px 0;
+        }
+
+        .picture-item {
+            width: 145px;
+        }
+
+        .picture-item img {
+            width: 145px;
+            height: 145px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #dce5d8;
+        }
+
+        .picture-item a {
+            display: block;
+            margin-top: 6px;
+            text-align: center;
+            color: #294b38;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .feedback-box {
+            background: #edf1e8;
+            padding: 15px;
+            border-radius: 9px;
+            margin-top: 18px;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .feedback-box strong {
+            color: #294b38;
+        }
+
+        .action-button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            background: #294b38;
+            color: #fffef8;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .action-button:hover {
+            background: #3c654b;
+        }
+
+        .action-button:disabled {
+            background: #9aaa9b;
+            cursor: not-allowed;
+        }
+
+        .message {
+            background: #fffef8;
+            border: 1px solid #dce5d8;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            color: #718675;
+            line-height: 1.7;
+        }
+
+        .date-info {
+            color: #718675;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .submission-card {
+                padding: 18px;
+            }
+
+            .picture-item,
+            .picture-item img {
+                width: 115px;
+            }
+
+            .picture-item img {
+                height: 115px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="back-link" href="dashboard.html">
+        ← Back to Teacher Dashboard
+    </a>
+
+    <div class="header">
+        <h1>Student Submissions</h1>
+        <p>
+            Review the pictures submitted by your students.
+            Provide feedback and mark submissions as checked after reviewing
+            the students' physical activity papers.
+        </p>
+    </div>
+
+    <div class="toolbar">
+        <h2>Submitted Activities</h2>
+
+        <select id="statusFilter">
+            <option value="all">All Submissions</option>
+            <option value="submitted">Submitted</option>
+            <option value="checked">Checked</option>
+        </select>
+    </div>
+
+    <div class="submission-list" id="submissionList">
+        <div class="message">Loading student submissions...</div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const submissionList = document.getElementById('submissionList');
+    const statusFilter = document.getElementById('statusFilter');
+
+    const BUCKET = 'module-submissions';
+
+    let currentUser = null;
+    let submissions = [];
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    function formatDate(value) {
+        if (!value) return 'Not available';
+
+        return new Date(value).toLocaleString();
+    }
+
+    async function initialize() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            currentUser = sessionData.session?.user;
+
+            if (!currentUser) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', currentUser.id)
+                .single();
+
+            if (profileError) throw profileError;
+
+            if (profile.role !== 'teacher') {
+                alert('Teacher access only.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            await loadSubmissions();
+
+        } catch (error) {
+            console.error(error);
+            showMessage('Unable to open submissions: ' + error.message);
+        }
+    }
+
+    function showMessage(message) {
+        submissionList.innerHTML = `
+            <div class="message">${escapeHTML(message)}</div>
+        `;
+    }
+
+    async function loadSubmissions() {
+        submissionList.innerHTML =
+            '<div class="message">Loading submissions...</div>';
+
+        const { data, error } = await supabase
+            .from('submissions')
+            .select(`
+                id,
+                module_id,
+                student_id,
+                file_paths,
+                status,
+                submitted_at,
+                checked_at,
+                feedback,
+                modules!inner (
+                    id,
+                    title,
+                    week_number,
+                    teacher_id
+                )
+            `)
+            .eq('modules.teacher_id', currentUser.id)
+            .order('submitted_at', { ascending: false });
+
+        if (error) throw error;
+
+        submissions = data || [];
+
+        await loadStudentProfiles();
+        displaySubmissions();
+    }
+
+    async function loadStudentProfiles() {
+        const studentIds = [
+            ...new Set(submissions.map(item => item.student_id))
+        ];
+
+        submissions.forEach(item => {
+            item.studentProfile = null;
+        });
+
+        if (studentIds.length === 0) return;
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('user_id, full_name, email')
+            .in('user_id', studentIds);
+
+        if (error) {
+            console.warn('Student profiles could not be loaded:', error.message);
+            return;
+        }
+
+        const profileMap = new Map(
+            (data || []).map(profile => [profile.user_id, profile])
+        );
+
+        submissions.forEach(item => {
+            item.studentProfile = profileMap.get(item.student_id) || null;
+        });
+    }
+
+    async function displaySubmissions() {
+        const selectedStatus = statusFilter.value;
+
+        const filtered = submissions.filter(item =>
+            selectedStatus === 'all' || item.status === selectedStatus
+        );
+
+        submissionList.innerHTML = '';
+
+        if (filtered.length === 0) {
+            showMessage('No submissions found for this filter.');
+            return;
+        }
+
+        for (const item of filtered) {
+            const module = item.modules;
+            const student = item.studentProfile;
+
+            const studentName =
+                student?.full_name ||
+                student?.email ||
+                'Student';
+
+            const card = document.createElement('article');
+            card.className = 'submission-card';
+
+            card.innerHTML = `
+                <div class="submission-heading">
+                    <div>
+                        <h2>
+                            Week ${escapeHTML(module.week_number)}:
+                            ${escapeHTML(module.title)}
+                        </h2>
+
+                        <div class="student-info">
+                            <strong>Student:</strong>
+                            ${escapeHTML(studentName)}
+                            <br>
+                            <strong>Email:</strong>
+                            ${escapeHTML(student?.email || 'Not available')}
+                        </div>
+                    </div>
+
+                    <span class="status ${item.status === 'checked' ? 'checked' : 'submitted'}">
+                        ${item.status === 'checked' ? 'Checked' : 'Submitted'}
+                    </span>
+                </div>
+
+                <p class="date-info">
+                    Submitted: ${escapeHTML(formatDate(item.submitted_at))}
+                </p>
+
+                <div class="picture-list">
+                    Loading pictures...
+                </div>
+
+                ${
+                    item.feedback
+                    ? `
+                        <div class="feedback-box">
+                            <strong>Teacher Feedback:</strong>
+                            <br>
+                            ${escapeHTML(item.feedback)}
+                        </div>
+                    `
+                    : ''
+                }
+
+                ${
+                    item.checked_at
+                    ? `<p class="date-info">Checked: ${escapeHTML(formatDate(item.checked_at))}</p>`
+                    : ''
+                }
+
+                ${
+                    item.status === 'submitted'
+                    ? `
+                        <button class="action-button" type="button">
+                            Review and Mark as Checked
+                        </button>
+                    `
+                    : ''
+                }
+            `;
+
+            submissionList.appendChild(card);
+
+            await displayPictures(
+                item.file_paths || [],
+                card.querySelector('.picture-list')
+            );
+
+            const button = card.querySelector('.action-button');
+
+            if (button) {
+                button.addEventListener('click', () => markAsChecked(item, button));
+            }
+        }
+    }
+
+    async function displayPictures(paths, container) {
+        container.innerHTML = '';
+
+        if (!paths.length) {
+            container.textContent = 'No pictures attached.';
+            return;
+        }
+
+        for (let index = 0; index < paths.length; index++) {
+            const { data, error } = await supabase.storage
+                .from(BUCKET)
+                .createSignedUrl(paths[index], 3600);
+
+            if (error) {
+                console.error('Picture access error:', error);
+                continue;
+            }
+
+            const item = document.createElement('div');
+            item.className = 'picture-item';
+
+            const image = document.createElement('img');
+            image.src = data.signedUrl;
+            image.alt = `Student activity picture ${index + 1}`;
+
+            const link = document.createElement('a');
+            link.href = data.signedUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = `View Picture ${index + 1}`;
+
+            item.appendChild(image);
+            item.appendChild(link);
+            container.appendChild(item);
+        }
+
+        if (!container.children.length) {
+            container.textContent =
+                'Unable to display pictures. Please check Storage permissions.';
+        }
+    }
+
+    async function markAsChecked(item, button) {
+        const feedback = prompt(
+            'Enter feedback for the student (optional):',
+            item.feedback || ''
+        );
+
+        if (feedback === null) return;
+
+        const confirmed = confirm(
+            'Mark this submission as CHECKED? The student will no longer be able to resubmit.'
+        );
+
+        if (!confirmed) return;
+
+        button.disabled = true;
+        button.textContent = 'Saving...';
+
+        try {
+            const { data, error } = await supabase
+                .from('submissions')
+                .update({
+                    status: 'checked',
+                    feedback: feedback.trim() || null,
+                    checked_at: new Date().toISOString()
+                })
+                .eq('id', item.id)
+                .eq('status', 'submitted')
+                .select('id')
+                .maybeSingle();
+
+            if (error) throw error;
+
+            if (!data) {
+                throw new Error(
+                    'The submission was already updated. Please refresh the page.'
+                );
+            }
+
+            alert('Submission marked as checked successfully!');
+
+            await loadSubmissions();
+
+        } catch (error) {
+            console.error(error);
+            alert('Unable to update submission: ' + error.message);
+
+            button.disabled = false;
+            button.textContent = 'Review and Mark as Checked';
+        }
+    }
+
+    statusFilter.addEventListener('change', displaySubmissions);
+
+    initialize();
+</script>
+
+</body>
+</html>
