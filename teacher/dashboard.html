@@ -129,9 +129,9 @@
     <main class="main-content">
 
         <div class="top-header">
-    <h1>Teacher Dashboard</h1>
-    <p>Welcome to MATHIQUE!</p>
-</div>
+            <h1>Teacher Dashboard</h1>
+            <p>Welcome to MATHIQUE!</p>
+        </div>
 
         <section class="welcome-section">
             <h1>Welcome, Teacher!</h1>
@@ -236,41 +236,49 @@
         });
     </script>
 
-<script type="module">
-    import { supabase } from "../js/supabase.js";
+    <!-- DASHBOARD ACCESS VERIFICATION -->
+    <script type="module">
+        import { supabase } from "../js/supabase.js";
 
-    async function verifyDeveloperAccess() {
-        try {
-            const { data: { user }, error: authError } =
-                await supabase.auth.getUser();
+        async function verifyDashboardAccess() {
+            try {
+                const { data: { user }, error: authError } =
+                    await supabase.auth.getUser();
 
-            if (authError || !user) {
+                if (authError || !user) {
+                    window.location.replace("../index.html");
+                    return;
+                }
+
+                const { data: profile, error: profileError } = await supabase
+                    .from("profiles")
+                    .select("role, is_developer")
+                    .eq("user_id", user.id)
+                    .maybeSingle();
+
+                if (profileError || !profile) {
+                    window.location.replace("../index.html");
+                    return;
+                }
+
+                const isDeveloper = profile.is_developer === true;
+                const isTeacher = profile.role?.toLowerCase() === "teacher";
+
+                if (!isDeveloper && !isTeacher) {
+                    window.location.replace("../index.html");
+                    return;
+                }
+
+                console.log("Dashboard access granted.");
+
+            } catch (error) {
+                console.error("Access verification failed:", error);
                 window.location.replace("../index.html");
-                return;
             }
-
-            const { data, error } = await supabase
-                .from("profiles")
-                .select("is_developer")
-                .eq("user_id", user.id)
-                .eq("is_developer", true)
-                .maybeSingle();
-
-            if (error || !data) {
-                window.location.replace("../index.html");
-                return;
-            }
-
-            console.log("Developer access granted.");
-
-        } catch (error) {
-            console.error("Access verification failed:", error);
-            window.location.replace("../index.html");
         }
-    }
 
-    verifyDeveloperAccess();
-</script>
+        verifyDashboardAccess();
+    </script>
 
 </body>
 </html>
