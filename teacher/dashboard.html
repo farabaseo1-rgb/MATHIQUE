@@ -12,8 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* HAMBURGER BUTTON */
-
         .sidebar-toggle {
             display: flex;
             align-items: center;
@@ -34,8 +32,6 @@
         body:not(.sidebar-collapsed) .sidebar-toggle {
             display: none;
         }
-
-        /* SIDEBAR ARROW TAB */
 
         .sidebar-close {
             position: fixed;
@@ -87,7 +83,6 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
 
-        <!-- CLOSE ARROW -->
         <button
             class="sidebar-close"
             id="sidebarClose"
@@ -114,7 +109,8 @@
         <nav>
             <a href="dashboard.html" class="active">Dashboard</a>
             <a href="modules.html">Learning Modules</a>
-            <a href="mock-test.html">Mock Test</a>
+            <a href="mock-test.html">Mock Test Management</a>
+            <a href="upload-mock-test.html">Upload Mock Test (PDF)</a>
             <a href="../videos.html">Video Tutorials</a>
             <a href="answer-keys.html">Answer Keys</a>
             <a href="../scores.html">Scores</a>
@@ -153,12 +149,21 @@
                 </p>
             </a>
 
+            <a href="upload-mock-test.html" class="dashboard-card">
+                <div class="card-icon">📄</div>
+                <h3>Upload Mock Test (PDF)</h3>
+                <p>
+                    Upload prepared questionnaire and
+                    separate answer key PDFs.
+                </p>
+            </a>
+
             <a href="mock-test.html" class="dashboard-card">
                 <div class="card-icon">📋</div>
-                <h3>Mock Test</h3>
+                <h3>Mock Test Management</h3>
                 <p>
-                    Prepare and manage mathematics
-                    mock tests.
+                    Review, manage, and publish
+                    uploaded mock tests.
                 </p>
             </a>
 
@@ -221,10 +226,8 @@
         openButton.addEventListener("click", openSidebar);
         closeButton.addEventListener("click", closeSidebar);
 
-        // Start with sidebar closed
         closeSidebar();
 
-        // Adjust sidebar when screen size changes
         window.addEventListener("resize", function () {
             if (window.innerWidth > 700) {
                 sidebar.classList.remove("mobile-open");
@@ -250,11 +253,12 @@
                     return;
                 }
 
-                const { data: profile, error: profileError } = await supabase
-                    .from("profiles")
-                    .select("role, is_developer")
-                    .eq("user_id", user.id)
-                    .maybeSingle();
+                const { data: profile, error: profileError } =
+                    await supabase
+                        .from("profiles")
+                        .select("role, is_developer")
+                        .eq("user_id", user.id)
+                        .maybeSingle();
 
                 if (profileError || !profile) {
                     window.location.replace("../index.html");
@@ -262,7 +266,8 @@
                 }
 
                 const isDeveloper = profile.is_developer === true;
-                const isTeacher = profile.role?.toLowerCase() === "teacher";
+                const isTeacher =
+                    profile.role?.toLowerCase() === "teacher";
 
                 if (!isDeveloper && !isTeacher) {
                     window.location.replace("../index.html");
