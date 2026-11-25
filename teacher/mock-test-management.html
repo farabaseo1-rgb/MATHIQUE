@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MATHIQUE | Mock Test Management</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -55,7 +56,8 @@
             gap: 15px;
         }
 
-        .test-card {
+        .test-card,
+        .details-card {
             background: #fffef8;
             padding: 22px;
             border-radius: 12px;
@@ -99,6 +101,12 @@
             font-family: inherit;
             font-weight: 600;
             cursor: pointer;
+            margin: 3px;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
         }
 
         .publish-btn {
@@ -106,15 +114,15 @@
             color: white;
         }
 
-        .publish-btn:disabled {
-            opacity: .6;
-            cursor: not-allowed;
-        }
-
-        .refresh-btn {
+        .view-btn {
             background: #dce8dc;
             color: #294b38;
-            margin-bottom: 20px;
+        }
+
+        .refresh-btn,
+        .back-btn {
+            background: #dce8dc;
+            color: #294b38;
         }
 
         #message {
@@ -129,6 +137,66 @@
             text-align: center;
             color: #64766a;
         }
+
+        #testDetails {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .details-header {
+            margin-bottom: 20px;
+        }
+
+        .details-header h2 {
+            margin: 12px 0 5px;
+            overflow-wrap: anywhere;
+        }
+
+        .question-card {
+            background: #f3f6f0;
+            border: 1px solid #dce8dc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .question-card h4 {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .choice {
+            padding: 8px 10px;
+            margin: 6px 0;
+            background: #fffef8;
+            border-radius: 7px;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .correct-answer {
+            color: #28613b;
+            font-weight: 700;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .details-message {
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            .test-card,
+            .details-card {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 
@@ -141,24 +209,63 @@
         <p>Teacher Mock Test Management</p>
     </header>
 
-    <h2 class="section-title">My Mock Tests</h2>
+    <section id="listSection">
 
-    <button class="refresh-btn" id="refreshButton">
-        Refresh Tests
-    </button>
+        <h2 class="section-title">My Mock Tests</h2>
 
-    <p id="message">Loading mock tests...</p>
+        <button class="refresh-btn" id="refreshButton" type="button">
+            Refresh Tests
+        </button>
 
-    <div id="testList"></div>
+        <p id="message">Loading mock tests...</p>
+
+        <div id="testList"></div>
+
+    </section>
+
+    <section id="testDetails">
+
+        <button class="back-btn" id="backButton" type="button">
+            ← Back to Mock Tests
+        </button>
+
+        <div class="details-card">
+
+            <div class="details-header">
+                <span id="detailsStatus" class="status"></span>
+                <h2 id="detailsTitle"></h2>
+                <p id="detailsInfo" class="test-info"></p>
+            </div>
+
+            <h3>Questionnaire and Answer Key</h3>
+
+            <p id="detailsMessage" class="details-message"></p>
+
+            <div id="questionList"></div>
+
+        </div>
+
+    </section>
 
 </div>
 
 <script type="module">
+
     import { supabase } from '../js/supabase.js';
 
     const testList = document.getElementById('testList');
     const message = document.getElementById('message');
     const refreshButton = document.getElementById('refreshButton');
+
+    const listSection = document.getElementById('listSection');
+    const testDetails = document.getElementById('testDetails');
+
+    const backButton = document.getElementById('backButton');
+    const detailsTitle = document.getElementById('detailsTitle');
+    const detailsStatus = document.getElementById('detailsStatus');
+    const detailsInfo = document.getElementById('detailsInfo');
+    const detailsMessage = document.getElementById('detailsMessage');
+    const questionList = document.getElementById('questionList');
 
     let currentUser = null;
 
@@ -173,6 +280,7 @@
     }
 
     async function checkAccess() {
+
         const { data: sessionData, error: sessionError } =
             await supabase.auth.getSession();
 
@@ -193,7 +301,10 @@
 
         if (error) throw error;
 
-        if (profile.role !== 'teacher' && !profile.is_developer) {
+        if (
+            profile.role !== 'teacher' &&
+            profile.is_developer !== true
+        ) {
             message.textContent = 'Access denied. Teacher access only.';
             return false;
         }
@@ -202,10 +313,12 @@
     }
 
     async function loadTests() {
+
         testList.innerHTML = '';
         message.textContent = 'Loading mock tests...';
 
         try {
+
             const allowed = await checkAccess();
 
             if (!allowed) return;
@@ -225,24 +338,29 @@
             if (error) throw error;
 
             if (!tests || tests.length === 0) {
+
                 message.textContent = '';
+
                 testList.innerHTML = `
                     <div class="empty">
                         No saved mock tests yet.
                     </div>
                 `;
+
                 return;
             }
 
             message.textContent = '';
 
             tests.forEach(test => {
+
                 const questionCount =
                     test.pdf_mock_test_questions?.[0]?.count ?? 0;
 
                 const isPublished = test.status === 'published';
 
                 const card = document.createElement('div');
+
                 card.className = 'test-card';
 
                 card.innerHTML = `
@@ -257,62 +375,232 @@
                         Created: ${new Date(test.created_at).toLocaleDateString()}
                     </p>
 
+                    <button
+                        type="button"
+                        class="view-btn"
+                        data-action="view"
+                        data-id="${escapeHTML(test.id)}">
+                        View Test
+                    </button>
+
                     ${
                         isPublished
-                        ? '<p> This test is now published for students.</p>'
-                        : `<button class="publish-btn" data-id="${escapeHTML(test.id)}">
-                            Publish Test
-                           </button>`
+                        ? '<p class="test-info">This test is published for students.</p>'
+                        : `
+                            <button
+                                type="button"
+                                class="publish-btn"
+                                data-action="publish"
+                                data-id="${escapeHTML(test.id)}">
+                                Publish Test
+                            </button>
+                        `
                     }
                 `;
 
                 testList.appendChild(card);
+
             });
 
         } catch (error) {
+
             console.error(error);
+
             message.textContent =
                 'Unable to load mock tests: ' + error.message;
+
+        }
+    }
+
+    async function viewTest(testId) {
+
+        listSection.style.display = 'none';
+        testDetails.style.display = 'block';
+
+        detailsTitle.textContent = 'Loading test...';
+        detailsStatus.textContent = '';
+        detailsInfo.textContent = '';
+        detailsMessage.textContent = 'Loading questions and answer key...';
+        questionList.innerHTML = '';
+
+        try {
+
+            const { data: test, error: testError } = await supabase
+                .from('pdf_mock_tests')
+                .select('id, title, status, created_at')
+                .eq('id', testId)
+                .eq('teacher_id', currentUser.id)
+                .single();
+
+            if (testError) throw testError;
+
+            const { data: questions, error: questionError } =
+                await supabase
+                    .from('pdf_mock_test_questions')
+                    .select(`
+                        id,
+                        question_number,
+                        question_text,
+                        choices,
+                        pdf_mock_test_answers (
+                            correct_answer
+                        )
+                    `)
+                    .eq('mock_test_id', testId)
+                    .order('question_number', { ascending: true });
+
+            if (questionError) throw questionError;
+
+            detailsTitle.textContent = test.title;
+
+            detailsStatus.textContent =
+                test.status.toUpperCase();
+
+            detailsStatus.className =
+                'status ' + (test.status === 'published' ? 'published' : 'draft');
+
+            detailsInfo.textContent =
+                'Created: ' + new Date(test.created_at).toLocaleDateString();
+
+            detailsMessage.textContent = '';
+
+            if (!questions || questions.length === 0) {
+
+                detailsMessage.textContent =
+                    'No questions found for this mock test.';
+
+                return;
+            }
+
+            questions.forEach(question => {
+
+                const choices = question.choices || {};
+
+                const answerRecord =
+                    Array.isArray(question.pdf_mock_test_answers)
+                        ? question.pdf_mock_test_answers[0]
+                        : question.pdf_mock_test_answers;
+
+                const correctAnswer =
+                    answerRecord?.correct_answer || 'Not available';
+
+                const questionCard = document.createElement('div');
+
+                questionCard.className = 'question-card';
+
+                let choicesHTML = '';
+
+                ['A', 'B', 'C', 'D'].forEach(letter => {
+
+                    const choiceText = choices[letter];
+
+                    if (choiceText !== undefined && choiceText !== null) {
+
+                        choicesHTML += `
+                            <div class="choice">
+                                <strong>${letter}.</strong>
+                                ${escapeHTML(choiceText)}
+                            </div>
+                        `;
+
+                    }
+
+                });
+
+                questionCard.innerHTML = `
+                    <h4>
+                        ${question.question_number}.
+                        ${escapeHTML(question.question_text)}
+                    </h4>
+
+                    ${choicesHTML}
+
+                    <p class="correct-answer">
+                        Correct Answer: ${escapeHTML(correctAnswer)}
+                    </p>
+                `;
+
+                questionList.appendChild(questionCard);
+
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            detailsMessage.textContent =
+                'Unable to load test details: ' + error.message;
+
         }
     }
 
     testList.addEventListener('click', async event => {
-        const button = event.target.closest('.publish-btn');
+
+        const button = event.target.closest('button[data-action]');
 
         if (!button) return;
 
         const testId = button.dataset.id;
+        const action = button.dataset.action;
 
-        if (!confirm('Are you sure you want to publish this mock test?')) {
+        if (action === 'view') {
+
+            await viewTest(testId);
+
             return;
         }
 
-        button.disabled = true;
-        button.textContent = 'Publishing...';
+        if (action === 'publish') {
 
-        try {
-            const { error } = await supabase
-                .from('pdf_mock_tests')
-                .update({ status: 'published' })
-                .eq('id', testId)
-                .eq('teacher_id', currentUser.id);
+            if (!confirm('Are you sure you want to publish this mock test?')) {
+                return;
+            }
 
-            if (error) throw error;
+            button.disabled = true;
+            button.textContent = 'Publishing...';
 
-            alert('Mock test published successfully!');
-            await loadTests();
+            try {
 
-        } catch (error) {
-            console.error(error);
-            alert('Publishing failed: ' + error.message);
-            button.disabled = false;
-            button.textContent = 'Publish Test';
+                const { error } = await supabase
+                    .from('pdf_mock_tests')
+                    .update({ status: 'published' })
+                    .eq('id', testId)
+                    .eq('teacher_id', currentUser.id);
+
+                if (error) throw error;
+
+                alert('Mock test published successfully!');
+
+                await loadTests();
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert('Publishing failed: ' + error.message);
+
+                button.disabled = false;
+                button.textContent = 'Publish Test';
+
+            }
+
         }
+
+    });
+
+    backButton.addEventListener('click', () => {
+
+        testDetails.style.display = 'none';
+        listSection.style.display = 'block';
+
+        questionList.innerHTML = '';
+
     });
 
     refreshButton.addEventListener('click', loadTests);
 
     loadTests();
+
 </script>
 
 </body>
