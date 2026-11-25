@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MATHIQUE | Mock Test</title>
 
-    <link rel="stylesheet" href="../assets/css/student_dashboard.css">
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -38,10 +36,6 @@
             margin-bottom: 25px;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         .header {
             background: #294b38;
             color: #fffef8;
@@ -60,69 +54,247 @@
             font-size: 14px;
         }
 
-        .content {
-            background: #fffef8;
-            padding: 35px;
-            border-radius: 15px;
+        #message {
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin: 20px 0;
+            font-size: 14px;
         }
 
-        .symbol {
-            font-size: 55px;
+        #testList {
+            display: grid;
+            gap: 15px;
+        }
+
+        .test-card {
+            background: #fffef8;
+            padding: 25px;
+            border-radius: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.06);
+        }
+
+        .test-card h2 {
+            color: #294b38;
+            font-size: 19px;
+            margin-bottom: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .test-info {
+            color: #68776b;
+            font-size: 13px;
             margin-bottom: 15px;
         }
 
-        .content h2 {
-            margin-bottom: 10px;
-            color: #294b38;
+        .status {
+            display: inline-block;
+            background: #dcefe0;
+            color: #28613b;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 12px;
         }
 
-        .content p {
+        .empty {
+            background: #fffef8;
+            padding: 35px 20px;
+            border-radius: 13px;
+            text-align: center;
             color: #68776b;
-            font-size: 14px;
-            line-height: 1.7;
+        }
+
+        .refresh-btn {
+            display: block;
+            margin: 0 auto 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 7px;
+            background: #416b4e;
+            color: white;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .header {
+                padding: 25px 15px;
+            }
+
+            .test-card {
+                padding: 18px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <main class="container">
+<main class="container">
 
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    <a href="dashboard.html" class="back-link">
+        ← Back to Dashboard
+    </a>
 
-        <section class="header">
-            <h1 id="teacherTitle">MOCK TEST</h1>
-            <p>Test your knowledge and practice your skills.</p>
-        </section>
+    <section class="header">
+        <h1 id="teacherTitle">MOCK TEST</h1>
+        <p>Test your knowledge and practice your skills.</p>
+    </section>
 
-        <section class="content">
-            <div class="symbol">📝</div>
-            <h2>No Mock Tests Available Yet</h2>
-            <p>
-                There are no mock tests available from this teacher at the moment.
-                Please check again later.
-            </p>
-        </section>
+    <button class="refresh-btn" id="refreshButton" type="button">
+        Refresh Tests
+    </button>
 
-    </main>
+    <p id="message">Loading mock tests...</p>
 
-    <script>
-        const selectedTeacher =
-            new URLSearchParams(window.location.search).get("teacher");
+    <section id="testList"></section>
 
-        const teachers = {
-            josephine: "Josephine H. Lapuz",
-            maria: "Maria Pauline B. Gonzales",
-            rochelle: "Rochelle R. Carpio"
-        };
+</main>
 
-        const teacherName = teachers[selectedTeacher] || "Your Teacher";
+<script type="module">
 
-        document.getElementById("teacherTitle").textContent =
-            teacherName + " - Mock Test";
-    </script>
+    import { supabase } from '../../js/supabase.js';
+
+    const testList = document.getElementById('testList');
+    const message = document.getElementById('message');
+    const refreshButton = document.getElementById('refreshButton');
+    const teacherTitle = document.getElementById('teacherTitle');
+
+    const selectedTeacher =
+        new URLSearchParams(window.location.search).get('teacher');
+
+    const teachers = {
+        josephine: 'Josephine H. Lapuz',
+        maria: 'Maria Pauline B. Gonzales',
+        rochelle: 'Rochelle R. Carpio'
+    };
+
+    const teacherName = teachers[selectedTeacher];
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    teacherTitle.textContent =
+        teacherName ? teacherName + ' - Mock Test' : 'MOCK TEST';
+
+    async function loadTests() {
+
+        testList.innerHTML = '';
+        message.textContent = 'Loading mock tests...';
+
+        try {
+
+            if (!teacherName) {
+                message.textContent =
+                    'Teacher not selected. Please select a teacher first.';
+                return;
+            }
+
+            // Find the selected teacher's profile.
+
+            const { data: teacher, error: teacherError } =
+                await supabase
+                    .from('profiles')
+                    .select('user_id, full_name')
+                    .eq('full_name', teacherName)
+                    .maybeSingle();
+
+            if (teacherError) throw teacherError;
+
+            if (!teacher) {
+                message.textContent =
+                    'Teacher profile not found.';
+                return;
+            }
+
+            // Load only published tests belonging to this teacher.
+
+            const { data: tests, error: testError } =
+                await supabase
+                    .from('pdf_mock_tests')
+                    .select('id, title, created_at')
+                    .eq('teacher_id', teacher.user_id)
+                    .eq('status', 'published')
+                    .order('created_at', { ascending: false });
+
+            if (testError) throw testError;
+
+            if (!tests || tests.length === 0) {
+
+                message.textContent = '';
+
+                testList.innerHTML = `
+                    <div class="empty">
+                        <div style="font-size:45px; margin-bottom:12px;">
+                            📝
+                        </div>
+
+                        <h2>No Mock Tests Available Yet</h2>
+
+                        <p style="font-size:14px; margin-top:10px;">
+                            ${escapeHTML(teacherName)} has no published
+                            mock tests available at the moment.
+                            Please check again later.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+            message.textContent =
+                tests.length + ' published mock test(s) available.';
+
+            tests.forEach(test => {
+
+                const card = document.createElement('article');
+
+                card.className = 'test-card';
+
+                card.innerHTML = `
+                    <span class="status">PUBLISHED</span>
+
+                    <h2>${escapeHTML(test.title)}</h2>
+
+                    <p class="test-info">
+                        Teacher: ${escapeHTML(teacherName)}<br>
+                        Published test<br>
+                        Date created:
+                        ${new Date(test.created_at).toLocaleDateString()}
+                    </p>
+                `;
+
+                testList.appendChild(card);
+
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.textContent =
+                'Unable to load mock tests: ' + error.message;
+
+        }
+    }
+
+    refreshButton.addEventListener('click', loadTests);
+
+    loadTests();
+
+</script>
 
 </body>
 </html>
