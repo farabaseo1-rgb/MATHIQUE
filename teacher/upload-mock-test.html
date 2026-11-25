@@ -4,12 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MATHIQUE | Upload Mock Test</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -38,7 +41,9 @@
             box-shadow: 0 3px 10px rgba(0,0,0,.06);
         }
 
-        h1, h2 { color: #294b38; }
+        h1, h2 {
+            color: #294b38;
+        }
 
         label {
             display: block;
@@ -87,6 +92,7 @@
 </head>
 
 <body>
+
 <div class="container">
 
     <a class="back" href="dashboard.html">← Back to Dashboard</a>
@@ -95,6 +101,7 @@
     <p>Upload your prepared questionnaire and its separate answer key.</p>
 
     <div class="card">
+
         <form id="uploadForm">
 
             <label for="testTitle">Mock Test Title</label>
@@ -112,7 +119,10 @@
                 accept=".pdf,application/pdf"
                 required
             >
-            <p class="note">PDF containing questions and choices.</p>
+
+            <p class="note">
+                PDF containing questions and choices.
+            </p>
 
             <label for="answerKey">Answer Key PDF</label>
             <input
@@ -121,19 +131,25 @@
                 accept=".pdf,application/pdf"
                 required
             >
-            <p class="note">Separate PDF containing correct answers.</p>
+
+            <p class="note">
+                Separate PDF containing correct answers.
+            </p>
 
             <button type="submit" id="uploadButton">
                 Upload PDF Files
             </button>
 
             <p id="message" role="status"></p>
+
         </form>
+
     </div>
 
 </div>
 
 <script type="module">
+
 import { supabase } from '../js/supabase.js';
 
 const form = document.getElementById('uploadForm');
@@ -143,11 +159,16 @@ const message = document.getElementById('message');
 const bucket = 'mock-test-pdfs';
 
 form.addEventListener('submit', async (event) => {
+
     event.preventDefault();
 
     const title = document.getElementById('testTitle').value.trim();
-    const questionnaire = document.getElementById('questionnaire').files[0];
-    const answerKey = document.getElementById('answerKey').files[0];
+
+    const questionnaire =
+        document.getElementById('questionnaire').files[0];
+
+    const answerKey =
+        document.getElementById('answerKey').files[0];
 
     if (!title || !questionnaire || !answerKey) {
         message.textContent = 'Please complete all fields.';
@@ -164,95 +185,150 @@ form.addEventListener('submit', async (event) => {
         return;
     }
 
-    const { data: { session }, error: sessionError } =
-        await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-        message.textContent = 'Please log in first.';
-        return;
-    }
-
-    const user = session.user;
-
-    const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-
-    if (profileError || profile?.role !== 'teacher') {
-        message.textContent = 'Teacher access only.';
-        return;
-    }
-
     button.disabled = true;
-    button.textContent = 'Uploading...';
-    message.textContent = 'Please wait while your files are uploaded.';
-
-    const uploadId = crypto.randomUUID();
-    const folder = `${user.id}/${uploadId}`;
-
-    const questionnairePath = `${folder}/questionnaire.pdf`;
-    const answerKeyPath = `${folder}/answer-key.pdf`;
-
-    let uploadedQuestionnaire = false;
-    let uploadedAnswerKey = false;
+    button.textContent = 'Checking account...';
 
     try {
-        const { error: questionError } = await supabase.storage
-            .from(bucket)
-            .upload(questionnairePath, questionnaire, {
-                contentType: 'application/pdf',
-                upsert: false
-            });
 
-        if (questionError) throw questionError;
-        uploadedQuestionnaire = true;
+        // CHECK LOGIN SESSION
+        const { data: { session }, error: sessionError } =
+            await supabase.auth.getSession();
 
-        const { error: answerError } = await supabase.storage
-            .from(bucket)
-            .upload(answerKeyPath, answerKey, {
-                contentType: 'application/pdf',
-                upsert: false
-            });
+        if (sessionError || !session) {
+            throw new Error('Please log in first.');
+        }
 
-        if (answerError) throw answerError;
-        uploadedAnswerKey = true;
+        const user = session.user;
 
-        const { error: recordError } = await supabase
-            .from('mock_test_uploads')
-            .insert({
-                teacher_id: user.id,
-                title: title,
-                questionnaire_path: questionnairePath,
-                answer_key_path: answerKeyPath,
-                status: 'pending'
-            });
+        // CHECK TEACHER OR DEVELOPER ACCESS
+        const { data: profile, error: profileError } =
+            await supabase
+                .from('profiles')
+                .select('role, is_developer')
+                .eq('user_id', user.id)
+                .single();
 
-        if (recordError) throw recordError;
+        if (profileError || !profile) {
+            throw new Error('Unable to verify account access.');
+        }
+
+        const isDeveloper = profile.is_developer === true;
+
+        const isTeacher =
+            profile.role?.toLowerCase() === 'teacher';
+
+        if (!isDeveloper && !isTeacher) {
+            throw new Error('Teacher access only.');
+        }
+
+        // START UPLOAD
+        button.textContent = 'Uploading...';
 
         message.textContent =
-            'Success! Both PDFs were uploaded. Your mock test is pending review.';
+            'Please wait while your files are uploaded.';
 
-        form.reset();
+        const uploadId = crypto.randomUUID();
 
-    } catch (error) {
-        if (uploadedQuestionnaire || uploadedAnswerKey) {
+        const folder = `${user.id}/${uploadId}`;
+
+        const questionnairePath =
+            `${folder}/questionnaire.pdf`;
+
+        const answerKeyPath =
+            `${folder}/answer-key.pdf`;
+
+        let uploadedQuestionnaire = false;
+        let uploadedAnswerKey = false;
+
+        try {
+
+            // UPLOAD QUESTIONNAIRE
+            const { error: questionError } =
+                await supabase.storage
+                    .from(bucket)
+                    .upload(questionnairePath, questionnaire, {
+                        contentType: 'application/pdf',
+                        upsert: false
+                    });
+
+            if (questionError) throw questionError;
+
+            uploadedQuestionnaire = true;
+
+            // UPLOAD ANSWER KEY
+            const { error: answerError } =
+                await supabase.storage
+                    .from(bucket)
+                    .upload(answerKeyPath, answerKey, {
+                        contentType: 'application/pdf',
+                        upsert: false
+                    });
+
+            if (answerError) throw answerError;
+
+            uploadedAnswerKey = true;
+
+            // SAVE MOCK TEST RECORD
+            const { error: recordError } =
+                await supabase
+                    .from('mock_test_uploads')
+                    .insert({
+                        teacher_id: user.id,
+                        title: title,
+                        questionnaire_path: questionnairePath,
+                        answer_key_path: answerKeyPath,
+                        status: 'pending'
+                    });
+
+            if (recordError) throw recordError;
+
+            message.textContent =
+                'Success! Both PDFs were uploaded. Your mock test is pending review.';
+
+            form.reset();
+
+        } catch (error) {
+
+            // REMOVE FILES IF THE COMPLETE UPLOAD FAILS
             const paths = [];
 
-            if (uploadedQuestionnaire) paths.push(questionnairePath);
-            if (uploadedAnswerKey) paths.push(answerKeyPath);
+            if (uploadedQuestionnaire) {
+                paths.push(questionnairePath);
+            }
 
-            await supabase.storage.from(bucket).remove(paths);
+            if (uploadedAnswerKey) {
+                paths.push(answerKeyPath);
+            }
+
+            if (paths.length > 0) {
+                const { error: cleanupError } =
+                    await supabase.storage
+                        .from(bucket)
+                        .remove(paths);
+
+                if (cleanupError) {
+                    console.error('File cleanup failed:', cleanupError);
+                }
+            }
+
+            throw error;
         }
+
+    } catch (error) {
+
+        console.error('Mock test upload error:', error);
 
         message.textContent = 'Upload failed: ' + error.message;
 
     } finally {
+
         button.disabled = false;
         button.textContent = 'Upload PDF Files';
+
     }
+
 });
+
 </script>
 
 </body>
