@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Process Mock Test</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #edf1e8;
+            color: #354b3c;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 30px auto;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            margin-bottom: 25px;
+            color: #718174;
+        }
+
+        .panel {
+            background: #fffef8;
+            padding: 24px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
+        }
+
+        select, button {
+            font-family: inherit;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5ca;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            margin: 12px 0;
+            background: white;
+        }
+
+        button {
+            background: #294b38;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .output {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            background: #f4f6f0;
+            padding: 16px;
+            border-radius: 8px;
+            min-height: 120px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .status {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .label {
+            font-weight: 600;
+            margin-top: 18px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #294b38;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back" href="dashboard.html">← Back to Dashboard</a>
+
+    <h1>Process Mock Test</h1>
+    <p class="subtitle">
+        Extract text from uploaded questionnaire and answer key PDFs.
+    </p>
+
+    <section class="panel">
+        <h3>Pending PDF Uploads</h3>
+        <select id="uploadSelect">
+            <option value="">Loading uploads...</option>
+        </select>
+
+        <button id="loadButton" type="button">Load Selected PDFs</button>
+        <p id="status" class="status">Loading...</p>
+    </section>
+
+    <section class="panel">
+        <h3>Questionnaire Text</h3>
+        <button id="extractQuestionnaire" type="button" disabled>
+            Extract Questionnaire
+        </button>
+        <div id="questionnaireOutput" class="output">
+            No questionnaire extracted yet.
+        </div>
+
+        <h3 class="label">Answer Key Text</h3>
+        <button id="extractAnswerKey" type="button" disabled>
+            Extract Answer Key
+        </button>
+        <div id="answerOutput" class="output">
+            No answer key extracted yet.
+        </div>
+    </section>
+
+</div>
+
+<script type="module">
+    import { supabase } from "../js/supabase.js";
+
+    import * as pdfjsLib from
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
+
+    const select = document.getElementById("uploadSelect");
+    const status = document.getElementById("status");
+
+    const loadButton = document.getElementById("loadButton");
+    const questionnaireButton =
+        document.getElementById("extractQuestionnaire");
+    const answerButton =
+        document.getElementById("extractAnswerKey");
+
+    let questionnairePath = "";
+    let answerKeyPath = "";
+
+    let questionnaireText = "";
+    let answerKeyText = "";
+
+    let currentUpload = null;
+
+    function showStatus(message) {
+        status.textContent = message;
+    }
+
+    async function checkAccess() {
+        const { data: { user }, error } =
+            await supabase.auth.getUser();
+
+        if (error || !user) {
+            window.location.replace("../index.html");
+            return null;
+        }
+
+        const { data: profile, error: profileError } =
+            await supabase
+                .from("profiles")
+                .select("role, is_developer")
+                .eq("user_id", user.id)
+                .maybeSingle();
+
+        if (profileError || !profile ||
+            (profile.role !== "teacher" &&
+             profile.is_developer !== true)) {
+            window.location.replace("../index.html");
+            return null;
+        }
+
+        return user;
+    }
+
+    async function loadUploads() {
+        const user = await checkAccess();
+        if (!user) return;
+
+        const { data, error } = await supabase
+            .from("mock_test_uploads")
+            .select("id, title, questionnaire_path, answer_key_path, status")
+            .eq("teacher_id", user.id)
+            .eq("status", "pending")
+            .order("id", { ascending: false });
+
+        if (error) {
+            showStatus("Could not load uploads: " + error.message);
+            return;
+        }
+
+        select.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            select.innerHTML =
+                '<option value="">No pending uploads found</option>';
+            showStatus("No pending PDF uploads.");
+            return;
+        }
+
+        data.forEach(upload => {
+            const option = document.createElement("option");
+            option.value = upload.id;
+            option.textContent = upload.title;
+            select.appendChild(option);
+        });
+
+        window.uploadRecords = data;
+        showStatus(data.length + " pending upload(s) found.");
+    }
+
+    async function loadSelectedPDFs() {
+        const uploadId = select.value;
+
+        const upload = window.uploadRecords?.find(
+            item => String(item.id) === String(uploadId)
+        );
+
+        if (!upload) {
+            showStatus("Please select an upload.");
+            return;
+        }
+
+        questionnairePath = upload.questionnaire_path;
+        answerKeyPath = upload.answer_key_path;
+        currentUpload = upload;
+
+        questionnaireText = "";
+        answerKeyText = "";
+
+        document.getElementById("questionnaireOutput").textContent =
+            "Ready to extract questionnaire.";
+        document.getElementById("answerOutput").textContent =
+            "Ready to extract answer key.";
+
+        questionnaireButton.disabled = false;
+        answerButton.disabled = false;
+
+        showStatus("PDF files selected: " + upload.title);
+    }
+
+    async function extractPDF(path) {
+        const { data, error } = await supabase.storage
+            .from("mock-test-pdfs")
+            .download(path);
+
+        if (error) throw error;
+
+        const buffer = await data.arrayBuffer();
+
+        const pdf = await pdfjsLib.getDocument({
+            data: new Uint8Array(buffer)
+        }).promise;
+
+        let fullText = "";
+
+        for (let pageNumber = 1;
+             pageNumber <= pdf.numPages;
+             pageNumber++) {
+
+            const page = await pdf.getPage(pageNumber);
+            const content = await page.getTextContent();
+
+            const pageText = content.items
+                .map(item => item.str)
+                .join(" ");
+
+            fullText +=
+                "\n\n--- PAGE " + pageNumber + " ---\n\n" +
+                pageText;
+        }
+
+        return fullText.trim();
+    }
+
+    loadButton.addEventListener("click", loadSelectedPDFs);
+
+    questionnaireButton.addEventListener("click", async () => {
+        questionnaireButton.disabled = true;
+        showStatus("Extracting questionnaire...");
+
+        try {
+            questionnaireText = await extractPDF(questionnairePath);
+
+            document.getElementById("questionnaireOutput").textContent =
+                questionnaireText || "No selectable text found in this PDF.";
+
+            showStatus("Questionnaire extraction complete.");
+        } catch (error) {
+            showStatus("Questionnaire error: " + error.message);
+        } finally {
+            questionnaireButton.disabled = false;
+        }
+    });
+
+    answerButton.addEventListener("click", async () => {
+        answerButton.disabled = true;
+        showStatus("Extracting answer key...");
+
+        try {
+            answerKeyText = await extractPDF(answerKeyPath);
+
+            document.getElementById("answerOutput").textContent =
+                answerKeyText || "No selectable text found in this PDF.";
+
+            showStatus("Answer key extraction complete.");
+        } catch (error) {
+            showStatus("Answer key error: " + error.message);
+        } finally {
+            answerButton.disabled = false;
+        }
+    });
+
+    await loadUploads();
+</script>
+</body>
+</html>
