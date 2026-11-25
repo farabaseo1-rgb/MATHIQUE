@@ -165,6 +165,13 @@
             display: none;
         }
 
+        #saveMockTestButton {
+            background: #294b38;
+            margin-top: 18px;
+            padding: 14px 20px;
+            font-weight: 600;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 15px;
@@ -192,7 +199,7 @@
     <h1>Process Mock Test</h1>
 
     <p class="subtitle">
-        Extract, organize, and review uploaded mock test PDFs.
+        Extract, organize, review, and save uploaded mock test PDFs.
     </p>
 
     <!-- PENDING UPLOADS -->
@@ -272,6 +279,12 @@
             against the original PDFs before publishing.
         </p>
 
+        <button id="saveMockTestButton" type="button" disabled>
+            Save Mock Test as Draft
+        </button>
+
+        <p id="saveStatus" class="status"></p>
+
     </section>
 
 </div>
@@ -323,10 +336,19 @@
     const reviewQuestions =
         document.getElementById("reviewQuestions");
 
+    const saveButton =
+        document.getElementById("saveMockTestButton");
+
+    const saveStatus =
+        document.getElementById("saveStatus");
+
 
     // VARIABLES
 
     let uploadRecords = [];
+
+    let selectedUpload = null;
+    let currentUser = null;
 
     let questionnairePath = "";
     let answerKeyPath = "";
@@ -335,6 +357,8 @@
     let answerKeyText = "";
 
     let parsedQuestions = [];
+
+    let savedTestId = null;
 
 
     function showStatus(message) {
@@ -378,6 +402,8 @@
             window.location.replace("../index.html");
             return null;
         }
+
+        currentUser = user;
 
         return user;
     }
@@ -464,12 +490,16 @@
             return;
         }
 
+        selectedUpload = upload;
+
         questionnairePath = upload.questionnaire_path;
         answerKeyPath = upload.answer_key_path;
 
         questionnaireText = "";
         answerKeyText = "";
         parsedQuestions = [];
+
+        savedTestId = null;
 
         questionnaireOutput.textContent =
             "Ready to extract questionnaire.";
@@ -480,6 +510,9 @@
         questionnaireButton.disabled = false;
         answerButton.disabled = false;
         parseButton.disabled = true;
+        saveButton.disabled = true;
+
+        saveStatus.textContent = "";
 
         reviewSection.classList.add("hidden");
 
@@ -720,13 +753,9 @@
 
         lines.forEach(line => {
 
-            // Ignore PDF page headers
-
             if (/^---\s*PAGE\s+\d+\s*---$/i.test(line)) {
                 return;
             }
-
-            // Ignore common document headings
 
             if (
                 /^(MATHIQUE|SAMPLE MATHEMATICS MOCK TEST|INSTRUCTIONS|NAME:.*|SECTION:.*|DATE:.*)$/i.test(line)
@@ -737,8 +766,6 @@
             if (/^Instructions:/i.test(line)) {
                 return;
             }
-
-            // Detect question number: 1. or 1)
 
             const questionMatch =
                 line.match(/^(\d{1,3})\s*[.)]\s*(.*)$/);
@@ -761,8 +788,6 @@
                 return;
             }
 
-            // Detect choices: A. / B. / C. / D.
-
             const choiceMatch =
                 line.match(/^([A-D])\s*[.)]\s*(.*)$/i);
 
@@ -777,8 +802,6 @@
 
                 return;
             }
-
-            // Continue a question or choice if text wraps
 
             if (currentChoice) {
 
@@ -816,12 +839,6 @@
                 return;
             }
 
-            // Accept formats such as:
-            // 1. C
-            // 1) C
-            // 1 - C
-            // 1 C
-
             const match = line.match(
                 /^(\d{1,3})\s*[.)-]?\s+([A-D])(?:\s|$)/i
             );
@@ -857,6 +874,10 @@
             "Parsing questions and matching answers...";
 
         reviewSection.classList.add("hidden");
+
+        saveButton.disabled = true;
+        saveStatus.textContent = "";
+        savedTestId = null;
 
         try {
 
@@ -896,6 +917,36 @@
             parseButton.disabled = false;
 
         }
+    }
+
+
+    // CHECK IF QUESTIONS ARE COMPLETE
+
+    function questionsAreComplete() {
+
+        if (!parsedQuestions.length) {
+            return false;
+        }
+
+        return parsedQuestions.every(question => {
+
+            const hasText =
+                question.text.trim().length > 0;
+
+            const hasAllChoices =
+                ["A", "B", "C", "D"].every(letter =>
+                    question.choices[letter] &&
+                    question.choices[letter].trim().length > 0
+                );
+
+            const hasAnswer =
+                ["A", "B", "C", "D"].includes(
+                    question.correctAnswer
+                );
+
+            return hasText && hasAllChoices && hasAnswer;
+
+        });
     }
 
 
@@ -1032,6 +1083,158 @@
 
         });
 
+        saveButton.disabled = !questionsAreComplete();
+
+        saveStatus.textContent =
+            questionsAreComplete()
+                ? "Questions are ready to save as a draft."
+                : "Complete questions, all four choices, and answer keys before saving.";
+
+    }
+
+
+    // SAVE MOCK TEST AS DRAFT
+
+    async function saveMockTest() {
+
+        if (!selectedUpload || !currentUser) {
+
+            saveStatus.textContent =
+                "Please select and load a PDF upload first.";
+
+            return;
+        }
+
+        if (!questionsAreComplete()) {
+
+            saveStatus.textContent =
+                "Cannot save. Please check incomplete questions or missing answers.";
+
+            return;
+        }
+
+        saveButton.disabled = true;
+
+        saveStatus.textContent =
+            "Saving mock test and questions... Please wait.";
+
+        try {
+
+            // Prevent duplicate saving for the same PDF upload
+
+            const { data: existingTest, error: existingError } =
+                await supabase
+                    .from("pdf_mock_tests")
+                    .select("id")
+                    .eq("upload_id", selectedUpload.id)
+                    .maybeSingle();
+
+            if (existingError) {
+                throw existingError;
+            }
+
+            if (existingTest) {
+
+                savedTestId = existingTest.id;
+
+                saveStatus.textContent =
+                    "This PDF upload already has a saved mock test. Existing draft ID: " +
+                    savedTestId;
+
+                return;
+            }
+
+            // Create parent mock test record
+
+            const { data: newTest, error: testError } =
+                await supabase
+                    .from("pdf_mock_tests")
+                    .insert({
+                        upload_id: selectedUpload.id,
+                        teacher_id: currentUser.id,
+                        title: selectedUpload.title,
+                        status: "draft"
+                    })
+                    .select("id")
+                    .single();
+
+            if (testError) {
+                throw testError;
+            }
+
+            savedTestId = newTest.id;
+
+            // Prepare question records
+
+            const questionRows = parsedQuestions.map(question => ({
+                mock_test_id: savedTestId,
+                question_number: question.number,
+                question_text: question.text,
+                choices: question.choices
+            }));
+
+            // Save all questions
+
+            const { data: savedQuestions, error: questionsError } =
+                await supabase
+                    .from("pdf_mock_test_questions")
+                    .insert(questionRows)
+                    .select("id, question_number");
+
+            if (questionsError) {
+                throw questionsError;
+            }
+
+            // Match each saved question with its answer
+
+            const answerRows = savedQuestions.map(savedQuestion => {
+
+                const originalQuestion = parsedQuestions.find(
+                    question =>
+                        question.number === savedQuestion.question_number
+                );
+
+                return {
+                    question_id: savedQuestion.id,
+                    correct_answer: originalQuestion.correctAnswer
+                };
+
+            });
+
+            // Save answer key separately
+
+            const { error: answersError } =
+                await supabase
+                    .from("pdf_mock_test_answers")
+                    .insert(answerRows);
+
+            if (answersError) {
+                throw answersError;
+            }
+
+            saveStatus.textContent =
+                "SUCCESS! Mock test, questions, and answer keys have been saved as a draft. It is not published to students yet.";
+
+            saveStatus.className = "status success";
+
+        } catch (error) {
+
+            console.error("Save error:", error);
+
+            saveStatus.textContent =
+                "Save failed: " + error.message +
+                ". Please report this message before trying again.";
+
+            saveStatus.className = "status warning";
+
+            // Keep the button disabled to avoid duplicate partial records
+
+            saveButton.disabled = true;
+
+            return;
+
+        }
+
     }
 
 
@@ -1055,6 +1258,11 @@
     parseButton.addEventListener(
         "click",
         handleParsing
+    );
+
+    saveButton.addEventListener(
+        "click",
+        saveMockTest
     );
 
 
