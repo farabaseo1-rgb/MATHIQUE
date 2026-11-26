@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* SIDEBAR BUTTONS */
+
         .sidebar-toggle {
             display: flex;
             align-items: center;
@@ -60,64 +62,51 @@
         }
 
         /* TOP HEADER */
+
         .top-header {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            padding-right: 180px;
             min-height: 110px;
         }
 
-        /* LOGO TOGGLE BUTTON */
-        .logo-toggle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            width: 160px;
-            height: 90px;
-            padding: 0;
-            margin: 0;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: width 0.45s ease;
-        }
+        /* INTERACTIVE MATHIQUE LOGO */
 
-        /* SMALL LOGO */
-        .header-logo {
+        .logo-button {
+            position: relative;
             display: block;
-            width: 160px;
-            max-height: 90px;
-            height: auto;
-            object-fit: contain;
-            background: transparent;
+            width: 70px;
+            height: 65px;
+            padding: 0;
+            overflow: hidden;
+            flex-shrink: 0;
             border: none;
-            box-shadow: none;
-            transition: opacity 0.25s ease;
+            background: transparent;
+            cursor: pointer;
+            transition: width 0.7s ease;
         }
 
-        /* EXPANDED LOGO */
-        .logo-toggle.expanded {
-            width: 280px;
+        .logo-button img {
+            position: absolute;
+            width: 318px;
+            max-width: none;
+            height: auto;
+            left: -26px;
+            top: -86px;
+            display: block;
+            pointer-events: none;
+            user-select: none;
         }
 
-        .logo-toggle.expanded .header-logo {
-            content: url("../assets/images/mathique-full-logo.png");
-            width: 280px;
-            max-height: 110px;
-            object-fit: contain;
+        .logo-button.expanded {
+            width: 266px;
         }
 
-        .logo-toggle:focus-visible {
-            outline: 2px solid #294b38;
-            outline-offset: 5px;
+        .logo-button:focus-visible {
+            outline: 2px solid #c9a227;
+            outline-offset: 4px;
             border-radius: 6px;
         }
 
@@ -127,29 +116,19 @@
                 left: 12px;
             }
 
-            .top-header {
-                padding-right: 125px;
-                min-height: 85px;
-                gap: 10px;
+            .logo-button {
+                width: 60px;
+                height: 55px;
             }
 
-            .logo-toggle {
-                width: 110px;
-                height: 70px;
+            .logo-button img {
+                width: 264px;
+                left: -22px;
+                top: -71px;
             }
 
-            .header-logo {
-                width: 110px;
-                max-height: 70px;
-            }
-
-            .logo-toggle.expanded {
-                width: 190px;
-            }
-
-            .logo-toggle.expanded .header-logo {
-                width: 190px;
-                max-height: 85px;
+            .logo-button.expanded {
+                width: 220px;
             }
         }
     </style>
@@ -157,7 +136,8 @@
 
 <body>
 
-    <!-- HAMBURGER MENU -->
+    <!-- SIDEBAR OPEN BUTTON -->
+
     <button
         class="sidebar-toggle"
         id="sidebarToggle"
@@ -168,6 +148,7 @@
     </button>
 
     <!-- SIDEBAR -->
+
     <aside class="sidebar" id="sidebar">
 
         <button
@@ -179,6 +160,7 @@
         </button>
 
         <!-- TEACHER PROFILE -->
+
         <div class="teacher-profile">
             <div class="profile-avatar">T</div>
             <h3>Teacher Profile</h3>
@@ -187,12 +169,14 @@
         </div>
 
         <!-- SIDEBAR BRANDING -->
+
         <div class="logo">
             <h2>MATHIQUE</h2>
             <p>MATHEMATICS LEARNING DATABASE</p>
         </div>
 
         <!-- NAVIGATION -->
+
         <nav>
             <a href="dashboard.html" class="active">Dashboard</a>
             <a href="modules.html">Learning Modules</a>
@@ -206,40 +190,47 @@
         </nav>
 
         <!-- LOG OUT -->
+
         <a href="../index.html" class="logout">Log Out</a>
 
     </aside>
 
     <!-- MAIN CONTENT -->
+
     <main class="main-content">
 
         <!-- TOP HEADER -->
-        <div class="top-header">
+
+        <header class="top-header">
 
             <div>
                 <h1>Teacher Dashboard</h1>
                 <p>Welcome to MATHIQUE!</p>
             </div>
 
-            <!-- CLICK TO EXPAND / COLLAPSE LOGO -->
+            <!-- CLICKABLE MATHIQUE LOGO -->
+
             <button
                 type="button"
-                class="logo-toggle"
-                id="logoToggle"
+                class="logo-button"
+                id="mathiqueLogo"
                 aria-label="Expand MATHIQUE logo"
-                aria-expanded="false">
+                aria-expanded="false"
+                title="Click to expand logo">
 
                 <img
-                    src="../assets/images/mathique-logo.png"
-                    alt="MATHIQUE Logo"
-                    class="header-logo">
+                    src="../assets/images/mathique-full-logo.png"
+                    alt="MATHIQUE Logo">
 
             </button>
 
-        </div>
+        </header>
+
+        <!-- WELCOME SECTION -->
 
         <section class="welcome-section">
             <h1>Welcome, Teacher!</h1>
+
             <p>
                 Manage your mathematics learning materials
                 and student activities.
@@ -247,6 +238,7 @@
         </section>
 
         <!-- DASHBOARD CARDS -->
+
         <section class="dashboard-cards">
 
             <a href="modules.html" class="dashboard-card">
@@ -321,40 +313,54 @@
 
         </section>
 
+        <!-- FOOTER -->
+
         <footer>
             <p>© 2026 MATHIQUE | Mathematics Learning Database</p>
         </footer>
 
     </main>
 
-    <!-- LOGO TRANSITION SCRIPT -->
+    <!-- MATHIQUE LOGO CLICK ANIMATION -->
+
     <script>
-        const logoToggle = document.getElementById("logoToggle");
+        const mathiqueLogo =
+            document.getElementById("mathiqueLogo");
 
-        logoToggle.addEventListener("click", function () {
-            const isExpanded = logoToggle.classList.toggle("expanded");
+        mathiqueLogo.addEventListener("click", function () {
 
-            logoToggle.setAttribute(
+            const isExpanded =
+                this.classList.toggle("expanded");
+
+            this.setAttribute(
                 "aria-expanded",
-                isExpanded ? "true" : "false"
+                isExpanded
             );
 
-            logoToggle.setAttribute(
+            this.setAttribute(
                 "aria-label",
                 isExpanded
-                    ? "Minimize MATHIQUE logo"
+                    ? "Collapse MATHIQUE logo"
                     : "Expand MATHIQUE logo"
             );
+
         });
     </script>
 
-    <!-- SIDEBAR SCRIPT -->
+    <!-- SIDEBAR CONTROLS -->
+
     <script>
-        const sidebar = document.getElementById("sidebar");
-        const openButton = document.getElementById("sidebarToggle");
-        const closeButton = document.getElementById("sidebarClose");
+        const sidebar =
+            document.getElementById("sidebar");
+
+        const openButton =
+            document.getElementById("sidebarToggle");
+
+        const closeButton =
+            document.getElementById("sidebarClose");
 
         function openSidebar() {
+
             document.body.classList.remove("sidebar-collapsed");
 
             if (window.innerWidth <= 700) {
@@ -362,37 +368,51 @@
             }
 
             openButton.setAttribute("aria-expanded", "true");
+
         }
 
         function closeSidebar() {
+
             document.body.classList.add("sidebar-collapsed");
+
             sidebar.classList.remove("mobile-open");
 
             openButton.setAttribute("aria-expanded", "false");
+
         }
 
         openButton.addEventListener("click", openSidebar);
+
         closeButton.addEventListener("click", closeSidebar);
 
         closeSidebar();
 
         window.addEventListener("resize", function () {
+
             if (window.innerWidth > 700) {
+
                 sidebar.classList.remove("mobile-open");
+
             } else if (
                 !document.body.classList.contains("sidebar-collapsed")
             ) {
+
                 sidebar.classList.add("mobile-open");
+
             }
+
         });
     </script>
 
     <!-- DASHBOARD ACCESS VERIFICATION -->
+
     <script type="module">
         import { supabase } from "../js/supabase.js";
 
         async function verifyDashboardAccess() {
+
             try {
+
                 const { data: { user }, error: authError } =
                     await supabase.auth.getUser();
 
@@ -413,7 +433,9 @@
                     return;
                 }
 
-                const isDeveloper = profile.is_developer === true;
+                const isDeveloper =
+                    profile.is_developer === true;
+
                 const isTeacher =
                     profile.role?.toLowerCase() === "teacher";
 
@@ -425,9 +447,16 @@
                 console.log("Dashboard access granted.");
 
             } catch (error) {
-                console.error("Access verification failed:", error);
+
+                console.error(
+                    "Access verification failed:",
+                    error
+                );
+
                 window.location.replace("../index.html");
+
             }
+
         }
 
         verifyDashboardAccess();
