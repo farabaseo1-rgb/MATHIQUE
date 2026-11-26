@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Modules</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f3e9;
+            color: #294536;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 27px;
+        }
+
+        .subtitle {
+            color: #718477;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        a.back {
+            text-decoration: none;
+            color: white;
+            background: #315c43;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat, .panel {
+            background: #fffef8;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        }
+
+        .stat p {
+            color: #718477;
+            font-size: 13px;
+        }
+
+        .stat h2 {
+            font-size: 28px;
+            margin-top: 8px;
+        }
+
+        .panel {
+            overflow: hidden;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 18px 0;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #dce3d9;
+            border-radius: 8px;
+            font-family: inherit;
+            background: white;
+            color: #294536;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        select {
+            min-width: 150px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf0e9;
+            font-size: 13px;
+        }
+
+        th {
+            color: #718477;
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #e7eee4;
+            color: #315c43;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #718477;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #718477;
+        }
+
+        @media(max-width:600px) {
+            body { padding: 16px; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div>
+            <h1>Learning Modules Management</h1>
+            <p class="subtitle">Monitor learning modules created by teachers</p>
+        </div>
+
+        <a class="back" href="dashboard.html">← Admin Dashboard</a>
+    </header>
+
+    <section class="stats">
+        <div class="stat">
+            <p>Total Modules</p>
+            <h2 id="totalModules">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>Published Modules</p>
+            <h2 id="publishedModules">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>Unpublished Modules</p>
+            <h2 id="unpublishedModules">—</h2>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h3>All Learning Modules</h3>
+
+        <div class="toolbar">
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search module title or teacher..."
+            >
+
+            <select id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="published">Published</option>
+                <option value="unpublished">Unpublished</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module Title</th>
+                        <th>Teacher</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="moduleTable">
+                    <tr>
+                        <td colspan="3" class="empty">Loading modules...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="message"></p>
+    </section>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const table = document.getElementById('moduleTable');
+    const message = document.getElementById('message');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+
+    let modules = [];
+
+    async function loadModules() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const session = sessionData.session;
+
+            if (!session) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: admin, error: adminError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (adminError) throw adminError;
+
+            if (admin.role !== 'admin') {
+                document.body.innerHTML =
+                    '<h2 style="padding:30px">Admin access only.</h2>';
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('modules')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            modules = data || [];
+
+            document.getElementById('totalModules').textContent =
+                modules.length;
+
+            document.getElementById('publishedModules').textContent =
+                modules.filter(m => m.is_published === true).length;
+
+            document.getElementById('unpublishedModules').textContent =
+                modules.filter(m => m.is_published === false).length;
+
+            renderModules();
+
+        } catch (error) {
+            console.error(error);
+            table.innerHTML = `
+                <tr>
+                    <td colspan="3" class="empty">
+                        Unable to load modules.
+                    </td>
+                </tr>
+            `;
+            message.textContent = error.message;
+        }
+    }
+
+    function renderModules() {
+        const search = searchInput.value.toLowerCase();
+        const filter = statusFilter.value;
+
+        const filtered = modules.filter(module => {
+            const title = (module.title || '').toLowerCase();
+            const teacher = (module.teacher_id || '').toLowerCase();
+
+            const matchesSearch =
+                title.includes(search) || teacher.includes(search);
+
+            const isPublished = module.is_published === true;
+
+            const matchesStatus =
+                filter === 'all' ||
+                (filter === 'published' && isPublished) ||
+                (filter === 'unpublished' && !isPublished);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        if (!filtered.length) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="3" class="empty">
+                        No modules found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        table.innerHTML = filtered.map(module => `
+            <tr>
+                <td>${escapeHTML(module.title || 'Untitled')}</td>
+                <td>${escapeHTML(module.teacher_id || 'Unknown')}</td>
+                <td>
+                    <span class="status">
+                        ${module.is_published ? 'Published' : 'Unpublished'}
+                    </span>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    searchInput.addEventListener('input', renderModules);
+    statusFilter.addEventListener('change', renderModules);
+
+    loadModules();
+</script>
+</body>
+</html>
