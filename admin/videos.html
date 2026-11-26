@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Video Tutorials</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f3e9;
+            color: #294536;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 { font-size: 27px; }
+
+        .subtitle {
+            color: #718477;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: white;
+            background: #315c43;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat, .panel {
+            background: #fffef8;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        }
+
+        .stat p {
+            color: #718477;
+            font-size: 13px;
+        }
+
+        .stat h2 {
+            font-size: 28px;
+            margin-top: 8px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 18px 0;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #dce3d9;
+            border-radius: 8px;
+            font-family: inherit;
+            background: white;
+            color: #294536;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        select { min-width: 150px; }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf0e9;
+            font-size: 13px;
+        }
+
+        th {
+            color: #718477;
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #e7eee4;
+            color: #315c43;
+        }
+
+        .video-link {
+            color: #315c43;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .video-link:hover { text-decoration: underline; }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #718477;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #a33b35;
+        }
+
+        @media(max-width:600px) {
+            body { padding: 16px; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div>
+            <h1>Video Tutorials Management</h1>
+            <p class="subtitle">Monitor video tutorials added by all teachers</p>
+        </div>
+
+        <a class="back" href="dashboard.html">← Admin Dashboard</a>
+    </header>
+
+    <section class="stats">
+        <div class="stat">
+            <p>Total Tutorials</p>
+            <h2 id="totalVideos">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>Published</p>
+            <h2 id="publishedVideos">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>Unpublished</p>
+            <h2 id="unpublishedVideos">—</h2>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h3>All Video Tutorials</h3>
+
+        <div class="toolbar">
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search title, description, or teacher ID..."
+            >
+
+            <select id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="published">Published</option>
+                <option value="unpublished">Unpublished</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Teacher ID</th>
+                        <th>Status</th>
+                        <th>Video Link</th>
+                    </tr>
+                </thead>
+
+                <tbody id="videoTable">
+                    <tr>
+                        <td colspan="5" class="empty">Loading tutorials...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="message"></p>
+    </section>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const table = document.getElementById('videoTable');
+    const message = document.getElementById('message');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+
+    let videos = [];
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[char]);
+    }
+
+    function safeVideoURL(value) {
+        try {
+            const url = new URL(value);
+
+            if (url.protocol === 'https:' || url.protocol === 'http:') {
+                return url.href;
+            }
+        } catch (error) {
+            return null;
+        }
+
+        return null;
+    }
+
+    async function loadVideos() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const session = sessionData.session;
+
+            if (!session) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: admin, error: adminError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (adminError) throw adminError;
+
+            if (admin.role !== 'admin') {
+                document.body.innerHTML =
+                    '<h2 style="padding:30px">Admin access only.</h2>';
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('video_tutorials')
+                .select('id, title, description, video_url, teacher_id, is_published, created_at')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            videos = data || [];
+
+            document.getElementById('totalVideos').textContent =
+                videos.length;
+
+            document.getElementById('publishedVideos').textContent =
+                videos.filter(video => video.is_published === true).length;
+
+            document.getElementById('unpublishedVideos').textContent =
+                videos.filter(video => video.is_published === false).length;
+
+            renderVideos();
+
+        } catch (error) {
+            console.error(error);
+            message.textContent = 'Unable to load tutorials: ' + error.message;
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty">
+                        Unable to load video tutorials.
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    function renderVideos() {
+        const search = searchInput.value.toLowerCase();
+        const filter = statusFilter.value;
+
+        const filtered = videos.filter(video => {
+            const matchesSearch =
+                (video.title || '').toLowerCase().includes(search) ||
+                (video.description || '').toLowerCase().includes(search) ||
+                (video.teacher_id || '').toLowerCase().includes(search);
+
+            const isPublished = video.is_published === true;
+
+            const matchesStatus =
+                filter === 'all' ||
+                (filter === 'published' && isPublished) ||
+                (filter === 'unpublished' && !isPublished);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        if (!filtered.length) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty">
+                        No video tutorials found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        table.innerHTML = filtered.map(video => {
+            const url = safeVideoURL(video.video_url);
+
+            return `
+                <tr>
+                    <td>${escapeHTML(video.title || 'Untitled')}</td>
+                    <td>${escapeHTML(video.description || '—')}</td>
+                    <td>${escapeHTML(video.teacher_id || 'Unknown')}</td>
+                    <td>
+                        <span class="status">
+                            ${video.is_published ? 'Published' : 'Unpublished'}
+                        </span>
+                    </td>
+                    <td>
+                        ${url
+                            ? `<a class="video-link" href="${escapeHTML(url)}"
+                                target="_blank" rel="noopener noreferrer">Open Video</a>`
+                            : 'No valid link'}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    searchInput.addEventListener('input', renderVideos);
+    statusFilter.addEventListener('change', renderVideos);
+
+    loadVideos();
+</script>
+
+</body>
+</html>
