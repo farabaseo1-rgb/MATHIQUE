@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Profile</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f5ed;
+            color: #294638;
+        }
+
+        header {
+            background: #244b38;
+            color: #fffef8;
+            padding: 22px 5%;
+        }
+
+        header h1 {
+            font-size: 23px;
+        }
+
+        header p {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        main {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .top h2 {
+            font-size: 22px;
+        }
+
+        .back {
+            background: #52745d;
+            color: white;
+            text-decoration: none;
+            padding: 10px 17px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .profile-card {
+            background: #fffef8;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: #dce9dc;
+            color: #315b40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .profile-card h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .role {
+            display: inline-block;
+            background: #dcefe1;
+            color: #27633d;
+            padding: 5px 13px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .details {
+            margin-top: 28px;
+            border-top: 1px solid #e8ece4;
+        }
+
+        .detail {
+            padding: 17px 0;
+            border-bottom: 1px solid #e8ece4;
+        }
+
+        .detail p {
+            color: #849187;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .detail strong {
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #718174;
+            line-height: 1.7;
+        }
+
+        #message {
+            padding: 25px;
+            text-align: center;
+            color: #718174;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>MATHIQUE</h1>
+    <p>ADMINISTRATION PORTAL</p>
+</header>
+
+<main>
+
+    <div class="top">
+        <div>
+            <h2>My Admin Profile</h2>
+            <p style="font-size:12px;color:#718174;">
+                View your account information.
+            </p>
+        </div>
+
+        <a href="dashboard.html" class="back">Back to Dashboard</a>
+    </div>
+
+    <section class="profile-card" id="profileCard">
+        <div id="message">Loading profile...</div>
+    </section>
+
+</main>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const profileCard = document.getElementById('profileCard');
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[char]);
+    }
+
+    async function loadProfile() {
+        const { data: sessionData, error: sessionError } =
+            await supabase.auth.getSession();
+
+        if (sessionError || !sessionData.session) {
+            window.location.href = '../index.html';
+            return;
+        }
+
+        const user = sessionData.session.user;
+
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('user_id, full_name, email, role')
+            .eq('user_id', user.id)
+            .single();
+
+        if (error || !profile || profile.role !== 'admin') {
+            profileCard.innerHTML =
+                '<div id="message">Unable to load profile. Admin access required.</div>';
+            return;
+        }
+
+        const name = profile.full_name || 'Admin';
+        const email = profile.email || user.email || 'Not available';
+        const initial = name.charAt(0).toUpperCase();
+
+        profileCard.innerHTML = `
+            <div class="avatar">${escapeHTML(initial)}</div>
+
+            <h3>${escapeHTML(name)}</h3>
+            <p style="font-size:13px;color:#718174;">
+                ${escapeHTML(email)}
+            </p>
+
+            <span class="role">ADMINISTRATOR</span>
+
+            <div class="details">
+
+                <div class="detail">
+                    <p>Full Name</p>
+                    <strong>${escapeHTML(name)}</strong>
+                </div>
+
+                <div class="detail">
+                    <p>Email Address</p>
+                    <strong>${escapeHTML(email)}</strong>
+                </div>
+
+                <div class="detail">
+                    <p>Account Role</p>
+                    <strong>${escapeHTML(profile.role)}</strong>
+                </div>
+
+                <div class="detail">
+                    <p>User ID</p>
+                    <strong>${escapeHTML(profile.user_id)}</strong>
+                </div>
+
+            </div>
+
+            <p class="note">
+                This page displays your administrator account information.
+                Profile details are currently read-only.
+            </p>
+        `;
+    }
+
+    loadProfile();
+</script>
+
+</body>
+</html>
