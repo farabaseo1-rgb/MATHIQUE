@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Submissions</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f5ed;
+            color: #294638;
+        }
+
+        header {
+            background: #244b38;
+            color: #fffef8;
+            padding: 22px 5%;
+        }
+
+        header h1 {
+            font-size: 23px;
+        }
+
+        header p {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .top h2 {
+            font-size: 22px;
+        }
+
+        .back {
+            color: #fff;
+            background: #52745d;
+            padding: 10px 17px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat, .panel {
+            background: #fffef8;
+            border-radius: 13px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        }
+
+        .stat p {
+            font-size: 13px;
+            color: #718174;
+        }
+
+        .stat h3 {
+            font-size: 28px;
+            margin-top: 5px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            padding: 11px 13px;
+            border: 1px solid #d5ded3;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            background: white;
+        }
+
+        input {
+            flex: 1;
+            min-width: 190px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e8ece4;
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        th {
+            color: #607565;
+            background: #f7f8f1;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .submitted {
+            background: #fff0d7;
+            color: #98620b;
+        }
+
+        .checked {
+            background: #dcefe1;
+            color: #27633d;
+        }
+
+        .muted {
+            color: #849187;
+        }
+
+        #message {
+            padding: 18px;
+            text-align: center;
+            color: #718174;
+            font-size: 13px;
+        }
+
+        @media(max-width: 600px) {
+            main {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>MATHIQUE</h1>
+    <p>ADMINISTRATION PORTAL</p>
+</header>
+
+<main>
+
+    <div class="top">
+        <div>
+            <h2>Online Submissions</h2>
+            <p class="muted">Monitor student activity submissions.</p>
+        </div>
+        <a class="back" href="dashboard.html">Back to Dashboard</a>
+    </div>
+
+    <section class="stats">
+        <div class="stat">
+            <p>Total Submissions</p>
+            <h3 id="totalCount">0</h3>
+        </div>
+
+        <div class="stat">
+            <p>Awaiting Checking</p>
+            <h3 id="pendingCount">0</h3>
+        </div>
+
+        <div class="stat">
+            <p>Checked</p>
+            <h3 id="checkedCount">0</h3>
+        </div>
+    </section>
+
+    <section class="panel">
+
+        <div class="filters">
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search student or activity..."
+            >
+
+            <select id="statusFilter">
+                <option value="all">All Statuses</option>
+                <option value="submitted">Submitted</option>
+                <option value="checked">Checked</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Activity</th>
+                        <th>Submission Date</th>
+                        <th>Files</th>
+                        <th>Status</th>
+                        <th>Checked Date</th>
+                    </tr>
+                </thead>
+
+                <tbody id="submissionTable">
+                    <tr>
+                        <td colspan="6" id="message">Loading submissions...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+</main>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const table = document.getElementById('submissionTable');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+
+    let submissions = [];
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[char]);
+    }
+
+    function formatDate(value) {
+        if (!value) return '—';
+
+        return new Date(value).toLocaleString('en-PH', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    async function loadSubmissions() {
+        table.innerHTML = `
+            <tr><td colspan="6" id="message">Loading submissions...</td></tr>
+        `;
+
+        const { data: sessionData, error: sessionError } =
+            await supabase.auth.getSession();
+
+        if (sessionError || !sessionData.session) {
+            window.location.href = '../index.html';
+            return;
+        }
+
+        const user = sessionData.session.user;
+
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('user_id', user.id)
+            .single();
+
+        if (profileError || profile?.role !== 'admin') {
+            table.innerHTML = `
+                <tr><td colspan="6">Access denied. Admin account required.</td></tr>
+            `;
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('submissions')
+            .select(`
+                id,
+                module_id,
+                student_id,
+                file_paths,
+                status,
+                submitted_at,
+                checked_at
+            `)
+            .order('submitted_at', { ascending: false });
+
+        if (error) {
+            console.error(error);
+            table.innerHTML = `
+                <tr><td colspan="6">Unable to load submissions: ${escapeHTML(error.message)}</td></tr>
+            `;
+            return;
+        }
+
+        submissions = data || [];
+
+        const moduleIds = [...new Set(submissions.map(item => item.module_id))];
+        const studentIds = [...new Set(submissions.map(item => item.student_id))];
+
+        let modules = [];
+        let students = [];
+
+        if (moduleIds.length) {
+            const result = await supabase
+                .from('modules')
+                .select('id, title')
+                .in('id', moduleIds);
+
+            if (result.error) console.error(result.error);
+            modules = result.data || [];
+        }
+
+        if (studentIds.length) {
+            const result = await supabase
+                .from('profiles')
+                .select('user_id, full_name, email')
+                .in('user_id', studentIds);
+
+            if (result.error) console.error(result.error);
+            students = result.data || [];
+        }
+
+        submissions = submissions.map(item => ({
+            ...item,
+            moduleTitle: modules.find(m => m.id === item.module_id)?.title || 'Unknown activity',
+            studentName: students.find(s => s.user_id === item.student_id)?.full_name || 'Student',
+            studentEmail: students.find(s => s.user_id === item.student_id)?.email || ''
+        }));
+
+        document.getElementById('totalCount').textContent = submissions.length;
+        document.getElementById('pendingCount').textContent =
+            submissions.filter(s => s.status === 'submitted').length;
+        document.getElementById('checkedCount').textContent =
+            submissions.filter(s => s.status === 'checked').length;
+
+        renderSubmissions();
+    }
+
+    function renderSubmissions() {
+        const search = searchInput.value.toLowerCase().trim();
+        const status = statusFilter.value;
+
+        const filtered = submissions.filter(item => {
+            const matchesSearch =
+                item.studentName.toLowerCase().includes(search) ||
+                item.studentEmail.toLowerCase().includes(search) ||
+                item.moduleTitle.toLowerCase().includes(search);
+
+            const matchesStatus =
+                status === 'all' || item.status === status;
+
+            return matchesSearch && matchesStatus;
+        });
+
+        if (!filtered.length) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" id="message">No submissions found.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        table.innerHTML = filtered.map(item => {
+            const fileCount = Array.isArray(item.file_paths)
+                ? item.file_paths.length
+                : 0;
+
+            return `
+                <tr>
+                    <td>
+                        <strong>${escapeHTML(item.studentName)}</strong><br>
+                        <span class="muted">${escapeHTML(item.studentEmail)}</span>
+                    </td>
+
+                    <td>${escapeHTML(item.moduleTitle)}</td>
+
+                    <td>${escapeHTML(formatDate(item.submitted_at))}</td>
+
+                    <td>${fileCount} file(s)</td>
+
+                    <td>
+                        <span class="status ${item.status === 'checked' ? 'checked' : 'submitted'}">
+                            ${escapeHTML(item.status)}
+                        </span>
+                    </td>
+
+                    <td>${escapeHTML(formatDate(item.checked_at))}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    searchInput.addEventListener('input', renderSubmissions);
+    statusFilter.addEventListener('change', renderSubmissions);
+
+    loadSubmissions();
+</script>
+
+</body>
+</html>
