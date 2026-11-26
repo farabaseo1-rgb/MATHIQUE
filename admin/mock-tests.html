@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Mock Tests</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f3e9;
+            color: #294536;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 { font-size: 27px; }
+
+        .subtitle {
+            color: #718477;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: white;
+            background: #315c43;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat, .panel {
+            background: #fffef8;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        }
+
+        .stat p {
+            color: #718477;
+            font-size: 13px;
+        }
+
+        .stat h2 {
+            font-size: 28px;
+            margin-top: 8px;
+        }
+
+        .panel { margin-bottom: 24px; }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 18px 0;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #dce3d9;
+            border-radius: 8px;
+            font-family: inherit;
+            background: white;
+            color: #294536;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        select { min-width: 150px; }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf0e9;
+            font-size: 13px;
+        }
+
+        th {
+            color: #718477;
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #e7eee4;
+            color: #315c43;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #718477;
+        }
+
+        .error {
+            color: #a33b35;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        @media(max-width:600px) {
+            body { padding: 16px; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div>
+            <h1>Mock Tests Management</h1>
+            <p class="subtitle">Monitor regular and PDF mock tests created by teachers</p>
+        </div>
+
+        <a class="back" href="dashboard.html">← Admin Dashboard</a>
+    </header>
+
+    <section class="stats">
+        <div class="stat">
+            <p>Regular Mock Tests</p>
+            <h2 id="regularCount">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>PDF Mock Tests</p>
+            <h2 id="pdfCount">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>PDF Uploads</p>
+            <h2 id="uploadCount">—</h2>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h3>Regular Mock Tests</h3>
+
+        <div class="toolbar">
+            <input id="regularSearch" type="search"
+                placeholder="Search test title or teacher...">
+
+            <select id="regularFilter">
+                <option value="all">All Status</option>
+                <option value="published">Published</option>
+                <option value="unpublished">Unpublished</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Title</th>
+                        <th>Teacher ID</th>
+                        <th>Status</th>
+                        <th>Date Created</th>
+                    </tr>
+                </thead>
+                <tbody id="regularTable">
+                    <tr><td colspan="4" class="empty">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h3>PDF Mock Tests</h3>
+
+        <div class="toolbar">
+            <input id="pdfSearch" type="search"
+                placeholder="Search PDF test title or teacher...">
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Title</th>
+                        <th>Teacher ID</th>
+                        <th>Status</th>
+                        <th>Date Created</th>
+                    </tr>
+                </thead>
+                <tbody id="pdfTable">
+                    <tr><td colspan="4" class="empty">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h3>Uploaded Mock Test PDFs</h3>
+
+        <div class="toolbar">
+            <input id="uploadSearch" type="search"
+                placeholder="Search uploaded test or teacher...">
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Upload Title</th>
+                        <th>Teacher ID</th>
+                        <th>Status</th>
+                        <th>Date Uploaded</th>
+                    </tr>
+                </thead>
+                <tbody id="uploadTable">
+                    <tr><td colspan="4" class="empty">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <p id="message"></p>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const regularTable = document.getElementById('regularTable');
+    const pdfTable = document.getElementById('pdfTable');
+    const uploadTable = document.getElementById('uploadTable');
+    const message = document.getElementById('message');
+
+    let regularTests = [];
+    let pdfTests = [];
+    let uploads = [];
+
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[char]);
+    }
+
+    function formatDate(value) {
+        if (!value) return '—';
+
+        const date = new Date(value);
+
+        return isNaN(date)
+            ? '—'
+            : date.toLocaleDateString();
+    }
+
+    function showEmpty(table, columns, text) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="${columns}" class="empty">
+                    ${text}
+                </td>
+            </tr>
+        `;
+    }
+
+    async function loadData() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const session = sessionData.session;
+
+            if (!session) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: admin, error: adminError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (adminError) throw adminError;
+
+            if (admin.role !== 'admin') {
+                document.body.innerHTML =
+                    '<h2 style="padding:30px">Admin access only.</h2>';
+                return;
+            }
+
+            const [regularResult, pdfResult, uploadResult] =
+                await Promise.all([
+                    supabase.from('mock_tests')
+                        .select('id, title, teacher_id, is_published, created_at')
+                        .order('created_at', { ascending: false }),
+
+                    supabase.from('pdf_mock_tests')
+                        .select('id, title, teacher_id, status, created_at')
+                        .order('created_at', { ascending: false }),
+
+                    supabase.from('mock_test_uploads')
+                        .select('id, title, teacher_id, status, created_at')
+                        .order('created_at', { ascending: false })
+                ]);
+
+            if (regularResult.error) throw regularResult.error;
+            if (pdfResult.error) throw pdfResult.error;
+            if (uploadResult.error) throw uploadResult.error;
+
+            regularTests = regularResult.data || [];
+            pdfTests = pdfResult.data || [];
+            uploads = uploadResult.data || [];
+
+            document.getElementById('regularCount').textContent =
+                regularTests.length;
+
+            document.getElementById('pdfCount').textContent =
+                pdfTests.length;
+
+            document.getElementById('uploadCount').textContent =
+                uploads.length;
+
+            renderRegular();
+            renderPDF();
+            renderUploads();
+
+        } catch (error) {
+            console.error(error);
+            message.textContent = 'Unable to load mock tests: ' + error.message;
+
+            showEmpty(regularTable, 4, 'Unable to load regular mock tests.');
+            showEmpty(pdfTable, 4, 'Unable to load PDF mock tests.');
+            showEmpty(uploadTable, 4, 'Unable to load PDF uploads.');
+        }
+    }
+
+    function renderRegular() {
+        const search = document.getElementById('regularSearch')
+            .value.toLowerCase();
+
+        const filter = document.getElementById('regularFilter').value;
+
+        const filtered = regularTests.filter(test => {
+            const matchesSearch =
+                (test.title || '').toLowerCase().includes(search) ||
+                (test.teacher_id || '').toLowerCase().includes(search);
+
+            const matchesStatus =
+                filter === 'all' ||
+                (filter === 'published' && test.is_published === true) ||
+                (filter === 'unpublished' && test.is_published === false);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        if (!filtered.length) {
+            showEmpty(regularTable, 4, 'No regular mock tests found.');
+            return;
+        }
+
+        regularTable.innerHTML = filtered.map(test => `
+            <tr>
+                <td>${escapeHTML(test.title || 'Untitled')}</td>
+                <td>${escapeHTML(test.teacher_id || 'Unknown')}</td>
+                <td><span class="status">
+                    ${test.is_published ? 'Published' : 'Unpublished'}
+                </span></td>
+                <td>${formatDate(test.created_at)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderPDF() {
+        const search = document.getElementById('pdfSearch')
+            .value.toLowerCase();
+
+        const filtered = pdfTests.filter(test =>
+            (test.title || '').toLowerCase().includes(search) ||
+            (test.teacher_id || '').toLowerCase().includes(search)
+        );
+
+        if (!filtered.length) {
+            showEmpty(pdfTable, 4, 'No PDF mock tests found.');
+            return;
+        }
+
+        pdfTable.innerHTML = filtered.map(test => `
+            <tr>
+                <td>${escapeHTML(test.title || 'Untitled')}</td>
+                <td>${escapeHTML(test.teacher_id || 'Unknown')}</td>
+                <td><span class="status">
+                    ${escapeHTML(test.status || 'Unknown')}
+                </span></td>
+                <td>${formatDate(test.created_at)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderUploads() {
+        const search = document.getElementById('uploadSearch')
+            .value.toLowerCase();
+
+        const filtered = uploads.filter(upload =>
+            (upload.title || '').toLowerCase().includes(search) ||
+            (upload.teacher_id || '').toLowerCase().includes(search)
+        );
+
+        if (!filtered.length) {
+            showEmpty(uploadTable, 4, 'No uploaded PDFs found.');
+            return;
+        }
+
+        uploadTable.innerHTML = filtered.map(upload => `
+            <tr>
+                <td>${escapeHTML(upload.title || 'Untitled')}</td>
+                <td>${escapeHTML(upload.teacher_id || 'Unknown')}</td>
+                <td><span class="status">
+                    ${escapeHTML(upload.status || 'Unknown')}
+                </span></td>
+                <td>${formatDate(upload.created_at)}</td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('regularSearch')
+        .addEventListener('input', renderRegular);
+
+    document.getElementById('regularFilter')
+        .addEventListener('change', renderRegular);
+
+    document.getElementById('pdfSearch')
+        .addEventListener('input', renderPDF);
+
+    document.getElementById('uploadSearch')
+        .addEventListener('input', renderUploads);
+
+    loadData();
+</script>
+
+</body>
+</html>
