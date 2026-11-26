@@ -36,14 +36,20 @@
             min-height: 100vh;
         }
 
+        /* SIDEBAR */
+
         .sidebar {
             width: 255px;
+            min-height: 100vh;
             background: var(--green-dark);
             color: white;
             padding: 25px 18px;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            transition: width .3s ease, padding .3s ease;
         }
 
         .brand {
@@ -64,6 +70,29 @@
             letter-spacing: 2px;
             margin-top: 12px;
             font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 25px;
+            right: 12px;
+            width: 35px;
+            height: 35px;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 8px;
+            background: #41654f;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            z-index: 5;
+            transition: .2s;
+        }
+
+        .sidebar-toggle:hover {
+            background: #5b8065;
         }
 
         .nav-title {
@@ -73,6 +102,7 @@
             letter-spacing: 1.5px;
             padding: 0 12px;
             margin: 8px 0 12px;
+            white-space: nowrap;
         }
 
         .nav-list {
@@ -95,6 +125,7 @@
             font-size: 13px;
             text-align: left;
             text-decoration: none;
+            white-space: nowrap;
             cursor: pointer;
             transition: .2s;
         }
@@ -107,6 +138,7 @@
 
         .nav-icon {
             width: 22px;
+            min-width: 22px;
             text-align: center;
             font-size: 17px;
         }
@@ -117,10 +149,57 @@
             border-top: 1px solid rgba(255,255,255,.15);
         }
 
+        .logout {
+            color: #ffe4dc;
+        }
+
+        /* COLLAPSED SIDEBAR */
+
+        .sidebar.collapsed {
+            width: 78px;
+            padding: 25px 12px;
+        }
+
+        .sidebar.collapsed .brand {
+            padding: 48px 0 18px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .brand img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .sidebar.collapsed .admin-label,
+        .sidebar.collapsed .nav-title {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            gap: 0;
+            padding: 13px 5px;
+            font-size: 0;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            font-size: 19px;
+        }
+
+        .sidebar.collapsed .sidebar-toggle {
+            right: 21px;
+        }
+
+        /* MAIN CONTENT */
+
         .main {
             flex: 1;
             min-width: 0;
             padding: 30px 38px;
+            transition: .3s ease;
         }
 
         .topbar {
@@ -175,6 +254,8 @@
             color: var(--muted);
         }
 
+        /* WELCOME */
+
         .welcome {
             background: linear-gradient(120deg, #244b3a, #52765c);
             border-radius: 18px;
@@ -199,6 +280,8 @@
             color: var(--green-dark);
             margin: 27px 0 15px;
         }
+
+        /* STATISTICS */
 
         .stats {
             display: grid;
@@ -231,6 +314,8 @@
             color: var(--green);
             margin-top: 5px;
         }
+
+        /* MANAGEMENT CARDS */
 
         .feature-grid {
             display: grid;
@@ -293,10 +378,6 @@
             line-height: 1.7;
         }
 
-        .logout {
-            color: #ffe4dc;
-        }
-
         .message {
             display: none;
             margin-bottom: 18px;
@@ -307,6 +388,8 @@
             border-radius: 10px;
             font-size: 12px;
         }
+
+        /* ACCESS SCREENS */
 
         .access-screen {
             min-height: 100vh;
@@ -343,6 +426,8 @@
             font-weight: 600;
         }
 
+        /* TABLET */
+
         @media (max-width: 1000px) {
             .stats {
                 grid-template-columns: repeat(2, 1fr);
@@ -351,25 +436,39 @@
             .feature-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .main {
+                padding: 25px;
+            }
         }
 
+        /* MOBILE */
+
         @media (max-width: 700px) {
+
             .layout {
                 flex-direction: column;
             }
 
             .sidebar {
                 width: 100%;
+                min-height: auto;
                 padding: 15px;
             }
 
-            .brand {
-                padding-bottom: 15px;
+            .sidebar .brand {
+                padding: 5px 8px 15px;
                 margin-bottom: 15px;
             }
 
-            .brand img {
+            .sidebar .brand img {
                 width: 155px;
+                height: auto;
+            }
+
+            .sidebar-toggle {
+                position: static;
+                margin-bottom: 12px;
             }
 
             .nav-list {
@@ -380,6 +479,27 @@
 
             .sidebar-bottom {
                 margin-top: 12px;
+            }
+
+            .sidebar.collapsed {
+                width: 100%;
+                min-height: auto;
+                padding: 12px 15px;
+            }
+
+            .sidebar.collapsed .brand {
+                display: none;
+            }
+
+            .sidebar.collapsed .nav-list,
+            .sidebar.collapsed .nav-title,
+            .sidebar.collapsed .sidebar-bottom {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-toggle {
+                position: static;
+                margin: 0;
             }
 
             .main {
@@ -436,17 +556,33 @@
 <div id="accessDenied" class="access-screen" style="display:none;">
     <div class="access-card">
         <h2 id="accessTitle">Access Restricted</h2>
-        <p id="accessMessage">You need an administrator account to access this page.</p>
+        <p id="accessMessage">
+            You need an administrator account to access this page.
+        </p>
         <a href="../index.html">Back to Login</a>
     </div>
 </div>
 
 <div class="layout" id="dashboard" style="display:none;">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+
+        <button
+            class="sidebar-toggle"
+            id="sidebarToggle"
+            type="button"
+            aria-label="Toggle sidebar"
+            aria-expanded="true"
+            title="Toggle Sidebar"
+        >
+            ☰
+        </button>
 
         <div class="brand">
-            <img src="../assets/images/mathique-full-logo.png" alt="MATHIQUE Logo">
+            <img
+                src="../assets/images/mathique-full-logo.png"
+                alt="MATHIQUE Logo"
+            >
             <div class="admin-label">ADMINISTRATOR PORTAL</div>
         </div>
 
@@ -454,43 +590,57 @@
 
         <nav class="nav-list">
 
-            <a class="nav-item active" href="dashboard.html">
-                <span class="nav-icon">⌂</span> Dashboard
+            <a class="nav-item active" href="dashboard.html" title="Dashboard">
+                <span class="nav-icon">⌂</span>
+                Dashboard
             </a>
 
-            <a class="nav-item" href="users.html">
-                <span class="nav-icon">♙</span> User Management
+            <a class="nav-item" href="users.html" title="User Management">
+                <span class="nav-icon">♙</span>
+                User Management
             </a>
 
-            <a class="nav-item" href="modules.html">
-                <span class="nav-icon">▤</span> Learning Modules
+            <a class="nav-item" href="modules.html" title="Learning Modules">
+                <span class="nav-icon">▤</span>
+                Learning Modules
             </a>
 
-            <a class="nav-item" href="lessons.html">
-                <span class="nav-icon">▧</span> Lessons
+            <a class="nav-item" href="lessons.html" title="Lessons">
+                <span class="nav-icon">▧</span>
+                Lessons
             </a>
 
-            <a class="nav-item" href="mock-tests.html">
-                <span class="nav-icon">✎</span> Mock Tests
+            <a class="nav-item" href="mock-tests.html" title="Mock Tests">
+                <span class="nav-icon">✎</span>
+                Mock Tests
             </a>
 
-            <a class="nav-item" href="videos.html">
-                <span class="nav-icon">▷</span> Video Tutorials
+            <a class="nav-item" href="videos.html" title="Video Tutorials">
+                <span class="nav-icon">▷</span>
+                Video Tutorials
             </a>
 
-            <a class="nav-item" href="submissions.html">
-                <span class="nav-icon">▣</span> Submissions
+            <a class="nav-item" href="submissions.html" title="Submissions">
+                <span class="nav-icon">▣</span>
+                Submissions
             </a>
 
-            <a class="nav-item" href="profile.html">
-                <span class="nav-icon">♙</span> My Profile
+            <a class="nav-item" href="profile.html" title="My Profile">
+                <span class="nav-icon">♙</span>
+                My Profile
             </a>
 
         </nav>
 
         <div class="sidebar-bottom">
-            <button class="nav-item logout" id="logoutBtn" type="button">
-                <span class="nav-icon">↪</span> Log Out
+            <button
+                class="nav-item logout"
+                id="logoutBtn"
+                type="button"
+                title="Log Out"
+            >
+                <span class="nav-icon">↪</span>
+                Log Out
             </button>
         </div>
 
@@ -499,6 +649,7 @@
     <main class="main">
 
         <header class="topbar">
+
             <div>
                 <h1>Admin Dashboard</h1>
                 <p>Manage and monitor the MATHIQUE learning system.</p>
@@ -506,11 +657,15 @@
 
             <a class="admin-profile" href="profile.html">
                 <div class="avatar" id="adminAvatar">A</div>
+
                 <div>
-                    <div class="profile-name" id="adminName">Administrator</div>
+                    <div class="profile-name" id="adminName">
+                        Administrator
+                    </div>
                     <div class="profile-role">System Administrator</div>
                 </div>
             </a>
+
         </header>
 
         <div class="message" id="featureMessage"></div>
@@ -626,7 +781,33 @@
     const dashboard = document.getElementById('dashboard');
     const accessDenied = document.getElementById('accessDenied');
 
+    /* SIDEBAR TOGGLE */
+
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+
+    sidebarToggle.addEventListener('click', () => {
+
+        sidebar.classList.toggle('collapsed');
+
+        const isCollapsed = sidebar.classList.contains('collapsed');
+
+        sidebarToggle.setAttribute(
+            'aria-expanded',
+            String(!isCollapsed)
+        );
+
+        sidebarToggle.innerHTML = isCollapsed ? '☰' : '✕';
+
+        sidebarToggle.title = isCollapsed
+            ? 'Open Sidebar'
+            : 'Close Sidebar';
+    });
+
+    /* ACCESS CONTROL */
+
     function denyAccess(title, message) {
+
         loading.style.display = 'none';
         dashboard.style.display = 'none';
         accessDenied.style.display = 'grid';
@@ -635,70 +816,82 @@
         document.getElementById('accessMessage').textContent = message;
     }
 
-    async function getCount(tableName, columnId) {
-        const { count, error } = await supabase
-            .from(tableName)
-            .select(columnId, {
-                count: 'exact',
-                head: true
-            });
-
-        if (error) {
-            console.error('Count error:', tableName, error);
-            return '—';
-        }
-
-        return count ?? 0;
-    }
+    /* DASHBOARD STATISTICS */
 
     async function loadStatistics() {
+
         const [students, teachers, modules, submissions] =
             await Promise.all([
-                supabase.from('profiles')
-                    .select('user_id', { count: 'exact', head: true })
+
+                supabase
+                    .from('profiles')
+                    .select('user_id', {
+                        count: 'exact',
+                        head: true
+                    })
                     .eq('role', 'student'),
 
-                supabase.from('profiles')
-                    .select('user_id', { count: 'exact', head: true })
+                supabase
+                    .from('profiles')
+                    .select('user_id', {
+                        count: 'exact',
+                        head: true
+                    })
                     .eq('role', 'teacher'),
 
-                supabase.from('modules')
-                    .select('id', { count: 'exact', head: true }),
+                supabase
+                    .from('modules')
+                    .select('id', {
+                        count: 'exact',
+                        head: true
+                    }),
 
-                supabase.from('submissions')
-                    .select('id', { count: 'exact', head: true })
+                supabase
+                    .from('submissions')
+                    .select('id', {
+                        count: 'exact',
+                        head: true
+                    })
             ]);
 
         document.getElementById('studentCount').textContent =
-            students.error ? '—' : students.count ?? 0;
+            students.error ? '—' : (students.count ?? 0);
 
         document.getElementById('teacherCount').textContent =
-            teachers.error ? '—' : teachers.count ?? 0;
+            teachers.error ? '—' : (teachers.count ?? 0);
 
         document.getElementById('moduleCount').textContent =
-            modules.error ? '—' : modules.count ?? 0;
+            modules.error ? '—' : (modules.count ?? 0);
 
         document.getElementById('submissionCount').textContent =
-            submissions.error ? '—' : submissions.count ?? 0;
+            submissions.error ? '—' : (submissions.count ?? 0);
 
-        if (students.error) console.error(students.error);
-        if (teachers.error) console.error(teachers.error);
-        if (modules.error) console.error(modules.error);
-        if (submissions.error) console.error(submissions.error);
+        if (students.error) console.error('Students:', students.error);
+        if (teachers.error) console.error('Teachers:', teachers.error);
+        if (modules.error) console.error('Modules:', modules.error);
+        if (submissions.error) console.error('Submissions:', submissions.error);
     }
 
+    /* VERIFY ADMIN ACCOUNT */
+
     async function verifyAdmin() {
+
         try {
-            const { data: { session }, error: sessionError } =
-                await supabase.auth.getSession();
+
+            const {
+                data: { session },
+                error: sessionError
+            } = await supabase.auth.getSession();
 
             if (sessionError) throw sessionError;
 
             if (!session) {
+
                 denyAccess(
                     'Login Required',
                     'Please log in using your MATHIQUE administrator account.'
                 );
+
                 return;
             }
 
@@ -711,18 +904,23 @@
             if (profileError) throw profileError;
 
             if (!profile || profile.role !== 'admin') {
+
                 denyAccess(
                     'Admin Access Only',
                     'This account is not registered as a MATHIQUE administrator.'
                 );
+
                 return;
             }
 
             const displayName =
-                profile.full_name || profile.email ||
-                session.user.email || 'Administrator';
+                profile.full_name ||
+                profile.email ||
+                session.user.email ||
+                'Administrator';
 
-            document.getElementById('adminName').textContent = displayName;
+            document.getElementById('adminName').textContent =
+                displayName;
 
             document.getElementById('adminAvatar').textContent =
                 displayName.charAt(0).toUpperCase();
@@ -733,6 +931,7 @@
             await loadStatistics();
 
         } catch (error) {
+
             console.error('Admin verification error:', error);
 
             denyAccess(
@@ -742,7 +941,10 @@
         }
     }
 
+    /* LOG OUT */
+
     document.getElementById('logoutBtn').addEventListener('click', async () => {
+
         const { error } = await supabase.auth.signOut();
 
         if (error) {
@@ -754,6 +956,7 @@
     });
 
     verifyAdmin();
+
 </script>
 
 </body>
