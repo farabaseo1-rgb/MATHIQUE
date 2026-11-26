@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,6 +75,11 @@
             margin: 8px 0 12px;
         }
 
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+        }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -90,6 +94,7 @@
             font-family: inherit;
             font-size: 13px;
             text-align: left;
+            text-decoration: none;
             cursor: pointer;
             transition: .2s;
         }
@@ -98,10 +103,6 @@
         .nav-item.active {
             background: #41654f;
             color: white;
-        }
-
-        .nav-item.disabled {
-            opacity: .65;
         }
 
         .nav-icon {
@@ -149,6 +150,8 @@
             border: 1px solid var(--border);
             border-radius: 13px;
             padding: 10px 15px;
+            text-decoration: none;
+            color: inherit;
         }
 
         .avatar {
@@ -236,13 +239,22 @@
         }
 
         .feature-card {
+            display: block;
             background: var(--cream);
             border: 1px solid var(--border);
             border-radius: 15px;
             padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            transition: .2s;
         }
 
-        .feature-card .feature-icon {
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 7px 18px rgba(0,0,0,.08);
+        }
+
+        .feature-icon {
             font-size: 25px;
             margin-bottom: 12px;
         }
@@ -265,7 +277,7 @@
             padding: 5px 10px;
             border-radius: 20px;
             background: #edf1e9;
-            color: #637765;
+            color: #41654f;
             font-size: 10px;
             font-weight: 600;
         }
@@ -366,10 +378,6 @@
                 gap: 4px;
             }
 
-            .nav-title {
-                margin-top: 5px;
-            }
-
             .sidebar-bottom {
                 margin-top: 12px;
             }
@@ -436,6 +444,7 @@
 <div class="layout" id="dashboard" style="display:none;">
 
     <aside class="sidebar">
+
         <div class="brand">
             <img src="../assets/images/mathique-full-logo.png" alt="MATHIQUE Logo">
             <div class="admin-label">ADMINISTRATOR PORTAL</div>
@@ -444,37 +453,39 @@
         <div class="nav-title">MAIN MENU</div>
 
         <nav class="nav-list">
-            <button class="nav-item active" type="button">
+
+            <a class="nav-item active" href="dashboard.html">
                 <span class="nav-icon">⌂</span> Dashboard
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="User Management" type="button">
+            <a class="nav-item" href="users.html">
                 <span class="nav-icon">♙</span> User Management
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="Learning Modules" type="button">
+            <a class="nav-item" href="modules.html">
                 <span class="nav-icon">▤</span> Learning Modules
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="Lessons" type="button">
+            <a class="nav-item" href="lessons.html">
                 <span class="nav-icon">▧</span> Lessons
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="Mock Tests" type="button">
+            <a class="nav-item" href="mock-tests.html">
                 <span class="nav-icon">✎</span> Mock Tests
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="Video Tutorials" type="button">
+            <a class="nav-item" href="videos.html">
                 <span class="nav-icon">▷</span> Video Tutorials
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="Student Submissions" type="button">
+            <a class="nav-item" href="submissions.html">
                 <span class="nav-icon">▣</span> Submissions
-            </button>
+            </a>
 
-            <button class="nav-item disabled" data-feature="Scores and Activities" type="button">
-                <span class="nav-icon">▥</span> Scores & Activities
-            </button>
+            <a class="nav-item" href="profile.html">
+                <span class="nav-icon">♙</span> My Profile
+            </a>
+
         </nav>
 
         <div class="sidebar-bottom">
@@ -482,22 +493,24 @@
                 <span class="nav-icon">↪</span> Log Out
             </button>
         </div>
+
     </aside>
 
     <main class="main">
+
         <header class="topbar">
             <div>
                 <h1>Admin Dashboard</h1>
                 <p>Manage and monitor the MATHIQUE learning system.</p>
             </div>
 
-            <div class="admin-profile">
-                <div class="avatar">A</div>
+            <a class="admin-profile" href="profile.html">
+                <div class="avatar" id="adminAvatar">A</div>
                 <div>
                     <div class="profile-name" id="adminName">Administrator</div>
                     <div class="profile-role">System Administrator</div>
                 </div>
-            </div>
+            </a>
         </header>
 
         <div class="message" id="featureMessage"></div>
@@ -505,92 +518,105 @@
         <section class="welcome">
             <h2>Welcome to MATHIQUE Admin Portal!</h2>
             <p>
-                You are signed in as an administrator. From here, you will be able
-                to manage the learning system and monitor student and teacher activities.
+                You are signed in as an administrator. From here, you can
+                monitor the learning system and view student and teacher activities.
             </p>
         </section>
 
         <h2 class="section-heading">System Overview</h2>
 
         <section class="stats">
+
             <div class="stat-card">
                 <div class="stat-icon">👨‍🎓</div>
                 <h3>Total Students</h3>
-                <div class="stat-value">—</div>
+                <div class="stat-value" id="studentCount">—</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon">👩‍🏫</div>
                 <h3>Total Teachers</h3>
-                <div class="stat-value">—</div>
+                <div class="stat-value" id="teacherCount">—</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon">📚</div>
                 <h3>Learning Modules</h3>
-                <div class="stat-value">—</div>
+                <div class="stat-value" id="moduleCount">—</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon">📩</div>
                 <h3>Student Submissions</h3>
-                <div class="stat-value">—</div>
+                <div class="stat-value" id="submissionCount">—</div>
             </div>
+
         </section>
 
         <h2 class="section-heading">System Management</h2>
 
         <section class="feature-grid">
-            <div class="feature-card">
+
+            <a class="feature-card" href="users.html">
                 <div class="feature-icon">👥</div>
                 <h3>User Management</h3>
-                <p>Manage student and teacher accounts and their access.</p>
-                <span class="status">Coming Soon</span>
-            </div>
+                <p>View registered student and teacher profiles.</p>
+                <span class="status">Open Page →</span>
+            </a>
 
-            <div class="feature-card">
+            <a class="feature-card" href="modules.html">
                 <div class="feature-icon">📖</div>
                 <h3>Learning Modules</h3>
-                <p>View and manage learning modules created by teachers.</p>
-                <span class="status">Coming Soon</span>
-            </div>
+                <p>View learning modules created by teachers.</p>
+                <span class="status">Open Page →</span>
+            </a>
 
-            <div class="feature-card">
+            <a class="feature-card" href="lessons.html">
+                <div class="feature-icon">📚</div>
+                <h3>Lessons</h3>
+                <p>Monitor lessons available in the system.</p>
+                <span class="status">Open Page →</span>
+            </a>
+
+            <a class="feature-card" href="mock-tests.html">
                 <div class="feature-icon">📝</div>
                 <h3>Mock Tests</h3>
-                <p>Monitor mock tests, questions, and answer keys.</p>
-                <span class="status">Coming Soon</span>
-            </div>
+                <p>View mock tests and uploaded test documents.</p>
+                <span class="status">Open Page →</span>
+            </a>
 
-            <div class="feature-card">
+            <a class="feature-card" href="videos.html">
                 <div class="feature-icon">🎥</div>
                 <h3>Video Tutorials</h3>
-                <p>Manage educational video tutorial links.</p>
-                <span class="status">Coming Soon</span>
-            </div>
+                <p>View educational video tutorial links.</p>
+                <span class="status">Open Page →</span>
+            </a>
 
-            <div class="feature-card">
+            <a class="feature-card" href="submissions.html">
                 <div class="feature-icon">📤</div>
                 <h3>Student Submissions</h3>
-                <p>Monitor uploaded student activity proofs and feedback.</p>
-                <span class="status">Coming Soon</span>
-            </div>
+                <p>Monitor student activity submissions.</p>
+                <span class="status">Open Page →</span>
+            </a>
 
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Scores & Activities</h3>
-                <p>Monitor student progress and academic activities.</p>
-                <span class="status">Coming Soon</span>
-            </div>
+            <a class="feature-card" href="profile.html">
+                <div class="feature-icon">👤</div>
+                <h3>Admin Profile</h3>
+                <p>View your administrator account information.</p>
+                <span class="status">Open Page →</span>
+            </a>
+
         </section>
 
         <div class="notice">
             <strong>Administrator access:</strong>
             Your account has been verified as an MATHIQUE administrator.
-            The management sections and system statistics will be connected
-            to the database in the next development steps.
+            The dashboard displays available system records.
+            Management pages currently provide read-only monitoring.
         </div>
+
     </main>
+
 </div>
 
 <script type="module">
@@ -599,15 +625,66 @@
     const loading = document.getElementById('loading');
     const dashboard = document.getElementById('dashboard');
     const accessDenied = document.getElementById('accessDenied');
-    const accessTitle = document.getElementById('accessTitle');
-    const accessMessage = document.getElementById('accessMessage');
 
     function denyAccess(title, message) {
         loading.style.display = 'none';
         dashboard.style.display = 'none';
         accessDenied.style.display = 'grid';
-        accessTitle.textContent = title;
-        accessMessage.textContent = message;
+
+        document.getElementById('accessTitle').textContent = title;
+        document.getElementById('accessMessage').textContent = message;
+    }
+
+    async function getCount(tableName, columnId) {
+        const { count, error } = await supabase
+            .from(tableName)
+            .select(columnId, {
+                count: 'exact',
+                head: true
+            });
+
+        if (error) {
+            console.error('Count error:', tableName, error);
+            return '—';
+        }
+
+        return count ?? 0;
+    }
+
+    async function loadStatistics() {
+        const [students, teachers, modules, submissions] =
+            await Promise.all([
+                supabase.from('profiles')
+                    .select('user_id', { count: 'exact', head: true })
+                    .eq('role', 'student'),
+
+                supabase.from('profiles')
+                    .select('user_id', { count: 'exact', head: true })
+                    .eq('role', 'teacher'),
+
+                supabase.from('modules')
+                    .select('id', { count: 'exact', head: true }),
+
+                supabase.from('submissions')
+                    .select('id', { count: 'exact', head: true })
+            ]);
+
+        document.getElementById('studentCount').textContent =
+            students.error ? '—' : students.count ?? 0;
+
+        document.getElementById('teacherCount').textContent =
+            teachers.error ? '—' : teachers.count ?? 0;
+
+        document.getElementById('moduleCount').textContent =
+            modules.error ? '—' : modules.count ?? 0;
+
+        document.getElementById('submissionCount').textContent =
+            submissions.error ? '—' : submissions.count ?? 0;
+
+        if (students.error) console.error(students.error);
+        if (teachers.error) console.error(teachers.error);
+        if (modules.error) console.error(modules.error);
+        if (submissions.error) console.error(submissions.error);
     }
 
     async function verifyAdmin() {
@@ -641,11 +718,19 @@
                 return;
             }
 
-            document.getElementById('adminName').textContent =
-                profile.full_name || profile.email || 'Administrator';
+            const displayName =
+                profile.full_name || profile.email ||
+                session.user.email || 'Administrator';
+
+            document.getElementById('adminName').textContent = displayName;
+
+            document.getElementById('adminAvatar').textContent =
+                displayName.charAt(0).toUpperCase();
 
             loading.style.display = 'none';
             dashboard.style.display = 'flex';
+
+            await loadStatistics();
 
         } catch (error) {
             console.error('Admin verification error:', error);
@@ -666,19 +751,6 @@
         }
 
         window.location.href = '../index.html';
-    });
-
-    document.querySelectorAll('[data-feature]').forEach(button => {
-        button.addEventListener('click', () => {
-            const feature = button.dataset.feature;
-            const message = document.getElementById('featureMessage');
-
-            message.textContent =
-                feature + ' will be connected in the next development step.';
-
-            message.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
     });
 
     verifyAdmin();
