@@ -1,1 +1,688 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --green: #244b3a;
+            --green-dark: #193729;
+            --sage: #dce8dc;
+            --cream: #fffef8;
+            --text: #263b30;
+            --muted: #829087;
+            --border: #e7ece5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7f1;
+            color: var(--text);
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 255px;
+            background: var(--green-dark);
+            color: white;
+            padding: 25px 18px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 5px 8px 28px;
+            border-bottom: 1px solid rgba(255,255,255,.15);
+            margin-bottom: 25px;
+        }
+
+        .brand img {
+            width: 190px;
+            max-width: 100%;
+            display: block;
+        }
+
+        .admin-label {
+            color: #c5d8c9;
+            font-size: 11px;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+
+        .nav-title {
+            color: #a9c0ae;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            padding: 0 12px;
+            margin: 8px 0 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 14px;
+            margin-bottom: 6px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: #e4eee5;
+            font-family: inherit;
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #41654f;
+            color: white;
+        }
+
+        .nav-item.disabled {
+            opacity: .65;
+        }
+
+        .nav-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,.15);
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px 38px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 32px;
+        }
+
+        .topbar h1 {
+            font-size: 25px;
+            color: var(--green-dark);
+        }
+
+        .topbar p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 10px 15px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--sage);
+            display: grid;
+            place-items: center;
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .profile-name {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .profile-role {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .welcome {
+            background: linear-gradient(120deg, #244b3a, #52765c);
+            border-radius: 18px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 28px;
+        }
+
+        .welcome h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            font-size: 13px;
+            color: #e0ebe1;
+            line-height: 1.7;
+        }
+
+        .section-heading {
+            font-size: 16px;
+            color: var(--green-dark);
+            margin: 27px 0 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 125px;
+        }
+
+        .stat-icon {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--green);
+            margin-top: 5px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .feature-card .feature-icon {
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 14px;
+            color: var(--green-dark);
+            margin-bottom: 6px;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 13px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #edf1e9;
+            color: #637765;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .notice {
+            margin-top: 25px;
+            background: #fffef8;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 17px 20px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .logout {
+            color: #ffe4dc;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 18px;
+            padding: 13px 16px;
+            background: #fff3dc;
+            border: 1px solid #f0dfb9;
+            color: #765b26;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .access-screen {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .access-card {
+            max-width: 440px;
+            width: 100%;
+            background: white;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 8px 35px rgba(0,0,0,.07);
+        }
+
+        .access-card h2 {
+            color: var(--green-dark);
+            margin-bottom: 10px;
+        }
+
+        .access-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .access-card a {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .brand {
+                padding-bottom: 15px;
+                margin-bottom: 15px;
+            }
+
+            .brand img {
+                width: 155px;
+            }
+
+            .nav-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 4px;
+            }
+
+            .nav-title {
+                margin-top: 5px;
+            }
+
+            .sidebar-bottom {
+                margin-top: 12px;
+            }
+
+            .main {
+                padding: 22px 16px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .topbar h1 {
+                font-size: 21px;
+            }
+
+            .welcome {
+                padding: 23px;
+            }
+
+            .welcome h2 {
+                font-size: 19px;
+            }
+
+            .stats,
+            .feature-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card,
+            .feature-card {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .stats,
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="loading" class="access-screen">
+    <div class="access-card">
+        <h2>MATHIQUE</h2>
+        <p>Verifying administrator account...</p>
+    </div>
+</div>
+
+<div id="accessDenied" class="access-screen" style="display:none;">
+    <div class="access-card">
+        <h2 id="accessTitle">Access Restricted</h2>
+        <p id="accessMessage">You need an administrator account to access this page.</p>
+        <a href="../index.html">Back to Login</a>
+    </div>
+</div>
+
+<div class="layout" id="dashboard" style="display:none;">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="../assets/images/mathique-full-logo.png" alt="MATHIQUE Logo">
+            <div class="admin-label">ADMINISTRATOR PORTAL</div>
+        </div>
+
+        <div class="nav-title">MAIN MENU</div>
+
+        <nav class="nav-list">
+            <button class="nav-item active" type="button">
+                <span class="nav-icon">⌂</span> Dashboard
+            </button>
+
+            <button class="nav-item disabled" data-feature="User Management" type="button">
+                <span class="nav-icon">♙</span> User Management
+            </button>
+
+            <button class="nav-item disabled" data-feature="Learning Modules" type="button">
+                <span class="nav-icon">▤</span> Learning Modules
+            </button>
+
+            <button class="nav-item disabled" data-feature="Lessons" type="button">
+                <span class="nav-icon">▧</span> Lessons
+            </button>
+
+            <button class="nav-item disabled" data-feature="Mock Tests" type="button">
+                <span class="nav-icon">✎</span> Mock Tests
+            </button>
+
+            <button class="nav-item disabled" data-feature="Video Tutorials" type="button">
+                <span class="nav-icon">▷</span> Video Tutorials
+            </button>
+
+            <button class="nav-item disabled" data-feature="Student Submissions" type="button">
+                <span class="nav-icon">▣</span> Submissions
+            </button>
+
+            <button class="nav-item disabled" data-feature="Scores and Activities" type="button">
+                <span class="nav-icon">▥</span> Scores & Activities
+            </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button class="nav-item logout" id="logoutBtn" type="button">
+                <span class="nav-icon">↪</span> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Manage and monitor the MATHIQUE learning system.</p>
+            </div>
+
+            <div class="admin-profile">
+                <div class="avatar">A</div>
+                <div>
+                    <div class="profile-name" id="adminName">Administrator</div>
+                    <div class="profile-role">System Administrator</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="message" id="featureMessage"></div>
+
+        <section class="welcome">
+            <h2>Welcome to MATHIQUE Admin Portal!</h2>
+            <p>
+                You are signed in as an administrator. From here, you will be able
+                to manage the learning system and monitor student and teacher activities.
+            </p>
+        </section>
+
+        <h2 class="section-heading">System Overview</h2>
+
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-icon">👨‍🎓</div>
+                <h3>Total Students</h3>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👩‍🏫</div>
+                <h3>Total Teachers</h3>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <h3>Learning Modules</h3>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📩</div>
+                <h3>Student Submissions</h3>
+                <div class="stat-value">—</div>
+            </div>
+        </section>
+
+        <h2 class="section-heading">System Management</h2>
+
+        <section class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>User Management</h3>
+                <p>Manage student and teacher accounts and their access.</p>
+                <span class="status">Coming Soon</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>Learning Modules</h3>
+                <p>View and manage learning modules created by teachers.</p>
+                <span class="status">Coming Soon</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Mock Tests</h3>
+                <p>Monitor mock tests, questions, and answer keys.</p>
+                <span class="status">Coming Soon</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎥</div>
+                <h3>Video Tutorials</h3>
+                <p>Manage educational video tutorial links.</p>
+                <span class="status">Coming Soon</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📤</div>
+                <h3>Student Submissions</h3>
+                <p>Monitor uploaded student activity proofs and feedback.</p>
+                <span class="status">Coming Soon</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Scores & Activities</h3>
+                <p>Monitor student progress and academic activities.</p>
+                <span class="status">Coming Soon</span>
+            </div>
+        </section>
+
+        <div class="notice">
+            <strong>Administrator access:</strong>
+            Your account has been verified as an MATHIQUE administrator.
+            The management sections and system statistics will be connected
+            to the database in the next development steps.
+        </div>
+    </main>
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const loading = document.getElementById('loading');
+    const dashboard = document.getElementById('dashboard');
+    const accessDenied = document.getElementById('accessDenied');
+    const accessTitle = document.getElementById('accessTitle');
+    const accessMessage = document.getElementById('accessMessage');
+
+    function denyAccess(title, message) {
+        loading.style.display = 'none';
+        dashboard.style.display = 'none';
+        accessDenied.style.display = 'grid';
+        accessTitle.textContent = title;
+        accessMessage.textContent = message;
+    }
+
+    async function verifyAdmin() {
+        try {
+            const { data: { session }, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            if (!session) {
+                denyAccess(
+                    'Login Required',
+                    'Please log in using your MATHIQUE administrator account.'
+                );
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('user_id, email, full_name, role')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
+
+            if (profileError) throw profileError;
+
+            if (!profile || profile.role !== 'admin') {
+                denyAccess(
+                    'Admin Access Only',
+                    'This account is not registered as a MATHIQUE administrator.'
+                );
+                return;
+            }
+
+            document.getElementById('adminName').textContent =
+                profile.full_name || profile.email || 'Administrator';
+
+            loading.style.display = 'none';
+            dashboard.style.display = 'flex';
+
+        } catch (error) {
+            console.error('Admin verification error:', error);
+
+            denyAccess(
+                'Unable to Verify Account',
+                'There was a problem verifying your account. Please try again.'
+            );
+        }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            alert('Unable to log out. Please try again.');
+            return;
+        }
+
+        window.location.href = '../index.html';
+    });
+
+    document.querySelectorAll('[data-feature]').forEach(button => {
+        button.addEventListener('click', () => {
+            const feature = button.dataset.feature;
+            const message = document.getElementById('featureMessage');
+
+            message.textContent =
+                feature + ' will be connected in the next development step.';
+
+            message.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+
+    verifyAdmin();
+</script>
+
+</body>
+</html>
