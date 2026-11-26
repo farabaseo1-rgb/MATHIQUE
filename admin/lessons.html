@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Admin Lessons</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f3e9;
+            color: #294536;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 27px;
+        }
+
+        .subtitle {
+            color: #718477;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: white;
+            background: #315c43;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat, .panel {
+            background: #fffef8;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        }
+
+        .stat p {
+            color: #718477;
+            font-size: 13px;
+        }
+
+        .stat h2 {
+            font-size: 28px;
+            margin-top: 8px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 18px 0;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #dce3d9;
+            border-radius: 8px;
+            font-family: inherit;
+            background: white;
+            color: #294536;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        select {
+            min-width: 150px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf0e9;
+            font-size: 13px;
+        }
+
+        th {
+            color: #718477;
+            font-weight: 600;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #718477;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #718477;
+        }
+
+        @media(max-width:600px) {
+            body { padding: 16px; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div>
+            <h1>Lessons Management</h1>
+            <p class="subtitle">Monitor lessons created under all learning modules</p>
+        </div>
+
+        <a class="back" href="dashboard.html">← Admin Dashboard</a>
+    </header>
+
+    <section class="stats">
+        <div class="stat">
+            <p>Total Lessons</p>
+            <h2 id="totalLessons">—</h2>
+        </div>
+
+        <div class="stat">
+            <p>Modules with Lessons</p>
+            <h2 id="modulesWithLessons">—</h2>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h3>All Lessons</h3>
+
+        <div class="toolbar">
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search lesson title..."
+            >
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lesson Title</th>
+                        <th>Module ID</th>
+                    </tr>
+                </thead>
+
+                <tbody id="lessonTable">
+                    <tr>
+                        <td colspan="2" class="empty">Loading lessons...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="message"></p>
+    </section>
+
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const table = document.getElementById('lessonTable');
+    const message = document.getElementById('message');
+    const searchInput = document.getElementById('searchInput');
+
+    let lessons = [];
+
+    async function loadLessons() {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const session = sessionData.session;
+
+            if (!session) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            const { data: admin, error: adminError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (adminError) throw adminError;
+
+            if (admin.role !== 'admin') {
+                document.body.innerHTML =
+                    '<h2 style="padding:30px">Admin access only.</h2>';
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('lessons')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            lessons = data || [];
+
+            document.getElementById('totalLessons').textContent =
+                lessons.length;
+
+            const uniqueModules = new Set(
+                lessons.map(lesson => lesson.module_id)
+            );
+
+            document.getElementById('modulesWithLessons').textContent =
+                uniqueModules.size;
+
+            renderLessons();
+
+        } catch (error) {
+            console.error(error);
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="2" class="empty">
+                        Unable to load lessons.
+                    </td>
+                </tr>
+            `;
+
+            message.textContent = error.message;
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    function renderLessons() {
+        const search = searchInput.value.toLowerCase();
+
+        const filtered = lessons.filter(lesson =>
+            (lesson.title || '').toLowerCase().includes(search)
+        );
+
+        if (!filtered.length) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="2" class="empty">
+                        No lessons found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        table.innerHTML = filtered.map(lesson => `
+            <tr>
+                <td>${escapeHTML(lesson.title || 'Untitled')}</td>
+                <td>${escapeHTML(lesson.module_id || 'Unknown')}</td>
+            </tr>
+        `).join('');
+    }
+
+    searchInput.addEventListener('input', renderLessons);
+
+    loadLessons();
+</script>
+</body>
+</html>
