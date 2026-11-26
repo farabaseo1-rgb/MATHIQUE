@@ -67,26 +67,30 @@
             justify-content: space-between;
             gap: 20px;
             padding-right: 180px;
-            min-height: 100px;
+            min-height: 110px;
         }
 
-        /* CLICKABLE LOGO */
+        /* LOGO TOGGLE BUTTON */
         .logo-toggle {
             position: absolute;
             top: 0;
             right: 0;
             z-index: 100;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: flex-end;
+            width: 160px;
+            height: 90px;
             padding: 0;
             margin: 0;
             background: transparent;
             border: none;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            transition: width 0.45s ease;
         }
 
+        /* SMALL LOGO */
         .header-logo {
             display: block;
             width: 160px;
@@ -96,18 +100,19 @@
             background: transparent;
             border: none;
             box-shadow: none;
-            transform-origin: top right;
-            transition:
-                width 0.4s ease,
-                max-height 0.4s ease,
-                transform 0.4s ease;
+            transition: opacity 0.25s ease;
         }
 
-        /* EXPANDED FULL LOGO */
-        .logo-toggle.expanded .header-logo {
+        /* EXPANDED LOGO */
+        .logo-toggle.expanded {
             width: 280px;
-            max-height: 160px;
-            transform: scale(1.02);
+        }
+
+        .logo-toggle.expanded .header-logo {
+            content: url("../assets/images/mathique-full-logo.png");
+            width: 280px;
+            max-height: 110px;
+            object-fit: contain;
         }
 
         .logo-toggle:focus-visible {
@@ -124,8 +129,13 @@
 
             .top-header {
                 padding-right: 125px;
-                min-height: 75px;
+                min-height: 85px;
                 gap: 10px;
+            }
+
+            .logo-toggle {
+                width: 110px;
+                height: 70px;
             }
 
             .header-logo {
@@ -133,9 +143,13 @@
                 max-height: 70px;
             }
 
+            .logo-toggle.expanded {
+                width: 190px;
+            }
+
             .logo-toggle.expanded .header-logo {
                 width: 190px;
-                max-height: 120px;
+                max-height: 85px;
             }
         }
     </style>
@@ -207,7 +221,7 @@
                 <p>Welcome to MATHIQUE!</p>
             </div>
 
-            <!-- CLICK TO EXPAND LOGO -->
+            <!-- CLICK TO EXPAND / COLLAPSE LOGO -->
             <button
                 type="button"
                 class="logo-toggle"
