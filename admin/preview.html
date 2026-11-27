@@ -1,0 +1,691 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHIQUE | Preview & Testing Center</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green: #244b3a;
+            --dark: #193729;
+            --sage: #dce8dc;
+            --cream: #fffef8;
+            --muted: #829087;
+            --border: #e7ece5;
+        }
+
+        body {
+            font-family: Poppins, sans-serif;
+            background: #f4f7f1;
+            color: #263b30;
+        }
+
+        .layout { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 255px;
+            min-height: 100vh;
+            background: var(--dark);
+            color: white;
+            padding: 25px 18px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: .3s;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed { width: 78px; padding: 25px 12px; }
+
+        .toggle {
+            width: 36px;
+            height: 36px;
+            margin: 0 0 18px auto;
+            border: 1px solid #ffffff44;
+            border-radius: 8px;
+            background: #41654f;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .brand {
+            padding: 5px 8px 22px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ffffff25;
+        }
+
+        .brand img { width: 185px; max-width: 100%; }
+        .admin-label {
+            color: #c5d8c9;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+
+        .nav-title {
+            color: #a9c0ae;
+            font-size: 10px;
+            padding: 0 12px;
+            margin-bottom: 12px;
+            white-space: nowrap;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px;
+            margin-bottom: 6px;
+            border-radius: 9px;
+            color: #e4eee5;
+            text-decoration: none;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover, .nav-item.active { background: #41654f; }
+        .nav-icon { width: 22px; min-width: 22px; text-align: center; font-size: 17px; }
+
+        .sidebar-bottom { margin-top: auto; border-top: 1px solid #ffffff25; padding-top: 15px; }
+        .logout { background: none; border: 0; cursor: pointer; width: 100%; text-align: left; font-family: inherit; }
+
+        .sidebar.collapsed .brand img { width: 42px; }
+        .sidebar.collapsed .admin-label,
+        .sidebar.collapsed .nav-title { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; font-size: 0; padding: 13px 5px; }
+        .sidebar.collapsed .nav-icon { font-size: 19px; }
+
+        .main { flex: 1; min-width: 0; padding: 30px; }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 { color: var(--dark); font-size: 24px; }
+        .subtitle { color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+        .preview-label {
+            background: #e4eee2;
+            color: #41654f;
+            border-radius: 20px;
+            padding: 8px 13px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .intro {
+            background: linear-gradient(120deg, #244b3a, #52765c);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 22px;
+        }
+
+        .intro h2 { font-size: 19px; margin-bottom: 7px; }
+        .intro p { color: #e0ebe1; font-size: 12px; line-height: 1.7; }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            border: 1px solid var(--border);
+            background: var(--cream);
+            color: var(--green);
+            border-radius: 9px;
+            padding: 10px 15px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab.active { background: var(--green); color: white; }
+
+        .panel {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            min-height: 250px;
+        }
+
+        .panel h2 { font-size: 16px; color: var(--dark); margin-bottom: 6px; }
+        .panel-description { color: var(--muted); font-size: 11px; margin-bottom: 18px; }
+
+        .search {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font-family: inherit;
+            font-size: 12px;
+            margin-bottom: 16px;
+            outline-color: var(--green);
+        }
+
+        .records {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .record {
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 16px;
+            background: white;
+        }
+
+        .record h3 { font-size: 13px; color: var(--green); margin-bottom: 7px; }
+        .record p { font-size: 11px; color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }
+
+        .record button, .record a {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: var(--green);
+            border: 0;
+            border-radius: 7px;
+            color: white;
+            font-family: inherit;
+            font-size: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .record a.secondary {
+            background: #e8eee7;
+            color: var(--green);
+            margin-left: 5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 15px;
+            background: #edf1e9;
+            color: #41654f;
+            font-size: 9px;
+            margin-top: 8px;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            padding: 35px 10px;
+            grid-column: 1 / -1;
+        }
+
+        .details {
+            display: none;
+            margin-top: 20px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #f8faf6;
+        }
+
+        .details h3 { font-size: 14px; color: var(--green); margin-bottom: 10px; }
+        .details p { font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
+        .back-button {
+            margin-bottom: 15px;
+            border: 0;
+            background: transparent;
+            color: var(--green);
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .notice {
+            margin-top: 18px;
+            padding: 14px;
+            background: #f0f4eb;
+            border-radius: 10px;
+            color: #617265;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        @media(max-width: 800px) {
+            .sidebar { width: 210px; }
+            .sidebar.collapsed { width: 70px; }
+            .main { padding: 20px; }
+        }
+
+        @media(max-width: 650px) {
+            .layout { flex-direction: column; }
+            .sidebar, .sidebar.collapsed {
+                width: 100%;
+                min-height: auto;
+                padding: 12px 15px;
+            }
+            .sidebar .toggle { margin: 0 0 12px auto; }
+            .sidebar.collapsed .brand,
+            .sidebar.collapsed .nav-list,
+            .sidebar.collapsed .nav-title,
+            .sidebar.collapsed .sidebar-bottom { display: none; }
+            .sidebar.collapsed .toggle { margin: 0 0 0 auto; }
+            .nav-list { display: grid; grid-template-columns: 1fr 1fr; }
+            .sidebar.collapsed .nav-item { display: none; }
+            .main { padding: 18px 14px; }
+            .topbar { align-items: flex-start; flex-direction: column; }
+            .records { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout" id="app" style="display:none">
+
+    <aside class="sidebar" id="sidebar">
+
+        <button class="toggle" id="toggle" aria-label="Toggle sidebar">☰</button>
+
+        <div class="brand">
+            <img src="../assets/images/mathique-full-logo.png" alt="MATHIQUE">
+            <div class="admin-label">ADMINISTRATOR PORTAL</div>
+        </div>
+
+        <div class="nav-title">MAIN MENU</div>
+
+        <nav class="nav-list">
+            <a class="nav-item" href="dashboard.html"><span class="nav-icon">⌂</span>Dashboard</a>
+            <a class="nav-item" href="users.html"><span class="nav-icon">♙</span>User Management</a>
+            <a class="nav-item" href="modules.html"><span class="nav-icon">▤</span>Learning Modules</a>
+            <a class="nav-item" href="lessons.html"><span class="nav-icon">▧</span>Lessons</a>
+            <a class="nav-item" href="mock-tests.html"><span class="nav-icon">✎</span>Mock Tests</a>
+            <a class="nav-item" href="videos.html"><span class="nav-icon">▷</span>Video Tutorials</a>
+            <a class="nav-item" href="submissions.html"><span class="nav-icon">▣</span>Submissions</a>
+            <a class="nav-item active" href="preview.html"><span class="nav-icon">◉</span>Preview & Testing</a>
+            <a class="nav-item" href="profile.html"><span class="nav-icon">♙</span>My Profile</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button class="nav-item logout" id="logout">
+                <span class="nav-icon">↪</span>Log Out
+            </button>
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Preview & Testing Center</h1>
+                <p class="subtitle">Preview MATHIQUE content and test available links.</p>
+            </div>
+            <span class="preview-label">ADMIN PREVIEW MODE</span>
+        </header>
+
+        <section class="intro">
+            <h2>Welcome to the Preview & Testing Center!</h2>
+            <p>
+                Review learning modules, lessons, mock tests, and video tutorials.
+                This page is designed for viewing and testing without editing
+                original teacher content or recording student scores.
+            </p>
+        </section>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="modules">Learning Modules</button>
+            <button class="tab" data-tab="lessons">Lessons</button>
+            <button class="tab" data-tab="tests">Mock Tests</button>
+            <button class="tab" data-tab="videos">Video Tutorials</button>
+        </div>
+
+        <section class="panel">
+            <h2 id="panelTitle">Learning Modules</h2>
+            <p class="panel-description" id="panelDescription">
+                Browse modules created by teachers.
+            </p>
+
+            <input
+                class="search"
+                id="search"
+                type="search"
+                placeholder="Search records..."
+            >
+
+            <div class="records" id="records">
+                <div class="empty">Loading records...</div>
+            </div>
+
+            <div class="details" id="details">
+                <button class="back-button" id="back">← Back to records</button>
+                <div id="detailContent"></div>
+            </div>
+        </section>
+
+        <div class="notice">
+            <strong>Preview safety:</strong>
+            This page does not edit or delete records. Practice scoring and
+            answer-key checking will be added separately with an isolated
+            test mode so actual student scores remain untouched.
+        </div>
+
+    </main>
+</div>
+
+<script type="module">
+    import { supabase } from '../js/supabase.js';
+
+    const app = document.getElementById('app');
+    const sidebar = document.getElementById('sidebar');
+    const recordsBox = document.getElementById('records');
+    const details = document.getElementById('details');
+    const detailContent = document.getElementById('detailContent');
+    const search = document.getElementById('search');
+
+    let activeTab = 'modules';
+    let allRecords = [];
+    let modules = [];
+    let lessons = [];
+    let tests = [];
+    let videos = [];
+
+    const config = {
+        modules: {
+            table: 'modules',
+            title: 'Learning Modules',
+            description: 'Browse modules created by teachers.'
+        },
+        lessons: {
+            table: 'lessons',
+            title: 'Lessons',
+            description: 'Browse lessons stored in the learning system.'
+        },
+        tests: {
+            table: 'mock_tests',
+            title: 'Mock Tests',
+            description: 'Browse available mock test records.'
+        },
+        videos: {
+            table: 'video_tutorials',
+            title: 'Video Tutorials',
+            description: 'Open and test saved video tutorial links.'
+        }
+    };
+
+    function safe(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function getTitle(item) {
+        return item.title || item.name || item.lesson_title || 'Untitled record';
+    }
+
+    function getDescription(item) {
+        return item.description || item.content || item.instructions || 'No description available.';
+    }
+
+    function showEmpty(message) {
+        recordsBox.innerHTML = `<div class="empty">${safe(message)}</div>`;
+    }
+
+    function renderRecords(list) {
+        recordsBox.innerHTML = '';
+        details.style.display = 'none';
+        recordsBox.style.display = 'grid';
+
+        if (!list.length) {
+            showEmpty('No records found.');
+            return;
+        }
+
+        list.forEach((item) => {
+            const card = document.createElement('article');
+            card.className = 'record';
+
+            const title = document.createElement('h3');
+            title.textContent = getTitle(item);
+
+            const description = document.createElement('p');
+            description.textContent = getDescription(item);
+
+            const status = document.createElement('span');
+            status.className = 'status';
+
+            if (activeTab === 'modules' || activeTab === 'tests' || activeTab === 'videos') {
+                status.textContent =
+                    item.is_published === true ? 'Published' :
+                    item.is_published === false ? 'Unpublished' :
+                    item.status || 'Record available';
+            } else {
+                status.textContent = 'Lesson record';
+            }
+
+            const view = document.createElement('button');
+            view.textContent = 'View Details';
+            view.addEventListener('click', () => showDetails(item));
+
+            card.append(title, description, status, document.createElement('br'), view);
+
+            if (activeTab === 'videos' && item.video_url) {
+                try {
+                    const parsed = new URL(item.video_url);
+
+                    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+                        const link = document.createElement('a');
+                        link.className = 'secondary';
+                        link.href = parsed.href;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = 'Test Link ↗';
+                        card.append(link);
+                    }
+                } catch {
+                    const invalid = document.createElement('p');
+                    invalid.textContent = 'The saved video URL is not a valid web link.';
+                    card.append(invalid);
+                }
+            }
+
+            recordsBox.append(card);
+        });
+    }
+
+    function showDetails(item) {
+        recordsBox.style.display = 'none';
+        details.style.display = 'block';
+        detailContent.innerHTML = '';
+
+        const heading = document.createElement('h3');
+        heading.textContent = getTitle(item);
+        detailContent.append(heading);
+
+        const fieldsToShow = [
+            ['Description', item.description],
+            ['Content', item.content],
+            ['Instructions', item.instructions],
+            ['Published', typeof item.is_published === 'boolean'
+                ? (item.is_published ? 'Yes' : 'No') : null],
+            ['Status', item.status],
+            ['Video URL', item.video_url],
+            ['Created At', item.created_at]
+        ];
+
+        fieldsToShow.forEach(([label, value]) => {
+            if (value === null || value === undefined || value === '') return;
+
+            const p = document.createElement('p');
+            const strong = document.createElement('strong');
+            strong.textContent = label + ': ';
+            p.append(strong, document.createTextNode(String(value)));
+            detailContent.append(p);
+        });
+
+        if (activeTab === 'modules') {
+            const related = lessons.filter(
+                lesson => lesson.module_id === item.id
+            );
+
+            const lessonHeading = document.createElement('h3');
+            lessonHeading.style.marginTop = '18px';
+            lessonHeading.textContent = `Lessons in this module (${related.length})`;
+            detailContent.append(lessonHeading);
+
+            if (related.length) {
+                related.forEach(lesson => {
+                    const p = document.createElement('p');
+                    p.textContent = '• ' + getTitle(lesson);
+                    detailContent.append(p);
+                });
+            } else {
+                const p = document.createElement('p');
+                p.textContent = 'No related lessons were found using module_id.';
+                detailContent.append(p);
+            }
+        }
+    }
+
+    async function loadTab(tab) {
+        activeTab = tab;
+        search.value = '';
+        details.style.display = 'none';
+        recordsBox.style.display = 'grid';
+
+        document.getElementById('panelTitle').textContent = config[tab].title;
+        document.getElementById('panelDescription').textContent = config[tab].description;
+
+        showEmpty('Loading records...');
+
+        const { data, error } = await supabase
+            .from(config[tab].table)
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error(`Could not load ${tab}:`, error);
+            showEmpty(`Unable to load ${config[tab].title}. Check the Admin SELECT permission for this table.`);
+            return;
+        }
+
+        allRecords = data || [];
+
+        if (tab === 'modules') modules = allRecords;
+        if (tab === 'lessons') lessons = allRecords;
+        if (tab === 'tests') tests = allRecords;
+        if (tab === 'videos') videos = allRecords;
+
+        renderRecords(allRecords);
+    }
+
+    document.querySelectorAll('.tab').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            button.classList.add('active');
+            loadTab(button.dataset.tab);
+        });
+    });
+
+    search.addEventListener('input', () => {
+        const term = search.value.toLowerCase().trim();
+
+        const filtered = allRecords.filter(item => {
+            return [
+                item.title,
+                item.name,
+                item.description,
+                item.content,
+                item.video_url,
+                item.status
+            ].some(value => String(value ?? '').toLowerCase().includes(term));
+        });
+
+        renderRecords(filtered);
+    });
+
+    document.getElementById('back').addEventListener('click', () => {
+        details.style.display = 'none';
+        recordsBox.style.display = 'grid';
+    });
+
+    document.getElementById('toggle').addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        const collapsed = sidebar.classList.contains('collapsed');
+        document.getElementById('toggle').textContent = collapsed ? '☰' : '✕';
+    });
+
+    document.getElementById('logout').addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            alert('Unable to log out. Please try again.');
+            return;
+        }
+
+        window.location.href = '../index.html';
+    });
+
+    async function verifyAdmin() {
+        const { data: { session }, error: sessionError } =
+            await supabase.auth.getSession();
+
+        if (sessionError || !session) {
+            window.location.href = '../index.html';
+            return;
+        }
+
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+        if (error || !profile || profile.role !== 'admin') {
+            document.body.innerHTML = `
+                <div style="padding:40px;text-align:center;font-family:Poppins,sans-serif">
+                    <h2>Admin Access Only</h2>
+                    <p>This page is only available to MATHIQUE administrators.</p>
+                    <a href="../index.html">Back to Login</a>
+                </div>
+            `;
+            return;
+        }
+
+        app.style.display = 'flex';
+
+        const moduleResult = await supabase
+            .from('modules')
+            .select('*');
+
+        const lessonResult = await supabase
+            .from('lessons')
+            .select('*');
+
+        modules = moduleResult.data || [];
+        lessons = lessonResult.data || [];
+
+        await loadTab('modules');
+    }
+
+    verifyAdmin();
+</script>
+
+</body>
+</html>
