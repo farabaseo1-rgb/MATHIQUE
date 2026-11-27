@@ -9,7 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --green: #244b3a;
@@ -26,7 +30,12 @@
             color: #263b30;
         }
 
-        .layout { display: flex; min-height: 100vh; }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
 
         .sidebar {
             width: 255px;
@@ -37,11 +46,14 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: .3s;
+            transition: width .3s ease, padding .3s ease;
             overflow: hidden;
         }
 
-        .sidebar.collapsed { width: 78px; padding: 25px 12px; }
+        .sidebar.collapsed {
+            width: 78px;
+            padding: 25px 12px;
+        }
 
         .toggle {
             width: 36px;
@@ -61,7 +73,12 @@
             border-bottom: 1px solid #ffffff25;
         }
 
-        .brand img { width: 185px; max-width: 100%; }
+        .brand img {
+            width: 185px;
+            max-width: 100%;
+            display: block;
+        }
+
         .admin-label {
             color: #c5d8c9;
             font-size: 10px;
@@ -78,6 +95,11 @@
             white-space: nowrap;
         }
 
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+        }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -89,21 +111,62 @@
             text-decoration: none;
             font-size: 12px;
             white-space: nowrap;
+            transition: .2s;
         }
 
-        .nav-item:hover, .nav-item.active { background: #41654f; }
-        .nav-icon { width: 22px; min-width: 22px; text-align: center; font-size: 17px; }
+        .nav-item:hover,
+        .nav-item.active {
+            background: #41654f;
+        }
 
-        .sidebar-bottom { margin-top: auto; border-top: 1px solid #ffffff25; padding-top: 15px; }
-        .logout { background: none; border: 0; cursor: pointer; width: 100%; text-align: left; font-family: inherit; }
+        .nav-icon {
+            width: 22px;
+            min-width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
 
-        .sidebar.collapsed .brand img { width: 42px; }
+        .sidebar-bottom {
+            margin-top: auto;
+            border-top: 1px solid #ffffff25;
+            padding-top: 15px;
+        }
+
+        .logout {
+            background: none;
+            border: 0;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .sidebar.collapsed .brand img {
+            width: 42px;
+        }
+
         .sidebar.collapsed .admin-label,
-        .sidebar.collapsed .nav-title { display: none; }
-        .sidebar.collapsed .nav-item { justify-content: center; font-size: 0; padding: 13px 5px; }
-        .sidebar.collapsed .nav-icon { font-size: 19px; }
+        .sidebar.collapsed .nav-title {
+            display: none;
+        }
 
-        .main { flex: 1; min-width: 0; padding: 30px; }
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            font-size: 0;
+            padding: 13px 5px;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            font-size: 19px;
+        }
+
+        /* MAIN */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
 
         .topbar {
             display: flex;
@@ -113,8 +176,16 @@
             margin-bottom: 25px;
         }
 
-        h1 { color: var(--dark); font-size: 24px; }
-        .subtitle { color: var(--muted); font-size: 12px; margin-top: 5px; }
+        h1 {
+            color: var(--dark);
+            font-size: 24px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
 
         .preview-label {
             background: #e4eee2;
@@ -125,6 +196,8 @@
             font-weight: 700;
         }
 
+        /* INTRO */
+
         .intro {
             background: linear-gradient(120deg, #244b3a, #52765c);
             color: white;
@@ -133,8 +206,18 @@
             margin-bottom: 22px;
         }
 
-        .intro h2 { font-size: 19px; margin-bottom: 7px; }
-        .intro p { color: #e0ebe1; font-size: 12px; line-height: 1.7; }
+        .intro h2 {
+            font-size: 19px;
+            margin-bottom: 7px;
+        }
+
+        .intro p {
+            color: #e0ebe1;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* TABS */
 
         .tabs {
             display: flex;
@@ -155,7 +238,12 @@
             cursor: pointer;
         }
 
-        .tab.active { background: var(--green); color: white; }
+        .tab.active {
+            background: var(--green);
+            color: white;
+        }
+
+        /* PANEL */
 
         .panel {
             background: var(--cream);
@@ -165,8 +253,17 @@
             min-height: 250px;
         }
 
-        .panel h2 { font-size: 16px; color: var(--dark); margin-bottom: 6px; }
-        .panel-description { color: var(--muted); font-size: 11px; margin-bottom: 18px; }
+        .panel h2 {
+            font-size: 16px;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .panel-description {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 18px;
+        }
 
         .search {
             width: 100%;
@@ -178,6 +275,8 @@
             margin-bottom: 16px;
             outline-color: var(--green);
         }
+
+        /* RECORDS */
 
         .records {
             display: grid;
@@ -192,10 +291,21 @@
             background: white;
         }
 
-        .record h3 { font-size: 13px; color: var(--green); margin-bottom: 7px; }
-        .record p { font-size: 11px; color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }
+        .record h3 {
+            font-size: 13px;
+            color: var(--green);
+            margin-bottom: 7px;
+        }
 
-        .record button, .record a {
+        .record p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .record button,
+        .record a {
             display: inline-block;
             margin-top: 12px;
             padding: 8px 12px;
@@ -233,6 +343,8 @@
             grid-column: 1 / -1;
         }
 
+        /* DETAILS */
+
         .details {
             display: none;
             margin-top: 20px;
@@ -242,8 +354,18 @@
             background: #f8faf6;
         }
 
-        .details h3 { font-size: 14px; color: var(--green); margin-bottom: 10px; }
-        .details p { font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
+        .details h3 {
+            font-size: 14px;
+            color: var(--green);
+            margin-bottom: 10px;
+        }
+
+        .details p {
+            font-size: 11px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
         .back-button {
             margin-bottom: 15px;
             border: 0;
@@ -252,6 +374,28 @@
             font-family: inherit;
             font-weight: 600;
             cursor: pointer;
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 13px;
+        }
+
+        .question-title {
+            font-weight: 700;
+            color: var(--green);
+            margin-bottom: 12px;
+        }
+
+        .choice {
+            font-size: 12px;
+            padding: 8px 10px;
+            margin: 5px 0;
+            background: #f4f7f1;
+            border-radius: 6px;
         }
 
         .notice {
@@ -264,30 +408,70 @@
             line-height: 1.7;
         }
 
+        /* MOBILE */
+
         @media(max-width: 800px) {
-            .sidebar { width: 210px; }
-            .sidebar.collapsed { width: 70px; }
-            .main { padding: 20px; }
+            .sidebar {
+                width: 210px;
+            }
+
+            .sidebar.collapsed {
+                width: 70px;
+            }
+
+            .main {
+                padding: 20px;
+            }
         }
 
         @media(max-width: 650px) {
-            .layout { flex-direction: column; }
-            .sidebar, .sidebar.collapsed {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar,
+            .sidebar.collapsed {
                 width: 100%;
                 min-height: auto;
                 padding: 12px 15px;
             }
-            .sidebar .toggle { margin: 0 0 12px auto; }
+
+            .sidebar .toggle {
+                margin: 0 0 12px auto;
+            }
+
             .sidebar.collapsed .brand,
             .sidebar.collapsed .nav-list,
             .sidebar.collapsed .nav-title,
-            .sidebar.collapsed .sidebar-bottom { display: none; }
-            .sidebar.collapsed .toggle { margin: 0 0 0 auto; }
-            .nav-list { display: grid; grid-template-columns: 1fr 1fr; }
-            .sidebar.collapsed .nav-item { display: none; }
-            .main { padding: 18px 14px; }
-            .topbar { align-items: flex-start; flex-direction: column; }
-            .records { grid-template-columns: 1fr; }
+            .sidebar.collapsed .sidebar-bottom {
+                display: none;
+            }
+
+            .sidebar.collapsed .toggle {
+                margin: 0 0 0 auto;
+            }
+
+            .nav-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .sidebar.collapsed .nav-item {
+                display: none;
+            }
+
+            .main {
+                padding: 18px 14px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .records {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -298,7 +482,13 @@
 
     <aside class="sidebar" id="sidebar">
 
-        <button class="toggle" id="toggle" aria-label="Toggle sidebar">☰</button>
+        <button
+            class="toggle"
+            id="toggle"
+            type="button"
+            aria-label="Toggle sidebar"
+            aria-expanded="true"
+        >☰</button>
 
         <div class="brand">
             <img src="../assets/images/mathique-full-logo.png" alt="MATHIQUE">
@@ -308,19 +498,47 @@
         <div class="nav-title">MAIN MENU</div>
 
         <nav class="nav-list">
-            <a class="nav-item" href="dashboard.html"><span class="nav-icon">⌂</span>Dashboard</a>
-            <a class="nav-item" href="users.html"><span class="nav-icon">♙</span>User Management</a>
-            <a class="nav-item" href="modules.html"><span class="nav-icon">▤</span>Learning Modules</a>
-            <a class="nav-item" href="lessons.html"><span class="nav-icon">▧</span>Lessons</a>
-            <a class="nav-item" href="mock-tests.html"><span class="nav-icon">✎</span>Mock Tests</a>
-            <a class="nav-item" href="videos.html"><span class="nav-icon">▷</span>Video Tutorials</a>
-            <a class="nav-item" href="submissions.html"><span class="nav-icon">▣</span>Submissions</a>
-            <a class="nav-item active" href="preview.html"><span class="nav-icon">◉</span>Preview & Testing</a>
-            <a class="nav-item" href="profile.html"><span class="nav-icon">♙</span>My Profile</a>
+
+            <a class="nav-item" href="dashboard.html">
+                <span class="nav-icon">⌂</span>Dashboard
+            </a>
+
+            <a class="nav-item" href="users.html">
+                <span class="nav-icon">♙</span>User Management
+            </a>
+
+            <a class="nav-item" href="modules.html">
+                <span class="nav-icon">▤</span>Learning Modules
+            </a>
+
+            <a class="nav-item" href="lessons.html">
+                <span class="nav-icon">▧</span>Lessons
+            </a>
+
+            <a class="nav-item" href="mock-tests.html">
+                <span class="nav-icon">✎</span>Mock Tests
+            </a>
+
+            <a class="nav-item" href="videos.html">
+                <span class="nav-icon">▷</span>Video Tutorials
+            </a>
+
+            <a class="nav-item" href="submissions.html">
+                <span class="nav-icon">▣</span>Submissions
+            </a>
+
+            <a class="nav-item active" href="preview.html">
+                <span class="nav-icon">◉</span>Preview & Testing
+            </a>
+
+            <a class="nav-item" href="profile.html">
+                <span class="nav-icon">♙</span>My Profile
+            </a>
+
         </nav>
 
         <div class="sidebar-bottom">
-            <button class="nav-item logout" id="logout">
+            <button class="nav-item logout" id="logout" type="button">
                 <span class="nav-icon">↪</span>Log Out
             </button>
         </div>
@@ -330,11 +548,16 @@
     <main class="main">
 
         <header class="topbar">
+
             <div>
                 <h1>Preview & Testing Center</h1>
-                <p class="subtitle">Preview MATHIQUE content and test available links.</p>
+                <p class="subtitle">
+                    Preview MATHIQUE content and test available links.
+                </p>
             </div>
+
             <span class="preview-label">ADMIN PREVIEW MODE</span>
+
         </header>
 
         <section class="intro">
@@ -347,14 +570,29 @@
         </section>
 
         <div class="tabs">
-            <button class="tab active" data-tab="modules">Learning Modules</button>
-            <button class="tab" data-tab="lessons">Lessons</button>
-            <button class="tab" data-tab="tests">Mock Tests</button>
-            <button class="tab" data-tab="videos">Video Tutorials</button>
+
+            <button class="tab active" data-tab="modules">
+                Learning Modules
+            </button>
+
+            <button class="tab" data-tab="lessons">
+                Lessons
+            </button>
+
+            <button class="tab" data-tab="tests">
+                Mock Tests
+            </button>
+
+            <button class="tab" data-tab="videos">
+                Video Tutorials
+            </button>
+
         </div>
 
         <section class="panel">
+
             <h2 id="panelTitle">Learning Modules</h2>
+
             <p class="panel-description" id="panelDescription">
                 Browse modules created by teachers.
             </p>
@@ -371,9 +609,15 @@
             </div>
 
             <div class="details" id="details">
-                <button class="back-button" id="back">← Back to records</button>
+
+                <button class="back-button" id="back" type="button">
+                    ← Back to records
+                </button>
+
                 <div id="detailContent"></div>
+
             </div>
+
         </section>
 
         <div class="notice">
@@ -384,13 +628,16 @@
         </div>
 
     </main>
+
 </div>
 
 <script type="module">
+
     import { supabase } from '../js/supabase.js';
 
     const app = document.getElementById('app');
     const sidebar = document.getElementById('sidebar');
+
     const recordsBox = document.getElementById('records');
     const details = document.getElementById('details');
     const detailContent = document.getElementById('detailContent');
@@ -403,27 +650,35 @@
     let tests = [];
     let videos = [];
 
+    let selectedRecord = null;
+    let requestNumber = 0;
+
     const config = {
+
         modules: {
             table: 'modules',
             title: 'Learning Modules',
             description: 'Browse modules created by teachers.'
         },
+
         lessons: {
             table: 'lessons',
             title: 'Lessons',
             description: 'Browse lessons stored in the learning system.'
         },
+
         tests: {
             table: 'mock_tests',
             title: 'Mock Tests',
             description: 'Browse available mock test records.'
         },
+
         videos: {
             table: 'video_tutorials',
             title: 'Video Tutorials',
             description: 'Open and test saved video tutorial links.'
         }
+
     };
 
     function safe(value) {
@@ -436,18 +691,28 @@
     }
 
     function getTitle(item) {
-        return item.title || item.name || item.lesson_title || 'Untitled record';
+        return item.title || item.name || 'Untitled record';
     }
 
     function getDescription(item) {
-        return item.description || item.content || item.instructions || 'No description available.';
+        return item.description ||
+            item.content ||
+            item.instructions ||
+            'No description available.';
     }
 
     function showEmpty(message) {
-        recordsBox.innerHTML = `<div class="empty">${safe(message)}</div>`;
+        recordsBox.innerHTML = '';
+
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = message;
+
+        recordsBox.append(empty);
     }
 
     function renderRecords(list) {
+
         recordsBox.innerHTML = '';
         details.style.display = 'none';
         recordsBox.style.display = 'grid';
@@ -457,7 +722,8 @@
             return;
         }
 
-        list.forEach((item) => {
+        list.forEach(item => {
+
             const card = document.createElement('article');
             card.className = 'record';
 
@@ -470,46 +736,76 @@
             const status = document.createElement('span');
             status.className = 'status';
 
-            if (activeTab === 'modules' || activeTab === 'tests' || activeTab === 'videos') {
-                status.textContent =
-                    item.is_published === true ? 'Published' :
-                    item.is_published === false ? 'Unpublished' :
-                    item.status || 'Record available';
+            if (typeof item.is_published === 'boolean') {
+                status.textContent = item.is_published
+                    ? 'Published'
+                    : 'Unpublished';
             } else {
-                status.textContent = 'Lesson record';
+                status.textContent = item.status || 'Record available';
             }
 
             const view = document.createElement('button');
+            view.type = 'button';
             view.textContent = 'View Details';
-            view.addEventListener('click', () => showDetails(item));
 
-            card.append(title, description, status, document.createElement('br'), view);
+            view.addEventListener('click', () => {
+                showDetails(item);
+            });
+
+            card.append(
+                title,
+                description,
+                status,
+                document.createElement('br'),
+                view
+            );
 
             if (activeTab === 'videos' && item.video_url) {
+
                 try {
+
                     const parsed = new URL(item.video_url);
 
-                    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+                    if (
+                        parsed.protocol === 'https:' ||
+                        parsed.protocol === 'http:'
+                    ) {
+
                         const link = document.createElement('a');
+
                         link.className = 'secondary';
                         link.href = parsed.href;
                         link.target = '_blank';
                         link.rel = 'noopener noreferrer';
                         link.textContent = 'Test Link ↗';
+
                         card.append(link);
                     }
+
                 } catch {
+
                     const invalid = document.createElement('p');
-                    invalid.textContent = 'The saved video URL is not a valid web link.';
+                    invalid.textContent = 'Invalid video URL.';
                     card.append(invalid);
+
                 }
+
             }
 
             recordsBox.append(card);
+
         });
+
     }
 
-    function showDetails(item) {
+    /* ACTUAL DETAILS AND QUESTIONS */
+
+    async function showDetails(item) {
+
+        selectedRecord = item;
+
+        const currentRequest = ++requestNumber;
+
         recordsBox.style.display = 'none';
         details.style.display = 'block';
         detailContent.innerHTML = '';
@@ -519,58 +815,263 @@
         detailContent.append(heading);
 
         const fieldsToShow = [
+
             ['Description', item.description],
-            ['Content', item.content],
-            ['Instructions', item.instructions],
-            ['Published', typeof item.is_published === 'boolean'
-                ? (item.is_published ? 'Yes' : 'No') : null],
+
+            ['Published',
+                typeof item.is_published === 'boolean'
+                    ? (item.is_published ? 'Yes' : 'No')
+                    : null
+            ],
+
             ['Status', item.status],
+
             ['Video URL', item.video_url],
+
             ['Created At', item.created_at]
+
         ];
 
         fieldsToShow.forEach(([label, value]) => {
-            if (value === null || value === undefined || value === '') return;
+
+            if (
+                value === null ||
+                value === undefined ||
+                value === ''
+            ) return;
 
             const p = document.createElement('p');
+
             const strong = document.createElement('strong');
             strong.textContent = label + ': ';
-            p.append(strong, document.createTextNode(String(value)));
+
+            p.append(
+                strong,
+                document.createTextNode(String(value))
+            );
+
             detailContent.append(p);
+
         });
 
+        /* MODULE LESSONS */
+
         if (activeTab === 'modules') {
-            const related = lessons.filter(
+
+            const relatedLessons = lessons.filter(
                 lesson => lesson.module_id === item.id
             );
 
             const lessonHeading = document.createElement('h3');
-            lessonHeading.style.marginTop = '18px';
-            lessonHeading.textContent = `Lessons in this module (${related.length})`;
+            lessonHeading.style.marginTop = '20px';
+            lessonHeading.textContent =
+                `Lessons in this module (${relatedLessons.length})`;
+
             detailContent.append(lessonHeading);
 
-            if (related.length) {
-                related.forEach(lesson => {
+            if (relatedLessons.length) {
+
+                relatedLessons.forEach(lesson => {
+
                     const p = document.createElement('p');
                     p.textContent = '• ' + getTitle(lesson);
+
                     detailContent.append(p);
+
                 });
+
             } else {
+
                 const p = document.createElement('p');
-                p.textContent = 'No related lessons were found using module_id.';
+                p.textContent =
+                    'No related lessons were found using module_id.';
+
                 detailContent.append(p);
+
             }
+
         }
+
+        /* MOCK TEST QUESTIONS */
+
+        if (activeTab === 'tests') {
+
+            const questionHeading = document.createElement('h3');
+            questionHeading.style.marginTop = '22px';
+            questionHeading.textContent = 'Mock Test Questions';
+
+            detailContent.append(questionHeading);
+
+            const loadingText = document.createElement('p');
+            loadingText.textContent = 'Loading questions...';
+
+            detailContent.append(loadingText);
+
+            const { data: questions, error } = await supabase
+                .from('mock_test_questions')
+                .select(`
+                    id,
+                    question_text,
+                    option_a,
+                    option_b,
+                    option_c,
+                    option_d,
+                    position
+                `)
+                .eq('test_id', item.id)
+                .order('position', { ascending: true });
+
+            if (currentRequest !== requestNumber) return;
+
+            loadingText.remove();
+
+            if (error) {
+
+                console.error('Question loading error:', error);
+
+                const errorText = document.createElement('p');
+                errorText.textContent =
+                    'Unable to load questions. Please check permissions.';
+
+                detailContent.append(errorText);
+                return;
+
+            }
+
+            if (!questions || questions.length === 0) {
+
+                const emptyText = document.createElement('p');
+                emptyText.textContent =
+                    'No questions have been added to this mock test yet.';
+
+                detailContent.append(emptyText);
+                return;
+
+            }
+
+            questions.forEach((question, index) => {
+
+                const card = document.createElement('div');
+                card.className = 'question-card';
+
+                const questionTitle = document.createElement('p');
+                questionTitle.className = 'question-title';
+
+                questionTitle.textContent =
+                    `Question ${index + 1}: ${question.question_text || ''}`;
+
+                card.append(questionTitle);
+
+                const choices = [
+
+                    ['A', question.option_a],
+                    ['B', question.option_b],
+                    ['C', question.option_c],
+                    ['D', question.option_d]
+
+                ];
+
+                choices.forEach(([letter, value]) => {
+
+                    if (!value) return;
+
+                    const choice = document.createElement('p');
+                    choice.className = 'choice';
+                    choice.textContent = `${letter}. ${value}`;
+
+                    card.append(choice);
+
+                });
+
+                detailContent.append(card);
+
+            });
+
+            const total = document.createElement('p');
+
+            total.style.cssText =
+                'margin-top:15px;font-weight:700;color:#244b3a;';
+
+            total.textContent =
+                `Total Questions: ${questions.length}`;
+
+            detailContent.append(total);
+
+        }
+
+        /* VIDEO PREVIEW */
+
+        if (activeTab === 'videos' && item.video_url) {
+
+            const linkHeading = document.createElement('h3');
+            linkHeading.style.marginTop = '18px';
+            linkHeading.textContent = 'Video Link Preview';
+
+            detailContent.append(linkHeading);
+
+            try {
+
+                const parsed = new URL(item.video_url);
+
+                if (
+                    parsed.protocol !== 'https:' &&
+                    parsed.protocol !== 'http:'
+                ) {
+                    throw new Error('Invalid URL protocol');
+                }
+
+                const link = document.createElement('a');
+
+                link.href = parsed.href;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = 'Open Video Tutorial ↗';
+
+                link.style.cssText = `
+                    display:inline-block;
+                    margin-top:10px;
+                    background:#244b3a;
+                    color:white;
+                    padding:10px 14px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-size:11px;
+                `;
+
+                detailContent.append(link);
+
+            } catch {
+
+                const errorText = document.createElement('p');
+                errorText.textContent = 'This video URL is invalid.';
+
+                detailContent.append(errorText);
+
+            }
+
+        }
+
     }
 
+    /* LOAD RECORDS */
+
     async function loadTab(tab) {
+
         activeTab = tab;
+        selectedRecord = null;
+
+        requestNumber++;
+
         search.value = '';
+
         details.style.display = 'none';
         recordsBox.style.display = 'grid';
 
-        document.getElementById('panelTitle').textContent = config[tab].title;
-        document.getElementById('panelDescription').textContent = config[tab].description;
+        document.getElementById('panelTitle').textContent =
+            config[tab].title;
+
+        document.getElementById('panelDescription').textContent =
+            config[tab].description;
 
         showEmpty('Loading records...');
 
@@ -580,9 +1081,15 @@
             .order('created_at', { ascending: false });
 
         if (error) {
+
             console.error(`Could not load ${tab}:`, error);
-            showEmpty(`Unable to load ${config[tab].title}. Check the Admin SELECT permission for this table.`);
+
+            showEmpty(
+                `Unable to load ${config[tab].title}. Check Admin SELECT permissions.`
+            );
+
             return;
+
         }
 
         allRecords = data || [];
@@ -593,98 +1100,192 @@
         if (tab === 'videos') videos = allRecords;
 
         renderRecords(allRecords);
+
     }
 
+    /* TAB BUTTONS */
+
     document.querySelectorAll('.tab').forEach(button => {
+
         button.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
             button.classList.add('active');
+
             loadTab(button.dataset.tab);
+
         });
+
     });
 
+    /* SEARCH */
+
     search.addEventListener('input', () => {
+
         const term = search.value.toLowerCase().trim();
 
         const filtered = allRecords.filter(item => {
+
             return [
+
                 item.title,
                 item.name,
                 item.description,
                 item.content,
                 item.video_url,
                 item.status
-            ].some(value => String(value ?? '').toLowerCase().includes(term));
+
+            ].some(value =>
+                String(value ?? '').toLowerCase().includes(term)
+            );
+
         });
 
         renderRecords(filtered);
+
     });
+
+    /* BACK BUTTON */
 
     document.getElementById('back').addEventListener('click', () => {
+
+        requestNumber++;
+
+        selectedRecord = null;
+
         details.style.display = 'none';
         recordsBox.style.display = 'grid';
+
     });
+
+    /* SIDEBAR TOGGLE */
 
     document.getElementById('toggle').addEventListener('click', () => {
+
         sidebar.classList.toggle('collapsed');
+
         const collapsed = sidebar.classList.contains('collapsed');
-        document.getElementById('toggle').textContent = collapsed ? '☰' : '✕';
+
+        const toggle = document.getElementById('toggle');
+
+        toggle.textContent = collapsed ? '☰' : '✕';
+
+        toggle.setAttribute(
+            'aria-expanded',
+            String(!collapsed)
+        );
+
     });
 
+    /* LOGOUT */
+
     document.getElementById('logout').addEventListener('click', async () => {
+
         const { error } = await supabase.auth.signOut();
 
         if (error) {
+
             alert('Unable to log out. Please try again.');
             return;
+
         }
 
         window.location.href = '../index.html';
+
     });
 
+    /* VERIFY ADMIN */
+
     async function verifyAdmin() {
-        const { data: { session }, error: sessionError } =
-            await supabase.auth.getSession();
 
-        if (sessionError || !session) {
-            window.location.href = '../index.html';
-            return;
-        }
+        try {
 
-        const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
+            const {
+                data: { session },
+                error: sessionError
+            } = await supabase.auth.getSession();
 
-        if (error || !profile || profile.role !== 'admin') {
+            if (sessionError) throw sessionError;
+
+            if (!session) {
+
+                window.location.href = '../index.html';
+                return;
+
+            }
+
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            if (!profile || profile.role !== 'admin') {
+
+                document.body.innerHTML = `
+                    <div style="padding:40px;text-align:center;font-family:Poppins,sans-serif">
+                        <h2>Admin Access Only</h2>
+                        <p>This page is only available to MATHIQUE administrators.</p>
+                        <a href="../index.html">Back to Login</a>
+                    </div>
+                `;
+
+                return;
+
+            }
+
+            app.style.display = 'flex';
+
+            /* LOAD MODULES AND LESSONS */
+
+            const [moduleResult, lessonResult] = await Promise.all([
+
+                supabase
+                    .from('modules')
+                    .select('*'),
+
+                supabase
+                    .from('lessons')
+                    .select('*')
+
+            ]);
+
+            if (moduleResult.error) {
+                console.error('Module loading error:', moduleResult.error);
+            }
+
+            if (lessonResult.error) {
+                console.error('Lesson loading error:', lessonResult.error);
+            }
+
+            modules = moduleResult.data || [];
+            lessons = lessonResult.data || [];
+
+            await loadTab('modules');
+
+        } catch (error) {
+
+            console.error('Admin verification error:', error);
+
             document.body.innerHTML = `
                 <div style="padding:40px;text-align:center;font-family:Poppins,sans-serif">
-                    <h2>Admin Access Only</h2>
-                    <p>This page is only available to MATHIQUE administrators.</p>
+                    <h2>Unable to Verify Account</h2>
+                    <p>Please refresh the page and try again.</p>
                     <a href="../index.html">Back to Login</a>
                 </div>
             `;
-            return;
+
         }
 
-        app.style.display = 'flex';
-
-        const moduleResult = await supabase
-            .from('modules')
-            .select('*');
-
-        const lessonResult = await supabase
-            .from('lessons')
-            .select('*');
-
-        modules = moduleResult.data || [];
-        lessons = lessonResult.data || [];
-
-        await loadTab('modules');
     }
 
     verifyAdmin();
+
 </script>
 
 </body>
