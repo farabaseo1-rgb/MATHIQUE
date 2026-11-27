@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -388,6 +387,7 @@
             font-weight: 700;
             color: var(--green);
             margin-bottom: 12px;
+            font-size: 12px;
         }
 
         .choice {
@@ -396,6 +396,122 @@
             margin: 5px 0;
             background: #f4f7f1;
             border-radius: 6px;
+        }
+
+        /* PRACTICE TEST */
+
+        .practice-heading {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .practice-heading p {
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .practice-instructions {
+            background: #edf3e9;
+            border-radius: 9px;
+            padding: 12px;
+            margin: 14px 0;
+            color: #526b58;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 10px;
+            margin-top: 7px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fbfcf9;
+            cursor: pointer;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .answer-option:hover {
+            background: #edf3e9;
+        }
+
+        .answer-option input {
+            margin-top: 3px;
+            accent-color: var(--green);
+            flex-shrink: 0;
+        }
+
+        .submit-practice,
+        .retake-button {
+            border: 0;
+            border-radius: 8px;
+            background: var(--green);
+            color: white;
+            padding: 12px 17px;
+            margin-top: 18px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submit-practice:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .result-summary {
+            margin-top: 22px;
+            padding: 18px;
+            background: #edf3e9;
+            border: 1px solid #dce8dc;
+            border-radius: 10px;
+        }
+
+        .result-summary h3 {
+            margin-bottom: 8px;
+        }
+
+        .score-number {
+            color: var(--green);
+            font-size: 26px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .result-item {
+            padding: 13px;
+            border-radius: 9px;
+            background: white;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .result-correct {
+            border-left: 4px solid #4d8b59;
+        }
+
+        .result-wrong {
+            border-left: 4px solid #bd765e;
+        }
+
+        .result-status {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .result-correct .result-status {
+            color: #397449;
+        }
+
+        .result-wrong .result-status {
+            color: #a65c45;
         }
 
         .notice {
@@ -564,8 +680,8 @@
             <h2>Welcome to the Preview & Testing Center!</h2>
             <p>
                 Review learning modules, lessons, mock tests, and video tutorials.
-                This page is designed for viewing and testing without editing
-                original teacher content or recording student scores.
+                You can also take mock tests in practice mode without recording
+                student scores or changing original teacher content.
             </p>
         </section>
 
@@ -622,9 +738,8 @@
 
         <div class="notice">
             <strong>Preview safety:</strong>
-            This page does not edit or delete records. Practice scoring and
-            answer-key checking will be added separately with an isolated
-            test mode so actual student scores remain untouched.
+            Practice test scores are temporary and are not saved as student scores.
+            Answer checking is handled securely by the database function.
         </div>
 
     </main>
@@ -681,15 +796,6 @@
 
     };
 
-    function safe(value) {
-        return String(value ?? '')
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
-    }
-
     function getTitle(item) {
         return item.title || item.name || 'Untitled record';
     }
@@ -702,6 +808,7 @@
     }
 
     function showEmpty(message) {
+
         recordsBox.innerHTML = '';
 
         const empty = document.createElement('div');
@@ -709,6 +816,7 @@
         empty.textContent = message;
 
         recordsBox.append(empty);
+
     }
 
     function renderRecords(list) {
@@ -798,6 +906,335 @@
 
     }
 
+    function addDetailField(label, value) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ''
+        ) return;
+
+        const p = document.createElement('p');
+
+        const strong = document.createElement('strong');
+        strong.textContent = label + ': ';
+
+        p.append(
+            strong,
+            document.createTextNode(String(value))
+        );
+
+        detailContent.append(p);
+
+    }
+
+    /* PRACTICE TEST RESULT DISPLAY */
+
+    function getChoiceText(question, answer) {
+
+        if (!answer) return 'Not answered';
+
+        const normalized = String(answer).trim().toUpperCase();
+
+        const choices = {
+            A: question.option_a,
+            B: question.option_b,
+            C: question.option_c,
+            D: question.option_d
+        };
+
+        if (choices[normalized]) {
+            return `${normalized}. ${choices[normalized]}`;
+        }
+
+        return String(answer);
+
+    }
+
+    function displayPracticeResults(result, questions) {
+
+        const summary = document.createElement('div');
+        summary.className = 'result-summary';
+
+        const heading = document.createElement('h3');
+        heading.textContent = 'Practice Test Results';
+
+        const score = document.createElement('div');
+        score.className = 'score-number';
+
+        const scoreValue = Number(result.score) || 0;
+        const totalValue = Number(result.total_questions) || questions.length;
+
+        score.textContent = `${scoreValue} / ${totalValue}`;
+
+        const description = document.createElement('p');
+        description.textContent =
+            `You got ${scoreValue} out of ${totalValue} questions correct.`;
+
+        summary.append(heading, score, description);
+        detailContent.append(summary);
+
+        const resultMap = new Map(
+            (result.results || []).map(item => [
+                String(item.question_id),
+                item
+            ])
+        );
+
+        questions.forEach((question, index) => {
+
+            const answerResult = resultMap.get(String(question.id));
+
+            const card = document.createElement('div');
+            card.className = 'result-item';
+
+            const isCorrect = answerResult?.is_correct === true;
+
+            card.classList.add(
+                isCorrect ? 'result-correct' : 'result-wrong'
+            );
+
+            const status = document.createElement('p');
+            status.className = 'result-status';
+            status.textContent = isCorrect
+                ? '✓ Correct'
+                : '✗ Incorrect';
+
+            const questionText = document.createElement('p');
+            questionText.textContent =
+                `Question ${index + 1}: ${question.question_text || ''}`;
+
+            const submitted = document.createElement('p');
+            submitted.textContent =
+                'Your answer: ' +
+                getChoiceText(question, answerResult?.submitted_answer);
+
+            const correct = document.createElement('p');
+            correct.textContent =
+                'Correct answer: ' +
+                getChoiceText(question, answerResult?.correct_answer);
+
+            card.append(status, questionText, submitted, correct);
+
+            if (answerResult?.explanation) {
+
+                const explanation = document.createElement('p');
+                explanation.style.marginTop = '7px';
+                explanation.textContent =
+                    'Explanation: ' + answerResult.explanation;
+
+                card.append(explanation);
+
+            }
+
+            detailContent.append(card);
+
+        });
+
+        const retake = document.createElement('button');
+        retake.type = 'button';
+        retake.className = 'retake-button';
+        retake.textContent = 'Retake Practice Test';
+
+        retake.addEventListener('click', () => {
+
+            const form = detailContent.querySelector('#practiceForm');
+
+            if (form) {
+                form.reset();
+            }
+
+            summary.remove();
+
+            detailContent
+                .querySelectorAll('.result-item')
+                .forEach(item => item.remove());
+
+            retake.remove();
+
+            const submitButton =
+                detailContent.querySelector('.submit-practice');
+
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit Practice Test';
+            }
+
+            const resultNotice =
+                detailContent.querySelector('.practice-result-notice');
+
+            if (resultNotice) resultNotice.remove();
+
+        });
+
+        detailContent.append(retake);
+
+    }
+
+    /* PRACTICE TEST FORM */
+
+    function createPracticeForm(questions, testId) {
+
+        const section = document.createElement('section');
+        section.className = 'practice-heading';
+
+        const heading = document.createElement('h3');
+        heading.textContent = 'Practice Test Mode';
+
+        const description = document.createElement('p');
+        description.textContent =
+            'Answer the questions below, then submit to check your answers.';
+
+        const instructions = document.createElement('div');
+        instructions.className = 'practice-instructions';
+        instructions.textContent =
+            'This is an administrator practice session. Your result will not be saved to student scores.';
+
+        const form = document.createElement('form');
+        form.id = 'practiceForm';
+
+        questions.forEach((question, index) => {
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+
+            const questionTitle = document.createElement('p');
+            questionTitle.className = 'question-title';
+            questionTitle.textContent =
+                `Question ${index + 1}: ${question.question_text || ''}`;
+
+            card.append(questionTitle);
+
+            const choices = [
+                ['A', question.option_a],
+                ['B', question.option_b],
+                ['C', question.option_c],
+                ['D', question.option_d]
+            ];
+
+            choices.forEach(([letter, value]) => {
+
+                if (!value) return;
+
+                const label = document.createElement('label');
+                label.className = 'answer-option';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question_${question.id}`;
+                radio.value = letter;
+
+                const text = document.createElement('span');
+                text.textContent = `${letter}. ${value}`;
+
+                label.append(radio, text);
+                card.append(label);
+
+            });
+
+            form.append(card);
+
+        });
+
+        const submit = document.createElement('button');
+        submit.type = 'submit';
+        submit.className = 'submit-practice';
+        submit.textContent = 'Submit Practice Test';
+
+        form.append(submit);
+
+        const notice = document.createElement('p');
+        notice.className = 'practice-result-notice';
+        notice.style.marginTop = '10px';
+        notice.style.color = '#829087';
+        notice.style.fontSize = '10px';
+
+        form.addEventListener('submit', async event => {
+
+            event.preventDefault();
+
+            if (submit.disabled) return;
+
+            const answerMap = {};
+
+            questions.forEach(question => {
+
+                const selected = form.querySelector(
+                    `input[name="question_${question.id}"]:checked`
+                );
+
+                if (selected) {
+                    answerMap[question.id] = selected.value;
+                }
+
+            });
+
+            const answeredCount = Object.keys(answerMap).length;
+
+            const confirmed = confirm(
+                `You answered ${answeredCount} out of ${questions.length} questions. Submit your practice test?`
+            );
+
+            if (!confirmed) return;
+
+            submit.disabled = true;
+            submit.textContent = 'Checking Answers...';
+            notice.textContent = '';
+
+            try {
+
+                const { data, error } = await supabase.rpc(
+                    'admin_grade_practice_test',
+                    {
+                        p_test_id: testId,
+                        p_answers: answerMap
+                    }
+                );
+
+                if (error) throw error;
+
+                if (!data || typeof data !== 'object') {
+                    throw new Error('The grading function returned an invalid result.');
+                }
+
+                form.querySelectorAll('input').forEach(input => {
+                    input.disabled = true;
+                });
+
+                displayPracticeResults(data, questions);
+
+                submit.textContent = 'Practice Test Submitted';
+
+                notice.textContent =
+                    'Practice result displayed. No student score was recorded.';
+
+            } catch (error) {
+
+                console.error('Practice grading error:', error);
+
+                notice.textContent =
+                    error.message ||
+                    'Unable to check your answers. Please try again.';
+
+                submit.disabled = false;
+                submit.textContent = 'Submit Practice Test';
+
+            }
+
+        });
+
+        section.append(
+            heading,
+            description,
+            instructions,
+            form,
+            notice
+        );
+
+        detailContent.append(section);
+
+    }
+
     /* ACTUAL DETAILS AND QUESTIONS */
 
     async function showDetails(item) {
@@ -814,45 +1251,18 @@
         heading.textContent = getTitle(item);
         detailContent.append(heading);
 
-        const fieldsToShow = [
+        addDetailField('Description', item.description);
 
-            ['Description', item.description],
+        addDetailField(
+            'Published',
+            typeof item.is_published === 'boolean'
+                ? (item.is_published ? 'Yes' : 'No')
+                : null
+        );
 
-            ['Published',
-                typeof item.is_published === 'boolean'
-                    ? (item.is_published ? 'Yes' : 'No')
-                    : null
-            ],
-
-            ['Status', item.status],
-
-            ['Video URL', item.video_url],
-
-            ['Created At', item.created_at]
-
-        ];
-
-        fieldsToShow.forEach(([label, value]) => {
-
-            if (
-                value === null ||
-                value === undefined ||
-                value === ''
-            ) return;
-
-            const p = document.createElement('p');
-
-            const strong = document.createElement('strong');
-            strong.textContent = label + ': ';
-
-            p.append(
-                strong,
-                document.createTextNode(String(value))
-            );
-
-            detailContent.append(p);
-
-        });
+        addDetailField('Status', item.status);
+        addDetailField('Video URL', item.video_url);
+        addDetailField('Created At', item.created_at);
 
         /* MODULE LESSONS */
 
@@ -892,7 +1302,7 @@
 
         }
 
-        /* MOCK TEST QUESTIONS */
+        /* MOCK TEST QUESTIONS AND PRACTICE MODE */
 
         if (activeTab === 'tests') {
 
@@ -931,7 +1341,7 @@
 
                 const errorText = document.createElement('p');
                 errorText.textContent =
-                    'Unable to load questions. Please check permissions.';
+                    'Unable to load questions. Please check Admin SELECT permissions.';
 
                 detailContent.append(errorText);
                 return;
@@ -963,12 +1373,10 @@
                 card.append(questionTitle);
 
                 const choices = [
-
                     ['A', question.option_a],
                     ['B', question.option_b],
                     ['C', question.option_c],
                     ['D', question.option_d]
-
                 ];
 
                 choices.forEach(([letter, value]) => {
@@ -996,6 +1404,8 @@
                 `Total Questions: ${questions.length}`;
 
             detailContent.append(total);
+
+            createPracticeForm(questions, item.id);
 
         }
 
@@ -1130,14 +1540,12 @@
         const filtered = allRecords.filter(item => {
 
             return [
-
                 item.title,
                 item.name,
                 item.description,
                 item.content,
                 item.video_url,
                 item.status
-
             ].some(value =>
                 String(value ?? '').toLowerCase().includes(term)
             );
@@ -1187,10 +1595,8 @@
         const { error } = await supabase.auth.signOut();
 
         if (error) {
-
             alert('Unable to log out. Please try again.');
             return;
-
         }
 
         window.location.href = '../index.html';
@@ -1211,10 +1617,8 @@
             if (sessionError) throw sessionError;
 
             if (!session) {
-
                 window.location.href = '../index.html';
                 return;
-
             }
 
             const { data: profile, error } = await supabase
